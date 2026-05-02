@@ -1,5 +1,6 @@
 import {
   AppBar,
+  Badge,
   Box,
   Button,
   Container,
@@ -7,7 +8,9 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
+import { useSelector } from 'react-redux'
 import { NavLink, Outlet } from 'react-router-dom'
+import { selectCartQuantity } from '../store/cartSlice'
 
 const navItems = [
   { label: 'Home', path: '/' },
@@ -16,6 +19,8 @@ const navItems = [
 ]
 
 function MainLayout() {
+  const cartQuantity = useSelector(selectCartQuantity)
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <AppBar
@@ -60,7 +65,18 @@ function MainLayout() {
                     },
                   }}
                 >
-                  {item.label}
+                  {item.path === '/cart' ? (
+                    <Badge
+                      badgeContent={cartQuantity}
+                      color="secondary"
+                      showZero
+                      sx={{ '& .MuiBadge-badge': { right: -14 } }}
+                    >
+                      {item.label}
+                    </Badge>
+                  ) : (
+                    item.label
+                  )}
                 </Button>
               ))}
             </Stack>

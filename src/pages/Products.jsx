@@ -7,14 +7,39 @@ import {
   Grid,
   Typography,
 } from '@mui/material'
+import { useDispatch } from 'react-redux'
+import { addItem } from '../store/cartSlice'
 
 const products = [
-  { name: 'Structured Tote', price: '$89', category: 'Bags' },
-  { name: 'Travel Fold Wallet', price: '$42', category: 'Accessories' },
-  { name: 'Everyday Crossbody', price: '$76', category: 'Bags' },
+  {
+    id: 'structured-tote',
+    name: 'Structured Tote',
+    price: 8900,
+    category: 'Bags',
+  },
+  {
+    id: 'travel-fold-wallet',
+    name: 'Travel Fold Wallet',
+    price: 4200,
+    category: 'Accessories',
+  },
+  {
+    id: 'everyday-crossbody',
+    name: 'Everyday Crossbody',
+    price: 7600,
+    category: 'Bags',
+  },
 ]
 
+const formatPrice = (value) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(value / 100)
+
 function Products() {
+  const dispatch = useDispatch()
+
   return (
     <Container sx={{ py: { xs: 6, md: 8 } }}>
       <Typography variant="h2" sx={{ mb: 1 }}>
@@ -36,11 +61,15 @@ function Products() {
                   {product.name}
                 </Typography>
                 <Typography color="secondary.main" sx={{ mt: 2 }} variant="h6">
-                  {product.price}
+                  {formatPrice(product.price)}
                 </Typography>
               </CardContent>
               <CardActions sx={{ px: 2, pb: 2 }}>
-                <Button fullWidth variant="contained">
+                <Button
+                  fullWidth
+                  onClick={() => dispatch(addItem(product))}
+                  variant="contained"
+                >
                   Add to Cart
                 </Button>
               </CardActions>
