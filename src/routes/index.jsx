@@ -31,6 +31,12 @@ const routes = [
       { path: 'privacy-policy', element: <PrivacyPolicy /> },
       { path: 'shipping-and-returns', element: <ShippingReturns /> },
       { path: 'returns-and-refunds', element: <ReturnsRefunds /> },
+      {
+        path: '*',
+        element: (
+          <>not found</>
+        ),
+      },
     ],
   },
 ]

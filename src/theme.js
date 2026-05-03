@@ -49,7 +49,7 @@ const theme = createTheme({
     },
   },
   shape: {
-    borderRadius: 8,
+    borderRadius: 2,
   },
   components: {
     MuiButton: {
@@ -58,7 +58,7 @@ const theme = createTheme({
       },
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 2,
           paddingInline: 20,
         },
       },
@@ -66,7 +66,7 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 2,
           border: '1px solid #e6dfd5',
           boxShadow: '0 18px 45px rgba(15, 23, 42, 0.08)',
         },

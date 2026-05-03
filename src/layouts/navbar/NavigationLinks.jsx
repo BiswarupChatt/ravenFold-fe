@@ -6,6 +6,7 @@ import { Box, Button, Collapse, Menu, MenuItem, Stack } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { NavLink, matchPath, useLocation } from 'react-router-dom'
 import navigationItems from './navigationItems.js'
+import theme from '../../theme.js'
 
 const inlineLinkStyles = {
   color: 'text.secondary',
@@ -56,13 +57,13 @@ const drawerNestedLinkStyles = {
 }
 
 const menuPaperStyles = {
-  borderRadius: 3,
+  borderRadius: theme.shape.borderRadius,
   minWidth: 220,
   mt: 1,
 }
 
 const nestedMenuPaperStyles = {
-  borderRadius: 3,
+  borderRadius: theme.shape.borderRadius,
   minWidth: 220,
 }
 

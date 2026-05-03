@@ -5,6 +5,7 @@ import YouTubeIcon from '@mui/icons-material/YouTube'
 import { Box, Container, Divider, Link, Stack, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import useScreenSize from '../../hooks/useScreenSize.js'
+import theme from '../../theme.js'
 
 const quickLinks = [
     { label: 'Home', to: '/' },
@@ -146,7 +147,7 @@ function Footer() {
                                     sx={{
                                         alignItems: 'center',
                                         bgcolor: 'secondary.main',
-                                        borderRadius: 2,
+                                        borderRadius:  theme.shape.borderRadius,
                                         color: 'secondary.contrastText',
                                         display: 'inline-flex',
                                         fontSize: '0.92rem',

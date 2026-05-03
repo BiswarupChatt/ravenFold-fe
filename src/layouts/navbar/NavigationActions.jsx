@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom'
 import { selectCartQuantity } from '../../store/cartSlice'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import navigationActions from './navigationActions.js'
+import theme from '../../theme.js'
 
 const inlineActionButtonStyles = {
   bgcolor: 'background.paper',
@@ -25,7 +26,7 @@ const inlineActionButtonStyles = {
 
 const bottomBarActionButtonStyles = {
   alignItems: 'center',
-  borderRadius: 2,
+  borderRadius: theme.shape.borderRadius,
   color: 'text.primary',
   display: 'flex',
   flexDirection: 'column',
