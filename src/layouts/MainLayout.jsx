@@ -5,7 +5,7 @@ import Footer from './footer/Footer.jsx'
 import Navbar from './navbar/Navbar.jsx'
 
 function MainLayout() {
-  const { isMobile, isTab } = useScreenSize()
+  const { isMobile, isTab, isDesktop } = useScreenSize()
 
   return (
     <Box
@@ -14,7 +14,7 @@ function MainLayout() {
         display: 'flex',
         flexDirection: 'column',
         minHeight: '100vh',
-        pb: isMobile ? 10 : isTab ? 11 : 0,
+        pb: isDesktop ? 0 : 8,
       }}
     >
       <Navbar />
