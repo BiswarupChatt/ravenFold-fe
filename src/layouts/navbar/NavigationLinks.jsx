@@ -30,7 +30,7 @@ const drawerLinkStyles = {
   fontWeight: 700,
   justifyContent: 'flex-start',
   px: 0,
-  py: 2,
+  py: 1,
   textAlign: 'left',
   '&:hover': {
     bgcolor: 'transparent',
@@ -48,7 +48,7 @@ function NavigationLinks({ layout = 'inline', onItemClick }) {
     <Stack
       component="nav"
       direction={isDrawerLayout ? 'column' : 'row'}
-      spacing={isDrawerLayout ? 0 : 0.5}
+      spacing={isDrawerLayout ? 0.5 : 0.5}
       sx={{ width: isDrawerLayout ? '100%' : 'auto' }}
     >
       {/* Reuse the same route list for the centered desktop nav and the drawer menu. */}

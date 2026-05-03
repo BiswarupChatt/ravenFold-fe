@@ -19,6 +19,17 @@ function Navbar() {
 
   const openDrawer = () => setIsDrawerOpen(true)
   const closeDrawer = () => setIsDrawerOpen(false)
+  const drawerPaperStyles = {
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100vh',
+    inset: 0,
+    maxHeight: '100vh',
+    maxWidth: '100vw',
+    p: 3,
+    width: '100vw',
+  }
   const brandStyles = {
     color: 'text.primary',
     fontWeight: 800,
@@ -74,30 +85,29 @@ function Navbar() {
           anchor="left"
           onClose={closeDrawer}
           open={isDrawerOpen}
-          PaperProps={{
-            sx: {
-              p: 3,
-              width: { xs: '100%', sm: 420 },
+          slotProps={{
+            paper: {
+              sx: drawerPaperStyles,
             },
+          }}
+          sx={{
+            '& .MuiDrawer-paper': drawerPaperStyles,
           }}
         >
           <Box
             sx={{
               alignItems: 'center',
-              display: 'grid',
-              gap: 1,
-              gridTemplateColumns: '48px 1fr 48px',
-              mb: 4,
+              display: 'flex',
+              justifyContent: 'space-between',
+              mb: 3,
             }}
           >
-            <Box />
-
             <Typography
               component={NavLink}
               onClick={closeDrawer}
               to="/"
               variant="h6"
-              sx={{ ...brandStyles, justifySelf: 'center' }}
+              sx={brandStyles}
             >
               Raven Fold
             </Typography>
@@ -117,10 +127,12 @@ function Navbar() {
             </IconButton>
           </Box>
 
-          <NavigationLinks layout="drawer" onItemClick={closeDrawer} />
+          <Box sx={{ flex: 1, overflowY: 'auto' }}>
+            <NavigationLinks layout="drawer" onItemClick={closeDrawer} />
+          </Box>
         </Drawer>
 
-        <NavigationActions layout="bottomBar" />
+        {!isDrawerOpen ? <NavigationActions layout="bottomBar" /> : null}
       </Box>
 
       {/* Tablet and desktop keep the three-part navbar: brand, links, actions. */}
