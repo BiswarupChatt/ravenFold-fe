@@ -1,4 +1,4 @@
-const navbarItems = [
+const navigationItems = [
   { label: 'Home', path: '/' },
   { label: 'Shop', path: '/shop' },
   { label: 'Products', path: '/products' },
@@ -6,4 +6,4 @@ const navbarItems = [
   { label: 'Blog', path: '/blog' },
 ]
 
-export default navbarItems
+export default navigationItems

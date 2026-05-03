@@ -3,11 +3,11 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
 
-const navbarActions = [
+const navigationActions = [
   { label: 'Profile', path: '/profile', Icon: PersonOutlineRoundedIcon },
   { label: 'Cart', path: '/cart', Icon: ShoppingBagOutlinedIcon, showBadge: true },
   { label: 'Wishlist', path: '/wishlist', Icon: FavoriteBorderRoundedIcon },
   { label: 'Search', path: '/search', Icon: SearchRoundedIcon },
 ]
 
-export default navbarActions
+export default navigationActions

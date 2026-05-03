@@ -4,7 +4,13 @@ import Navbar from './navbar/Navbar.jsx'
 
 function MainLayout() {
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box
+      sx={{
+        bgcolor: 'background.default',
+        minHeight: '100vh',
+        pb: { xs: 10, sm: 11, md: 0 },
+      }}
+    >
       <Navbar />
 
       <Box component="main">
