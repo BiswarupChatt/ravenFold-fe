@@ -1,9 +1,12 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
+import useScreenSize from '../hooks/useScreenSize.js'
 
 function Home() {
+  const { isDesktop, isMobile } = useScreenSize()
+
   return (
-    <Box sx={{ py: { xs: 8, md: 12 } }}>
+    <Box sx={{ py: isDesktop ? 12 : 8 }}>
       <Container>
         <Stack spacing={4} sx={{ maxWidth: 720 }}>
           <Typography variant="h1">
@@ -28,7 +31,7 @@ Commodi amet neque temporibus soluta? Qui unde, enim sunt a voluptatem eum facil
 Numquam vitae placeat inventore aperiam ad eveniet blanditiis explicabo, assumenda tempora rerum, officiis asperiores saepe quam aliquid pariatur dolores sit porro nam reiciendis repellat! Laudantium, unde! Cum quasi sed sequi?
 Unde molestiae ab impedit dignissimos enim, explicabo, accusamus modi accusantium voluptatibus ad assumenda natus repellendus qui distinctio voluptatem soluta vel fugiat recusandae a neque! Quod assumenda aliquid obcaecati recusandae. Pariatur.
           </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <Stack direction={isMobile ? 'column' : 'row'} spacing={2}>
             <Button
               component={RouterLink}
               size="large"

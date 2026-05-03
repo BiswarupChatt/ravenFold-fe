@@ -2,6 +2,7 @@ import { Badge, Box, IconButton, Paper, Stack, Typography } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { selectCartQuantity } from '../../store/cartSlice'
+import useScreenSize from '../../hooks/useScreenSize.js'
 import navigationActions from './navigationActions.js'
 
 const inlineActionButtonStyles = {
@@ -45,6 +46,7 @@ const bottomBarActionButtonStyles = {
 
 function NavigationActions({ layout = 'inline', onActionClick }) {
   const cartQuantity = useSelector(selectCartQuantity)
+  const { isMobile } = useScreenSize()
   const isBottomBar = layout === 'bottomBar'
 
   const renderActionButton = ({ label, path, Icon, showBadge }) => {
@@ -108,7 +110,7 @@ function NavigationActions({ layout = 'inline', onActionClick }) {
       ))}
     </Box>
   ) : (
-    <Stack direction="row" spacing={{ xs: 0.5, sm: 1 }}>
+    <Stack direction="row" spacing={isMobile ? 0.5 : 1}>
       {navigationActions.map((action) => (
         <Box key={action.path}>{renderActionButton(action)}</Box>
       ))}

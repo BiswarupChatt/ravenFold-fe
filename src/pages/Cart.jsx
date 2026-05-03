@@ -19,6 +19,7 @@ import {
   selectCartQuantity,
   selectCartSubtotal,
 } from '../store/cartSlice'
+import useScreenSize from '../hooks/useScreenSize.js'
 
 const formatPrice = (value) =>
   new Intl.NumberFormat('en-US', {
@@ -31,14 +32,15 @@ function Cart() {
   const items = useSelector(selectCartItems)
   const quantity = useSelector(selectCartQuantity)
   const subtotal = useSelector(selectCartSubtotal)
+  const { isDesktop, isMobile } = useScreenSize()
 
   return (
-    <Container sx={{ py: { xs: 6, md: 8 } }}>
-      <Paper sx={{ p: { xs: 3, md: 5 } }}>
+    <Container sx={{ py: isDesktop ? 8 : 6 }}>
+      <Paper sx={{ p: isDesktop ? 5 : 3 }}>
         <Stack spacing={3}>
           <Stack
-            alignItems={{ xs: 'flex-start', sm: 'center' }}
-            direction={{ xs: 'column', sm: 'row' }}
+            alignItems={isMobile ? 'flex-start' : 'center'}
+            direction={isMobile ? 'column' : 'row'}
             justifyContent="space-between"
             spacing={2}
           >
@@ -84,8 +86,8 @@ function Cart() {
                   variant="outlined"
                 >
                   <Stack
-                    alignItems={{ xs: 'flex-start', md: 'center' }}
-                    direction={{ xs: 'column', md: 'row' }}
+                    alignItems={isDesktop ? 'center' : 'flex-start'}
+                    direction={isDesktop ? 'row' : 'column'}
                     justifyContent="space-between"
                     spacing={2}
                   >
@@ -136,8 +138,8 @@ function Cart() {
               <Divider />
 
               <Stack
-                alignItems={{ xs: 'flex-start', sm: 'center' }}
-                direction={{ xs: 'column', sm: 'row' }}
+                alignItems={isMobile ? 'flex-start' : 'center'}
+                direction={isMobile ? 'column' : 'row'}
                 justifyContent="space-between"
                 spacing={2}
               >

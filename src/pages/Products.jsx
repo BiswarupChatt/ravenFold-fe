@@ -8,6 +8,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useDispatch } from 'react-redux'
+import useScreenSize from '../hooks/useScreenSize.js'
 import { addItem } from '../store/cartSlice'
 
 const products = [
@@ -39,9 +40,11 @@ const formatPrice = (value) =>
 
 function Products() {
   const dispatch = useDispatch()
+  const { isDesktop, isMobile, isTab } = useScreenSize()
+  const productGridSize = isMobile ? 12 : isTab ? 6 : 4
 
   return (
-    <Container sx={{ py: { xs: 6, md: 8 } }}>
+    <Container sx={{ py: isDesktop ? 8 : 6 }}>
       <Typography variant="h2" sx={{ mb: 1 }}>
         Products
       </Typography>
@@ -51,7 +54,7 @@ function Products() {
 
       <Grid container spacing={3}>
         {products.map((product) => (
-          <Grid key={product.name} size={{ xs: 12, sm: 6, md: 4 }}>
+          <Grid key={product.name} size={productGridSize}>
             <Card>
               <CardContent>
                 <Typography color="text.secondary" variant="body2">

@@ -11,11 +11,13 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import useScreenSize from '../../hooks/useScreenSize.js'
 import NavigationActions from './NavigationActions.jsx'
 import NavigationLinks from './NavigationLinks.jsx'
 
 function Navbar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const { isDesktop } = useScreenSize()
 
   const openDrawer = () => setIsDrawerOpen(true)
   const closeDrawer = () => setIsDrawerOpen(false)
@@ -40,137 +42,141 @@ function Navbar() {
 
   return (
     <>
-      {/* Mobile navbar: hamburger + drawer for links and fixed bottom actions. */}
-      <Box sx={{ display: { xs: 'block', md: 'none' } }}>
-        <AppBar
-          color="inherit"
-          elevation={0}
-          position="sticky"
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
-        >
-          <Container>
-            <Toolbar
-              disableGutters
+      {/* Mobile and tablet navbar: hamburger + drawer for links and fixed bottom actions. */}
+      {!isDesktop ? (
+        <Box>
+          <AppBar
+            color="inherit"
+            elevation={0}
+            position="sticky"
+            sx={{ borderBottom: 1, borderColor: 'divider' }}
+          >
+            <Container>
+              <Toolbar
+                disableGutters
+                sx={{
+                  alignItems: 'center',
+                  display: 'grid',
+                  gridTemplateColumns: '48px 1fr',
+                  minHeight: 80,
+                }}
+              >
+                <IconButton
+                  aria-label="Open navigation menu"
+                  color="inherit"
+                  edge="start"
+                  onClick={openDrawer}
+                  sx={{
+                    color: 'text.primary',
+                    height: 44,
+                    width: 44,
+                  }}
+                >
+                  <MenuRoundedIcon />
+                </IconButton>
+
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', minWidth: 0 }}>
+                  <Typography component={NavLink} to="/" variant="h6" sx={brandStyles}>
+                    Raven Fold
+                  </Typography>
+                </Box>
+              </Toolbar>
+            </Container>
+          </AppBar>
+
+          <Drawer
+            anchor="left"
+            onClose={closeDrawer}
+            open={isDrawerOpen}
+            slotProps={{
+              paper: {
+                sx: drawerPaperStyles,
+              },
+            }}
+            sx={{
+              '& .MuiDrawer-paper': drawerPaperStyles,
+            }}
+          >
+            <Box
               sx={{
                 alignItems: 'center',
-                display: 'grid',
-                gridTemplateColumns: '48px 1fr',
-                minHeight: 80,
+                display: 'flex',
+                justifyContent: 'space-between',
+                mb: 3,
               }}
             >
+              <Typography
+                component={NavLink}
+                onClick={closeDrawer}
+                to="/"
+                variant="h6"
+                sx={brandStyles}
+              >
+                Raven Fold
+              </Typography>
+
               <IconButton
-                aria-label="Open navigation menu"
+                aria-label="Close navigation menu"
                 color="inherit"
-                edge="start"
-                onClick={openDrawer}
+                onClick={closeDrawer}
                 sx={{
                   color: 'text.primary',
                   height: 44,
+                  justifySelf: 'end',
                   width: 44,
                 }}
               >
-                <MenuRoundedIcon />
+                <CloseRoundedIcon />
               </IconButton>
+            </Box>
 
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', minWidth: 0 }}>
-                <Typography component={NavLink} to="/" variant="h6" sx={brandStyles}>
-                  Raven Fold
-                </Typography>
-              </Box>
-            </Toolbar>
-          </Container>
-        </AppBar>
+            <Box sx={{ flex: 1, overflowY: 'auto' }}>
+              <NavigationLinks layout="drawer" onItemClick={closeDrawer} />
+            </Box>
+          </Drawer>
 
-        <Drawer
-          anchor="left"
-          onClose={closeDrawer}
-          open={isDrawerOpen}
-          slotProps={{
-            paper: {
-              sx: drawerPaperStyles,
-            },
-          }}
-          sx={{
-            '& .MuiDrawer-paper': drawerPaperStyles,
-          }}
-        >
-          <Box
-            sx={{
-              alignItems: 'center',
-              display: 'flex',
-              justifyContent: 'space-between',
-              mb: 3,
-            }}
+          {!isDrawerOpen ? <NavigationActions layout="bottomBar" /> : null}
+        </Box>
+      ) : null}
+
+      {/* Desktop keeps the three-part navbar: brand, links, actions. */}
+      {isDesktop ? (
+        <Box>
+          <AppBar
+            color="inherit"
+            elevation={0}
+            position="sticky"
+            sx={{ borderBottom: 1, borderColor: 'divider' }}
           >
-            <Typography
-              component={NavLink}
-              onClick={closeDrawer}
-              to="/"
-              variant="h6"
-              sx={brandStyles}
-            >
-              Raven Fold
-            </Typography>
+            <Container>
+              <Toolbar
+                disableGutters
+                sx={{
+                  alignItems: 'center',
+                  columnGap: 3,
+                  display: 'grid',
+                  gridTemplateColumns: '1fr auto 1fr',
+                  minHeight: 80,
+                }}
+              >
+                <Box sx={{ alignItems: 'center', display: 'flex', minWidth: 0 }}>
+                  <Typography component={NavLink} to="/" variant="h6" sx={brandStyles}>
+                    Raven Fold
+                  </Typography>
+                </Box>
 
-            <IconButton
-              aria-label="Close navigation menu"
-              color="inherit"
-              onClick={closeDrawer}
-              sx={{
-                color: 'text.primary',
-                height: 44,
-                justifySelf: 'end',
-                width: 44,
-              }}
-            >
-              <CloseRoundedIcon />
-            </IconButton>
-          </Box>
+                <Box sx={{ justifySelf: 'center' }}>
+                  <NavigationLinks />
+                </Box>
 
-          <Box sx={{ flex: 1, overflowY: 'auto' }}>
-            <NavigationLinks layout="drawer" onItemClick={closeDrawer} />
-          </Box>
-        </Drawer>
-
-        {!isDrawerOpen ? <NavigationActions layout="bottomBar" /> : null}
-      </Box>
-
-      {/* Tablet and desktop keep the three-part navbar: brand, links, actions. */}
-      <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-        <AppBar
-          color="inherit"
-          elevation={0}
-          position="sticky"
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
-        >
-          <Container>
-            <Toolbar
-              disableGutters
-              sx={{
-                alignItems: 'center',
-                columnGap: 3,
-                display: 'grid',
-                gridTemplateColumns: '1fr auto 1fr',
-                minHeight: 80,
-              }}
-            >
-              <Box sx={{ alignItems: 'center', display: 'flex', minWidth: 0 }}>
-                <Typography component={NavLink} to="/" variant="h6" sx={brandStyles}>
-                  Raven Fold
-                </Typography>
-              </Box>
-
-              <Box sx={{ justifySelf: 'center' }}>
-                <NavigationLinks />
-              </Box>
-
-              <Box sx={{ justifySelf: 'end' }}>
-                <NavigationActions />
-              </Box>
-            </Toolbar>
-          </Container>
-        </AppBar>
-      </Box>
+                <Box sx={{ justifySelf: 'end' }}>
+                  <NavigationActions />
+                </Box>
+              </Toolbar>
+            </Container>
+          </AppBar>
+        </Box>
+      ) : null}
     </>
   )
 }

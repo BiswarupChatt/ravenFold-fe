@@ -1,5 +1,6 @@
 import { Button, Container, Stack, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
+import useScreenSize from '../hooks/useScreenSize.js'
 
 function PageSection({
   eyebrow,
@@ -8,8 +9,10 @@ function PageSection({
   primaryAction,
   secondaryAction,
 }) {
+  const { isDesktop, isMobile } = useScreenSize()
+
   return (
-    <Container sx={{ py: { xs: 6, md: 8 } }}>
+    <Container sx={{ py: isDesktop ? 8 : 6 }}>
       <Stack spacing={3} sx={{ maxWidth: 720 }}>
         {eyebrow && (
           <Typography
@@ -30,11 +33,11 @@ function PageSection({
         </Typography>
 
         {(primaryAction || secondaryAction) && (
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <Stack direction={isMobile ? 'column' : 'row'} spacing={2}>
             {primaryAction && (
               <Button
                 component={RouterLink}
-                sx={{ alignSelf: { xs: 'stretch', sm: 'flex-start' } }}
+                sx={{ alignSelf: isMobile ? 'stretch' : 'flex-start' }}
                 to={primaryAction.to}
                 variant="contained"
               >
@@ -45,7 +48,7 @@ function PageSection({
             {secondaryAction && (
               <Button
                 component={RouterLink}
-                sx={{ alignSelf: { xs: 'stretch', sm: 'flex-start' } }}
+                sx={{ alignSelf: isMobile ? 'stretch' : 'flex-start' }}
                 to={secondaryAction.to}
                 variant="outlined"
               >
