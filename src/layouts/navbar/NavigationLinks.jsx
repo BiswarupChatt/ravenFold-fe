@@ -51,6 +51,7 @@ function NavigationLinks({ layout = 'inline', onItemClick }) {
       spacing={isDrawerLayout ? 0 : 0.5}
       sx={{ width: isDrawerLayout ? '100%' : 'auto' }}
     >
+      {/* Reuse the same route list for the centered desktop nav and the drawer menu. */}
       {navigationItems.map((item) => (
         <Button
           className={({ isActive }) => (isActive ? 'active' : undefined)}

@@ -29,6 +29,7 @@ function Navbar() {
 
   return (
     <>
+      {/* Mobile navbar: hamburger + drawer for links and fixed bottom actions. */}
       <Box sx={{ display: { xs: 'block', md: 'none' } }}>
         <AppBar
           color="inherit"
@@ -42,13 +43,14 @@ function Navbar() {
               sx={{
                 alignItems: 'center',
                 display: 'grid',
-                gridTemplateColumns: '48px 1fr 48px',
+                gridTemplateColumns: '48px 1fr',
                 minHeight: 80,
               }}
             >
               <IconButton
                 aria-label="Open navigation menu"
                 color="inherit"
+                edge="start"
                 onClick={openDrawer}
                 sx={{
                   color: 'text.primary',
@@ -59,19 +61,17 @@ function Navbar() {
                 <MenuRoundedIcon />
               </IconButton>
 
-              <Box sx={{ display: 'flex', justifyContent: 'end', minWidth: 0 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', minWidth: 0 }}>
                 <Typography component={NavLink} to="/" variant="h6" sx={brandStyles}>
                   Raven Fold
                 </Typography>
               </Box>
-
-              <Box />
             </Toolbar>
           </Container>
         </AppBar>
 
         <Drawer
-          anchor="lerif"
+          anchor="left"
           onClose={closeDrawer}
           open={isDrawerOpen}
           PaperProps={{
@@ -123,6 +123,7 @@ function Navbar() {
         <NavigationActions layout="bottomBar" />
       </Box>
 
+      {/* Tablet and desktop keep the three-part navbar: brand, links, actions. */}
       <Box sx={{ display: { xs: 'none', md: 'block' } }}>
         <AppBar
           color="inherit"

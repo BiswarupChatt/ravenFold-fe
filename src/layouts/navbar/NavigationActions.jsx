@@ -41,6 +41,7 @@ function NavigationActions({ layout = 'inline', onActionClick }) {
   const cartQuantity = useSelector(selectCartQuantity)
   const isBottomBar = layout === 'bottomBar'
 
+  // Reuse the same action items for desktop inline icons and the mobile bottom bar.
   const actionsMarkup = (
     <Stack
       direction="row"
