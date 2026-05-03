@@ -25,8 +25,8 @@ const inlineActionButtonStyles = {
 const bottomBarActionButtonStyles = {
   borderRadius: 999,
   color: 'text.primary',
-  height: 52,
-  width: 52,
+  height: 46,
+  width: 46,
   '&:hover': {
     bgcolor: 'rgba(17, 24, 39, 0.05)',
     color: 'secondary.main',
@@ -45,9 +45,9 @@ function NavigationActions({ layout = 'inline', onActionClick }) {
   const actionsMarkup = (
     <Stack
       direction="row"
-      justifyContent={isBottomBar ? 'space-between' : 'flex-start'}
-      spacing={{ xs: 0.5, sm: 1 }}
-      sx={{ width: '100%' }}
+      justifyContent={isBottomBar ? 'center' : 'flex-start'}
+      spacing={isBottomBar ? 1.25 : { xs: 0.5, sm: 1 }}
+      sx={{ width: isBottomBar ? 'auto' : '100%' }}
     >
       {navigationActions.map(({ label, path, Icon, showBadge }) => (
         <IconButton
@@ -61,16 +61,22 @@ function NavigationActions({ layout = 'inline', onActionClick }) {
         >
           {showBadge ? (
             <Badge
-              badgeContent={cartQuantity}
+              badgeContent={cartQuantity !== 0 ? cartQuantity : undefined }
               color="secondary"
               overlap="circular"
               showZero
-              sx={{ '& .MuiBadge-badge': { fontWeight: 700 } }}
+              sx={{
+                '& .MuiBadge-badge': {
+                  fontWeight: 500,
+                  transform:'scale(0.85) translate(55%, -45%)'
+                   
+                },
+              }}
             >
-              <Icon fontSize="small" />
+              <Icon sx={{ fontSize: isBottomBar ? 25 : 20 }} />
             </Badge>
           ) : (
-            <Icon fontSize="small" />
+            <Icon sx={{ fontSize: isBottomBar ? 25 : 20 }} />
           )}
         </IconButton>
       ))}
@@ -91,7 +97,7 @@ function NavigationActions({ layout = 'inline', onActionClick }) {
           zIndex: (theme) => theme.zIndex.appBar,
         }}
       >
-        <Container sx={{ py: 1.25 }}>
+        <Container sx={{ display: 'flex', justifyContent: 'center', py: 0.75 }}>
           {actionsMarkup}
         </Container>
       </Paper>
