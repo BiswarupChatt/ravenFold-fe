@@ -8,7 +8,6 @@ import { NavLink, matchPath, useLocation } from 'react-router-dom'
 import navigationItems from './navigationItems.js'
 
 const inlineLinkStyles = {
-  borderRadius: 999,
   color: 'text.secondary',
   fontSize: '0.9rem',
   fontWeight: 600,
