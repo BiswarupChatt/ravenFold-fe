@@ -1,4 +1,4 @@
-import { Badge, Container, IconButton, Paper, Stack } from '@mui/material'
+import { Badge, Box, IconButton, Paper, Stack, Typography } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { selectCartQuantity } from '../../store/cartSlice'
@@ -23,10 +23,16 @@ const inlineActionButtonStyles = {
 }
 
 const bottomBarActionButtonStyles = {
-  borderRadius: 999,
+  alignItems: 'center',
+  borderRadius: 2,
   color: 'text.primary',
-  height: 46,
-  width: 46,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 0.25,
+  height: 'auto',
+  px: 1,
+  py: 0.75,
+  width: 72,
   '&:hover': {
     bgcolor: 'rgba(17, 24, 39, 0.05)',
     color: 'secondary.main',
@@ -41,44 +47,70 @@ function NavigationActions({ layout = 'inline', onActionClick }) {
   const cartQuantity = useSelector(selectCartQuantity)
   const isBottomBar = layout === 'bottomBar'
 
+  const renderActionButton = ({ label, path, Icon, showBadge }) => {
+    const iconMarkup = showBadge ? (
+      <Badge
+        badgeContent={cartQuantity !== 0 ? cartQuantity : undefined}
+        color="secondary"
+        overlap="circular"
+        showZero
+        sx={{
+          '& .MuiBadge-badge': {
+            fontWeight: 500,
+            transform: 'scale(0.85) translate(55%, -45%)',
+          },
+        }}
+      >
+        <Icon sx={{ fontSize: isBottomBar ? 25 : 20 }} />
+      </Badge>
+    ) : (
+      <Icon sx={{ fontSize: isBottomBar ? 25 : 20 }} />
+    )
+
+    return (
+      <IconButton
+        aria-label={label}
+        className={({ isActive }) => (isActive ? 'active' : undefined)}
+        component={NavLink}
+        onClick={onActionClick}
+        to={path}
+        sx={isBottomBar ? bottomBarActionButtonStyles : inlineActionButtonStyles}
+      >
+        {iconMarkup}
+        {isBottomBar ? (
+          <Typography
+            component="span"
+            sx={{ fontSize: '0.7rem', fontWeight: 500, lineHeight: 1.1 }}
+          >
+            {label}
+          </Typography>
+        ) : null}
+      </IconButton>
+    )
+  }
+
   // Reuse the same action items for desktop inline icons and the mobile bottom bar.
-  const actionsMarkup = (
-    <Stack
-      direction="row"
-      justifyContent={isBottomBar ? 'center' : 'flex-start'}
-      spacing={isBottomBar ? 1.25 : { xs: 0.5, sm: 1 }}
-      sx={{ width: isBottomBar ? 'auto' : '100%' }}
+  const actionsMarkup = isBottomBar ? (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${navigationActions.length}, minmax(0, 1fr))`,
+        width: '100%',
+      }}
     >
-      {navigationActions.map(({ label, path, Icon, showBadge }) => (
-        <IconButton
-          aria-label={label}
-          className={({ isActive }) => (isActive ? 'active' : undefined)}
-          component={NavLink}
-          key={path}
-          onClick={onActionClick}
-          to={path}
-          sx={isBottomBar ? bottomBarActionButtonStyles : inlineActionButtonStyles}
+      {navigationActions.map((action) => (
+        <Box
+          key={action.path}
+          sx={{ display: 'flex', justifyContent: 'center' }}
         >
-          {showBadge ? (
-            <Badge
-              badgeContent={cartQuantity !== 0 ? cartQuantity : undefined }
-              color="secondary"
-              overlap="circular"
-              showZero
-              sx={{
-                '& .MuiBadge-badge': {
-                  fontWeight: 500,
-                  transform:'scale(0.85) translate(55%, -45%)'
-                   
-                },
-              }}
-            >
-              <Icon sx={{ fontSize: isBottomBar ? 25 : 20 }} />
-            </Badge>
-          ) : (
-            <Icon sx={{ fontSize: isBottomBar ? 25 : 20 }} />
-          )}
-        </IconButton>
+          {renderActionButton(action)}
+        </Box>
+      ))}
+    </Box>
+  ) : (
+    <Stack direction="row" spacing={{ xs: 0.5, sm: 1 }}>
+      {navigationActions.map((action) => (
+        <Box key={action.path}>{renderActionButton(action)}</Box>
       ))}
     </Stack>
   )
@@ -97,9 +129,9 @@ function NavigationActions({ layout = 'inline', onActionClick }) {
           zIndex: (theme) => theme.zIndex.appBar,
         }}
       >
-        <Container sx={{ display: 'flex', justifyContent: 'center', py: 0.75 }}>
+        <Box sx={{ px: 1, py: 0.75 }}>
           {actionsMarkup}
-        </Container>
+        </Box>
       </Paper>
     )
   }
