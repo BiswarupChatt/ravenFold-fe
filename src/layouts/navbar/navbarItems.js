@@ -1,7 +1,9 @@
 const navbarItems = [
   { label: 'Home', path: '/' },
+  { label: 'Shop', path: '/shop' },
   { label: 'Products', path: '/products' },
-  { label: 'Cart', path: '/cart' },
+  { label: 'Contacts', path: '/contacts' },
+  { label: 'Blog', path: '/blog' },
 ]
 
 export default navbarItems
