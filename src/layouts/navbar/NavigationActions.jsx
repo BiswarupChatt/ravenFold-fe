@@ -1,3 +1,28 @@
+/*
+ * NavigationActions
+ *
+ * Purpose:
+ * - Renders the action icons used by the navbar in two layouts:
+ *   `inline` for desktop and `bottomBar` for mobile.
+ * - Reuses the same action config from `navigationActions.js` so both layouts
+ *   stay in sync.
+ *
+ * How it works:
+ * - Standard navigation actions render as `NavLink` buttons and follow the URL.
+ * - Drawer actions (`isDrawer: true`) do not navigate. They call
+ *   `onDrawerAction(drawerKey)` instead, where `/cart` becomes `cart`.
+ * - The cart badge reads its quantity from Redux through `selectCartQuantity`.
+ * - Active styling comes from the current route for links, or from
+ *   `activeDrawer` for drawer-based actions like search/cart.
+ *
+ * Quick edit guide:
+ * - Add, remove, or reorder actions in `navigationActions.js`.
+ * - Use `isDrawer: true` for actions that should open a drawer instead of a page.
+ * - Keep drawer paths aligned with the ids used in `Navbar.jsx`
+ *   (`/cart` -> `cart`, `/search` -> `search`).
+ * - Update `inlineActionButtonStyles` or `bottomBarActionButtonStyles`
+ *   depending on which layout you want to change.
+ */
 import { Badge, Box, IconButton, Paper, Stack, Typography } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { NavLink, matchPath, useLocation } from 'react-router-dom'
