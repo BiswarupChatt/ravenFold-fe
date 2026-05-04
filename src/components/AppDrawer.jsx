@@ -1,5 +1,5 @@
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import { Box, Drawer, IconButton, Stack, Typography } from '@mui/material'
+import { Box, Drawer, IconButton, Typography } from '@mui/material'
 import useScreenSize from '../hooks/useScreenSize.js'
 
 function AppDrawer({
@@ -14,6 +14,7 @@ function AppDrawer({
   contentSx,
 }) {
   const { isMobile } = useScreenSize()
+  const hasHeaderContent = Boolean(title || description)
 
   return (
     <Drawer
@@ -41,31 +42,34 @@ function AppDrawer({
         },
       }}
     >
-      <Stack sx={{ flex: 1, minHeight: 0 }}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          spacing={2}
+      <Box sx={{ display: 'flex', flex: 1, flexDirection: 'column', minHeight: 0 }}>
+        <Box
           sx={{
-            borderBottom: 1,
+            alignItems: 'flex-start',
+            borderBottom: hasHeaderContent ? 1 : 0,
             borderColor: 'divider',
-            pb: 2,
+            display: 'flex',
+            gap: 2,
+            justifyContent: 'space-between',
+            pb: hasHeaderContent ? 2 : 1.5,
           }}
         >
-          <Box sx={{ minWidth: 0 }}>
-            <Typography variant="h3">
-              {title}
-            </Typography>
+          {hasHeaderContent ? (
+            <Box sx={{ minWidth: 0 }}>
+              {title ? <Typography variant="h3">{title}</Typography> : null}
 
-            {description ? (
-              <Typography color="text.secondary" sx={{ mt: 1 }}>
-                {description}
-              </Typography>
-            ) : null}
-          </Box>
+              {description ? (
+                <Typography color="text.secondary" sx={{ mt: title ? 1 : 0 }}>
+                  {description}
+                </Typography>
+              ) : null}
+            </Box>
+          ) : (
+            <Box />
+          )}
 
           <IconButton
-            aria-label={`Close ${title}`}
+            aria-label={title ? `Close ${title}` : 'Close'}
             color="inherit"
             onClick={onClose}
             sx={{
@@ -78,22 +82,24 @@ function AppDrawer({
           >
             <CloseRoundedIcon />
           </IconButton>
-        </Stack>
+        </Box>
 
         <Box
           sx={[
             {
+              display: 'flex',
               flex: 1,
+              flexDirection: 'column',
               minHeight: 0,
               overflowY: 'auto',
-              pt: 2.5,
+              pt: hasHeaderContent ? 2.5 : 0,
             },
             contentSx,
           ]}
         >
           {children}
         </Box>
-      </Stack>
+      </Box>
     </Drawer>
   )
 }

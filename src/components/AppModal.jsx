@@ -1,5 +1,5 @@
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import { Box, Dialog, IconButton, Stack, Typography } from '@mui/material'
+import { Box, Dialog, IconButton, Typography } from '@mui/material'
 import { useId } from 'react'
 import useScreenSize from '../hooks/useScreenSize.js'
 
@@ -14,17 +14,10 @@ function toSxArray(value) {
 function AppModal({
   open,
   onClose,
-  eyebrow,
   title,
   description,
   children,
-  footer,
   maxWidth = 'sm',
-  fullWidth = true,
-  fullScreenOnMobile = true,
-  keepMounted = true,
-  showCloseButton = true,
-  closeButtonLabel,
   paperSx,
   contentSx,
   slotProps,
@@ -33,18 +26,15 @@ function AppModal({
   const { isMobile } = useScreenSize()
   const titleId = useId()
   const descriptionId = useId()
-  const hasHeaderContent = Boolean(eyebrow || title || description)
-  const isFullScreen = fullScreenOnMobile && isMobile
-  const resolvedCloseButtonLabel =
-    closeButtonLabel ?? (title ? `Close ${title}` : 'Close modal')
+  const hasHeaderContent = Boolean(title || description)
 
   return (
     <Dialog
       aria-describedby={description ? descriptionId : undefined}
       aria-labelledby={title ? titleId : undefined}
-      fullScreen={isFullScreen}
-      fullWidth={fullWidth}
-      keepMounted={keepMounted}
+      fullScreen={isMobile}
+      fullWidth
+      keepMounted
       maxWidth={maxWidth}
       onClose={onClose}
       open={open}
@@ -68,12 +58,12 @@ function AppModal({
               backgroundColor: 'background.paper',
               border: '1px solid',
               borderColor: 'divider',
-              borderRadius: isFullScreen ? 0 : 3,
+              borderRadius: isMobile ? 0 : 3,
               boxSizing: 'border-box',
               boxShadow: '0 24px 80px rgba(15, 23, 42, 0.2)',
               display: 'flex',
               flexDirection: 'column',
-              maxHeight: isFullScreen
+              maxHeight: isMobile
                 ? '100dvh'
                 : {
                     xs: 'calc(100dvh - 24px)',
@@ -90,103 +80,72 @@ function AppModal({
       }}
       {...dialogProps}
     >
-      <Stack sx={{ flex: 1, minHeight: 0 }}>
-        {hasHeaderContent || showCloseButton ? (
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            spacing={2}
+      <Box sx={{ display: 'flex', flex: 1, flexDirection: 'column', minHeight: 0 }}>
+        <Box
+          sx={{
+            alignItems: 'flex-start',
+            borderBottom: hasHeaderContent ? 1 : 0,
+            borderColor: 'divider',
+            display: 'flex',
+            gap: 2,
+            justifyContent: 'space-between',
+            pb: hasHeaderContent ? 2 : 1.5,
+          }}
+        >
+          {hasHeaderContent ? (
+            <Box sx={{ minWidth: 0 }}>
+              {title ? (
+                <Typography id={titleId} variant="h3">
+                  {title}
+                </Typography>
+              ) : null}
+
+              {description ? (
+                <Typography
+                  color="text.secondary"
+                  id={descriptionId}
+                  sx={{ mt: title ? 1 : 0 }}
+                >
+                  {description}
+                </Typography>
+              ) : null}
+            </Box>
+          ) : (
+            <Box />
+          )}
+
+          <IconButton
+            aria-label={title ? `Close ${title}` : 'Close'}
+            color="inherit"
+            onClick={onClose}
             sx={{
-              alignItems: 'flex-start',
-              borderBottom: 1,
-              borderColor: 'divider',
-              pb: 2,
+              alignSelf: 'flex-start',
+              color: 'text.primary',
+              flexShrink: 0,
+              height: 44,
+              width: 44,
             }}
           >
-            {hasHeaderContent ? (
-              <Box sx={{ minWidth: 0 }}>
-                {eyebrow ? (
-                  <Typography
-                    color="secondary.main"
-                    fontWeight={700}
-                    letterSpacing={2}
-                    textTransform="uppercase"
-                    variant="overline"
-                  >
-                    {eyebrow}
-                  </Typography>
-                ) : null}
-
-                {title ? (
-                  <Typography
-                    id={titleId}
-                    sx={{ mt: eyebrow ? 0.5 : 0 }}
-                    variant="h3"
-                  >
-                    {title}
-                  </Typography>
-                ) : null}
-
-                {description ? (
-                  <Typography
-                    color="text.secondary"
-                    id={descriptionId}
-                    sx={{ mt: 1 }}
-                  >
-                    {description}
-                  </Typography>
-                ) : null}
-              </Box>
-            ) : (
-              <Box />
-            )}
-
-            {showCloseButton ? (
-              <IconButton
-                aria-label={resolvedCloseButtonLabel}
-                color="inherit"
-                onClick={onClose}
-                sx={{
-                  alignSelf: 'flex-start',
-                  color: 'text.primary',
-                  flexShrink: 0,
-                  height: 44,
-                  width: 44,
-                }}
-              >
-                <CloseRoundedIcon />
-              </IconButton>
-            ) : null}
-          </Stack>
-        ) : null}
+            <CloseRoundedIcon />
+          </IconButton>
+        </Box>
 
         <Box
           sx={[
             {
+              display: 'flex',
               flex: 1,
+              flexDirection: 'column',
               minHeight: 0,
               overflowY: 'auto',
-              pt: 2.5,
+              pt: hasHeaderContent ? 2.5 : 0,
             },
             contentSx,
           ]}
         >
           {children}
         </Box>
-
-        {footer ? (
-          <Box
-            sx={{
-              borderTop: 1,
-              borderColor: 'divider',
-              mt: 2,
-              pt: 2,
-            }}
-          >
-            {footer}
-          </Box>
-        ) : null}
-      </Stack>
+      </Box>
     </Dialog>
   )
 }
