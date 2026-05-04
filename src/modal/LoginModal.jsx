@@ -1,16 +1,84 @@
-import { Button, Stack, TextField, Typography } from '@mui/material'
+import { Button, Stack, Typography } from '@mui/material'
+import { useState } from 'react'
+import AppInput from '../components/AppInput.jsx'
 import AppModal from '../components/AppModal.jsx'
 
+const initialCredentials = {
+  email: '',
+  password: '',
+}
+
+const validateEmail = (value) => {
+  const trimmedValue = value.trim()
+
+  if (!trimmedValue) {
+    return 'Email is required.'
+  }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+  if (!emailPattern.test(trimmedValue)) {
+    return 'Enter a valid email address.'
+  }
+
+  return ''
+}
+
+const validatePassword = (value) => {
+  if (!value) {
+    return 'Password is required.'
+  }
+
+  if (value.length < 8) {
+    return 'Password must be at least 8 characters.'
+  }
+
+  return ''
+}
+
 function LoginModal({ open, onClose }) {
+  const [credentials, setCredentials] = useState(initialCredentials)
+  const [errors, setErrors] = useState({})
+
+  const handleFieldChange = (field) => (event) => {
+    const nextValue = event.target.value
+
+    setCredentials((currentCredentials) => ({
+      ...currentCredentials,
+      [field]: nextValue,
+    }))
+
+    setErrors((currentErrors) => ({
+      ...currentErrors,
+      [field]: '',
+    }))
+  }
+
+  const handleClose = (...args) => {
+    setCredentials(initialCredentials)
+    setErrors({})
+    onClose?.(...args)
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault()
+    const nextErrors = {
+      email: validateEmail(credentials.email),
+      password: validatePassword(credentials.password),
+    }
+
+    setErrors(nextErrors)
+
+    if (nextErrors.email || nextErrors.password) {
+      return
+    }
   }
 
   return (
     <AppModal
       description="Use this temporary login modal to test spacing, layout, and flow."
       maxWidth="xs"
-      onClose={onClose}
+      onClose={handleClose}
       open={open}
       title="Login"
     >
@@ -18,22 +86,33 @@ function LoginModal({ open, onClose }) {
         component="form"
         noValidate
         onSubmit={handleSubmit}
-        spacing={2.5}
+        spacing={1.5}
       >
-        <TextField
+        <AppInput
           autoComplete="email"
           autoFocus
-          fullWidth
-          label="Email Address"
-          placeholder="you@example.com"
+          label="Your Email"
+          name="email"
+          placeholder="email@address.com"
+          required
           type="email"
+          error={Boolean(errors.email)}
+          errorText={errors.email}
+          value={credentials.email}
+          onChange={handleFieldChange('email')}
         />
-        <TextField
+
+        <AppInput
           autoComplete="current-password"
-          fullWidth
           label="Password"
+          name="password"
           placeholder="Enter your password"
+          required
           type="password"
+          error={Boolean(errors.password)}
+          errorText={errors.password}
+          value={credentials.password}
+          onChange={handleFieldChange('password')}
         />
 
         <Button fullWidth size="large" type="submit" variant="contained">

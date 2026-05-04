@@ -58,7 +58,7 @@ function AppModal({
               backgroundColor: 'background.paper',
               border: '1px solid',
               borderColor: 'divider',
-              borderRadius: isMobile ? 0 : 3,
+              borderRadius: isMobile ? 0 : 2,
               boxSizing: 'border-box',
               boxShadow: '0 24px 80px rgba(15, 23, 42, 0.2)',
               display: 'flex',
