@@ -1,5 +1,6 @@
-import { Button, Stack, Typography } from '@mui/material'
+import { Stack } from '@mui/material'
 import { useState } from 'react'
+import AppButton from '../components/AppButton.jsx'
 import AppInput from '../components/AppInput.jsx'
 import AppModal from '../components/AppModal.jsx'
 
@@ -115,13 +116,10 @@ function LoginModal({ open, onClose }) {
           onChange={handleFieldChange('password')}
         />
 
-        <Button fullWidth size="large" type="submit" variant="contained">
+        <AppButton fullWidth loadingText="Signing In..." size="medium" type="submit" variant="contained">
           Sign In
-        </Button>
+        </AppButton>
 
-        <Typography color="text.secondary" variant="body2">
-          This is a dummy modal for now. No authentication is connected yet.
-        </Typography>
       </Stack>
     </AppModal>
   )
