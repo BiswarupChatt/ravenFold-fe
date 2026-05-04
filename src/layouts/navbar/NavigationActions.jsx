@@ -1,6 +1,6 @@
 import { Badge, Box, IconButton, Paper, Stack, Typography } from '@mui/material'
 import { useSelector } from 'react-redux'
-import { NavLink } from 'react-router-dom'
+import { NavLink, matchPath, useLocation } from 'react-router-dom'
 import { selectCartQuantity } from '../../store/cartSlice'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import navigationActions from './navigationActions.js'
@@ -45,12 +45,38 @@ const bottomBarActionButtonStyles = {
   },
 }
 
-function NavigationActions({ layout = 'inline', onActionClick }) {
+function getDrawerKey(path) {
+  return path?.replace(/^\//, '') ?? ''
+}
+
+function isDrawerActionActive(pathname, path, activeDrawer, isDrawer) {
+  if (isDrawer && activeDrawer === getDrawerKey(path)) {
+    return true
+  }
+
+  if (!path) {
+    return false
+  }
+
+  return Boolean(
+    matchPath(
+      {
+        end: path === '/',
+        path,
+      },
+      pathname,
+    ),
+  )
+}
+
+function NavigationActions({ layout = 'inline', activeDrawer, onDrawerAction }) {
   const cartQuantity = useSelector(selectCartQuantity)
   const { isMobile } = useScreenSize()
+  const { pathname } = useLocation()
   const isBottomBar = layout === 'bottomBar'
 
-  const renderActionButton = ({ label, path, Icon, showBadge }) => {
+  const renderActionButton = ({ label, path, isDrawer, Icon, showBadge }) => {
+    const drawerKey = getDrawerKey(path)
     const iconMarkup = showBadge ? (
       <Badge
         badgeContent={cartQuantity !== 0 ? cartQuantity : undefined}
@@ -73,11 +99,18 @@ function NavigationActions({ layout = 'inline', onActionClick }) {
     return (
       <IconButton
         aria-label={label}
-        className={({ isActive }) => (isActive ? 'active' : undefined)}
-        component={NavLink}
-        onClick={onActionClick}
-        to={path}
+        className={
+          isDrawer
+            ? isDrawerActionActive(pathname, path, activeDrawer, isDrawer)
+              ? 'active'
+              : undefined
+            : ({ isActive }) => (isActive ? 'active' : undefined)
+        }
+        component={isDrawer ? 'button' : NavLink}
+        onClick={isDrawer ? () => onDrawerAction?.(drawerKey) : undefined}
         sx={isBottomBar ? bottomBarActionButtonStyles : inlineActionButtonStyles}
+        to={isDrawer ? undefined : path}
+        type={isDrawer ? 'button' : undefined}
       >
         {iconMarkup}
         {isBottomBar ? (

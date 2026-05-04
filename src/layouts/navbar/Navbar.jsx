@@ -2,35 +2,34 @@ import {
   AppBar,
   Box,
   Container,
-  Drawer,
   IconButton,
   Toolbar,
   Typography,
 } from '@mui/material'
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
-import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
+import AppDrawer from '../../components/AppDrawer.jsx'
+import CartDrawer from '../../drawer/CartDrawer.jsx'
+import SearchDrawer from '../../drawer/SearchDrawer.jsx'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import NavigationActions from './NavigationActions.jsx'
 import NavigationLinks from './NavigationLinks.jsx'
 
 function Navbar() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [activeDrawer, setActiveDrawer] = useState(null)
   const { isDesktop } = useScreenSize()
+  const { pathname } = useLocation()
 
-  const openDrawer = () => setIsDrawerOpen(true)
-  const closeDrawer = () => setIsDrawerOpen(false)
-  const drawerPaperStyles = {
-    boxSizing: 'border-box',
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100vh',
-    inset: 0,
-    maxHeight: '100vh',
-    maxWidth: '100vw',
-    p: 3,
-    width: '100vw',
+  useEffect(() => {
+    setActiveDrawer(null)
+  }, [pathname])
+
+  const closeDrawer = () => setActiveDrawer(null)
+  const toggleDrawer = (drawerId) => {
+    setActiveDrawer((previousValue) =>
+      previousValue === drawerId ? null : drawerId,
+    )
   }
   const brandStyles = {
     color: 'text.primary',
@@ -65,7 +64,7 @@ function Navbar() {
                   aria-label="Open navigation menu"
                   color="inherit"
                   edge="start"
-                  onClick={openDrawer}
+                  onClick={() => toggleDrawer('menu')}
                   sx={{
                     color: 'text.primary',
                     height: 44,
@@ -84,58 +83,30 @@ function Navbar() {
             </Container>
           </AppBar>
 
-          <Drawer
+          <AppDrawer
             anchor="left"
+            description="Browse collections, categories, and supporting pages."
+            eyebrow="Navigation"
             onClose={closeDrawer}
-            open={isDrawerOpen}
-            slotProps={{
-              paper: {
-                sx: drawerPaperStyles,
-              },
-            }}
-            sx={{
-              '& .MuiDrawer-paper': drawerPaperStyles,
-            }}
+            open={activeDrawer === 'menu'}
+            title="Explore Raven Fold"
+            width={380}
           >
-            <Box
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                justifyContent: 'space-between',
-                mb: 3,
-              }}
-            >
-              <Typography
-                component={NavLink}
-                onClick={closeDrawer}
-                to="/"
-                variant="h6"
-                sx={brandStyles}
-              >
+            <Box sx={{ pb: 2 }}>
+              <Typography component={NavLink} onClick={closeDrawer} to="/" variant="h6" sx={brandStyles}>
                 Raven Fold
               </Typography>
-
-              <IconButton
-                aria-label="Close navigation menu"
-                color="inherit"
-                onClick={closeDrawer}
-                sx={{
-                  color: 'text.primary',
-                  height: 44,
-                  justifySelf: 'end',
-                  width: 44,
-                }}
-              >
-                <CloseRoundedIcon />
-              </IconButton>
             </Box>
+            <NavigationLinks layout="drawer" onItemClick={closeDrawer} />
+          </AppDrawer>
 
-            <Box sx={{ flex: 1, overflowY: 'auto' }}>
-              <NavigationLinks layout="drawer" onItemClick={closeDrawer} />
-            </Box>
-          </Drawer>
-
-          {!isDrawerOpen ? <NavigationActions layout="bottomBar" /> : null}
+          {!activeDrawer || activeDrawer !== 'menu' ? (
+            <NavigationActions
+              activeDrawer={activeDrawer}
+              layout="bottomBar"
+              onDrawerAction={toggleDrawer}
+            />
+          ) : null}
         </Box>
       ) : null}
 
@@ -170,13 +141,19 @@ function Navbar() {
                 </Box>
 
                 <Box sx={{ justifySelf: 'end' }}>
-                  <NavigationActions />
+                  <NavigationActions
+                    activeDrawer={activeDrawer}
+                    onDrawerAction={toggleDrawer}
+                  />
                 </Box>
               </Toolbar>
             </Container>
           </AppBar>
         </Box>
       ) : null}
+
+      <SearchDrawer onClose={closeDrawer} open={activeDrawer === 'search'} />
+      <CartDrawer onClose={closeDrawer} open={activeDrawer === 'cart'} />
     </>
   )
 }

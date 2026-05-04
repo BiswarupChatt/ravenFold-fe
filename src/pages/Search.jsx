@@ -1,14 +1,25 @@
-import PageSection from './PageSection.jsx'
+import { Container, Paper, Stack, Typography } from '@mui/material'
+import { SearchDrawerContent } from '../drawer/SearchDrawer.jsx'
+import useScreenSize from '../hooks/useScreenSize.js'
 
 function Search() {
+  const { isDesktop } = useScreenSize()
+
   return (
-    <PageSection
-      description="This is a placeholder for your future search experience. You can replace it with live suggestions, filters, and results."
-      eyebrow="Discovery"
-      primaryAction={{ label: 'Browse Products', to: '/products' }}
-      secondaryAction={{ label: 'Visit Shop', to: '/shop' }}
-      title="Search"
-    />
+    <Container sx={{ py: isDesktop ? 8 : 6 }}>
+      <Paper sx={{ p: isDesktop ? 5 : 3 }}>
+        <Stack spacing={3}>
+          <Stack spacing={1}>
+            <Typography variant="h2">Search</Typography>
+            <Typography color="text.secondary">
+              The drawer and this route share the same search experience.
+            </Typography>
+          </Stack>
+
+          <SearchDrawerContent />
+        </Stack>
+      </Paper>
+    </Container>
   )
 }
 

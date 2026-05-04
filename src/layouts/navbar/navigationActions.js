@@ -4,10 +4,31 @@ import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
 
 const navigationActions = [
-  { label: 'Profile', path: '/profile', Icon: PersonOutlineRoundedIcon },
-  { label: 'Cart', path: '/cart', Icon: ShoppingBagOutlinedIcon, showBadge: true },
-  { label: 'Wishlist', path: '/wishlist', Icon: FavoriteBorderRoundedIcon },
-  { label: 'Search', path: '/search', Icon: SearchRoundedIcon },
+  {
+    label: 'Profile',
+    path: '/profile',
+    isDrawer: false,
+    Icon: PersonOutlineRoundedIcon,
+  },
+  {
+    label: 'Cart',
+    path: '/cart',
+    isDrawer: true,
+    Icon: ShoppingBagOutlinedIcon,
+    showBadge: true,
+  },
+  {
+    label: 'Wishlist',
+    path: '/wishlist',
+    isDrawer: false,
+    Icon: FavoriteBorderRoundedIcon,
+  },
+  {
+    label: 'Search',
+    path: '/search',
+    isDrawer: true,
+    Icon: SearchRoundedIcon,
+  },
 ]
 
 export default navigationActions
