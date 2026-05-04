@@ -158,7 +158,6 @@ function CartDrawer({ open, onClose }) {
   return (
     <AppDrawer
       description="Review your current items and adjust quantities inline."
-      eyebrow="Bag"
       onClose={onClose}
       open={open}
       title="Cart"

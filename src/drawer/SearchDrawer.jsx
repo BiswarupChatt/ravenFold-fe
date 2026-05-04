@@ -160,7 +160,6 @@ function SearchDrawer({ open, onClose }) {
   return (
     <AppDrawer
       description="Search the catalog without leaving the current page."
-      eyebrow="Discovery"
       onClose={onClose}
       open={open}
       title="Search"

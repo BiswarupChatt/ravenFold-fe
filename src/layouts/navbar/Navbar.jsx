@@ -86,7 +86,6 @@ function Navbar() {
           <AppDrawer
             anchor="left"
             description="Browse collections, categories, and supporting pages."
-            eyebrow="Navigation"
             onClose={closeDrawer}
             open={activeDrawer === 'menu'}
             title="Explore Raven Fold"

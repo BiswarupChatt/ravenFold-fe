@@ -6,11 +6,9 @@ function AppDrawer({
   anchor = 'right',
   open,
   onClose,
-  eyebrow,
   title,
   description,
   children,
-  footer,
   width = 440,
   paperSx,
   contentSx,
@@ -55,19 +53,7 @@ function AppDrawer({
           }}
         >
           <Box sx={{ minWidth: 0 }}>
-            {eyebrow ? (
-              <Typography
-                color="secondary.main"
-                fontWeight={700}
-                letterSpacing={2}
-                textTransform="uppercase"
-                variant="overline"
-              >
-                {eyebrow}
-              </Typography>
-            ) : null}
-
-            <Typography sx={{ mt: eyebrow ? 0.5 : 0 }} variant="h3">
+            <Typography variant="h3">
               {title}
             </Typography>
 
@@ -107,19 +93,6 @@ function AppDrawer({
         >
           {children}
         </Box>
-
-        {footer ? (
-          <Box
-            sx={{
-              borderTop: 1,
-              borderColor: 'divider',
-              mt: 2,
-              pt: 2,
-            }}
-          >
-            {footer}
-          </Box>
-        ) : null}
       </Stack>
     </Drawer>
   )
