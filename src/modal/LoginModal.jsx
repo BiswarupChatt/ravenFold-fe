@@ -13,6 +13,7 @@ import {
   loginWithPassword,
 } from '../services/authApi.js'
 import { saveAuthSession } from '../services/authStorage.js'
+import { successToast } from '../services/toast.js'
 import {
   requestFacebookLogin,
   requestGoogleLogin,
@@ -119,6 +120,7 @@ function LoginModal({ open, onClose, onLoginSuccess }) {
     (authData) => {
       saveAuthSession(authData)
       dispatch(setAuthSession(authData))
+      successToast('Logged in successfully.')
       resetModalState()
       onLoginSuccess?.(authData)
       onClose?.()

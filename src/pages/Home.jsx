@@ -2,6 +2,7 @@ import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import useAuthModal from '../hooks/useAuthModal.js'
 import useScreenSize from '../hooks/useScreenSize.js'
+import { successToast } from '../services/toast.js'
 
 function Home() {
   const { openLoginModal } = useAuthModal()
@@ -51,11 +52,11 @@ function Home() {
               View Cart
             </Button>
             <Button
-              onClick={() => openLoginModal()}
+              onClick={() => successToast("This is a success toast!")}
               size="large"
               variant="text"
             >
-              Open Login
+              Success Toast
             </Button>
           </Stack>
         </Stack>
