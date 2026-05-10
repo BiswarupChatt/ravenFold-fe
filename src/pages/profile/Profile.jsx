@@ -2,9 +2,17 @@ import ContactMailOutlinedIcon from '@mui/icons-material/ContactMailOutlined'
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined'
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
-import { Button, Container, Paper, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  ButtonGroup,
+  Container,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material'
 import { NavLink, Outlet } from 'react-router-dom'
 import useScreenSize from '../../hooks/useScreenSize.js'
+import AppButton from '../../components/AppButton.jsx'
 
 const profileNavItems = [
   {
@@ -47,7 +55,8 @@ const navButtonStyles = {
 }
 
 function Profile() {
-  const { isDesktop, isMobile } = useScreenSize()
+  const { isDesktop, isMobile, isTab } = useScreenSize()
+  const isCompactNav = isMobile || isTab
 
   return (
     <Container sx={{ py: isDesktop ? 8 : 5 }}>
@@ -85,32 +94,54 @@ function Profile() {
               width: isDesktop ? 260 : '100%',
             }}
           >
-            <Stack
-              direction={isMobile ? 'row' : 'column'}
-              spacing={1}
+            <Box
               sx={{
-                overflowX: isMobile ? 'auto' : 'visible',
-                pb: isMobile ? 0.5 : 0,
+                display: isCompactNav ? 'flex' : 'block',
+                justifyContent: 'flex-start',
+                maxWidth: '100%',
+                overflowX: isCompactNav ? 'auto' : 'visible',
+                pb: isCompactNav ? 0.5 : 0,
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                '&::-webkit-scrollbar': {
+                  display: 'none',
+                },
               }}
             >
-              {profileNavItems.map(({ label, to, Icon }) => (
-                <Button
-                  component={NavLink}
-                  end
-                  key={to}
-                  startIcon={<Icon />}
-                  sx={{
-                    ...navButtonStyles,
-                    flexShrink: 0,
-                    minWidth: isMobile ? 132 : 0,
-                  }}
-                  to={to}
-                  variant="outlined"
-                >
-                  {label}
-                </Button>
-              ))}
-            </Stack>
+              <ButtonGroup
+                aria-label="Profile sections"
+                fullWidth
+                orientation={isCompactNav ? 'horizontal' : 'vertical'}
+                sx={{
+                  display: 'flex',
+                  minWidth: '100%',
+                  width: isCompactNav ? 'max-content' : '100%',
+                  '& .MuiButtonGroup-grouped': {
+                    borderColor: 'divider',
+                  },
+                }}
+                variant="outlined"
+              >
+                {profileNavItems.map(({ label, to, Icon }) => (
+                  <AppButton
+                    component={NavLink}
+                    end
+                    key={to}
+                    startIcon={<Icon />}
+                    sx={{
+                      ...navButtonStyles,
+                      flex: isCompactNav ? '1 0 132px' : 'initial',
+                      flexShrink: 0,
+                      minWidth: isCompactNav ? 120 : 0,
+                      my: isCompactNav ? 0 : 1,
+                    }}
+                    to={to}
+                  >
+                    {label}
+                  </AppButton>
+                ))}
+              </ButtonGroup>
+            </Box>
           </Paper>
 
           <Paper
