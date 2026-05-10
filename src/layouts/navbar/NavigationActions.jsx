@@ -18,6 +18,7 @@
  * Quick edit guide:
  * - Add, remove, or reorder actions in `navigationActions.js`.
  * - Use `isDrawer: true` for actions that should open a drawer instead of a page.
+ * - Use `requiresAuth: true` for actions that should open login first.
  * - Keep drawer paths aligned with the ids used in `Navbar.jsx`
  *   (`/cart` -> `cart`, `/search` -> `search`).
  * - Update `inlineActionButtonStyles` or `bottomBarActionButtonStyles`
@@ -25,7 +26,9 @@
  */
 import { Badge, Box, IconButton, Paper, Stack, Typography } from '@mui/material'
 import { useSelector } from 'react-redux'
-import { NavLink, matchPath, useLocation } from 'react-router-dom'
+import { NavLink, matchPath, useLocation, useNavigate } from 'react-router-dom'
+import useAuthModal from '../../hooks/useAuthModal.js'
+import { selectIsAuthenticated } from '../../store/authSlice.js'
 import { selectCartQuantity } from '../../store/cartSlice'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import navigationActions from './navigationActions.js'
@@ -95,13 +98,44 @@ function isDrawerActionActive(pathname, path, activeDrawer, isDrawer) {
 }
 
 function NavigationActions({ layout = 'inline', activeDrawer, onDrawerAction }) {
+  const isAuthenticated = useSelector(selectIsAuthenticated)
   const cartQuantity = useSelector(selectCartQuantity)
+  const { openLoginModal } = useAuthModal()
   const { isMobile } = useScreenSize()
   const { pathname } = useLocation()
+  const navigate = useNavigate()
   const isBottomBar = layout === 'bottomBar'
 
-  const renderActionButton = ({ label, path, isDrawer, Icon, showBadge }) => {
+  const renderActionButton = ({
+    label,
+    path,
+    isDrawer,
+    Icon,
+    requiresAuth,
+    showBadge,
+  }) => {
     const drawerKey = getDrawerKey(path)
+    const runAction = () => {
+      if (isDrawer) {
+        onDrawerAction?.(drawerKey)
+        return
+      }
+
+      navigate(path)
+    }
+    const handleClick = (event) => {
+      if (requiresAuth && !isAuthenticated) {
+        event.preventDefault()
+        openLoginModal({
+          onLoginSuccess: runAction,
+        })
+        return
+      }
+
+      if (isDrawer) {
+        runAction()
+      }
+    }
     const iconMarkup = showBadge ? (
       <Badge
         badgeContent={cartQuantity !== 0 ? cartQuantity : undefined}
@@ -132,7 +166,7 @@ function NavigationActions({ layout = 'inline', activeDrawer, onDrawerAction }) 
             : ({ isActive }) => (isActive ? 'active' : undefined)
         }
         component={isDrawer ? 'button' : NavLink}
-        onClick={isDrawer ? () => onDrawerAction?.(drawerKey) : undefined}
+        onClick={handleClick}
         sx={isBottomBar ? bottomBarActionButtonStyles : inlineActionButtonStyles}
         to={isDrawer ? undefined : path}
         type={isDrawer ? 'button' : undefined}

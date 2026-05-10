@@ -15,6 +15,7 @@ const navigationActions = [
     path: '/cart',
     isDrawer: true,
     Icon: ShoppingBagOutlinedIcon,
+    requiresAuth: true,
     showBadge: true,
   },
   {
@@ -22,6 +23,7 @@ const navigationActions = [
     path: '/wishlist',
     isDrawer: false,
     Icon: FavoriteBorderRoundedIcon,
+    requiresAuth: true,
   },
   {
     label: 'Search',
