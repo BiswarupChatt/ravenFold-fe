@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import useAuthModal from '../hooks/useAuthModal.js'
 import { selectIsAuthenticated } from '../store/authSlice.js'
 
@@ -9,21 +9,32 @@ function getComponentName(Component) {
 }
 
 function withAuthRequired(WrappedComponent, options = {}) {
-  const { fallback = null } = options
+  const { fallback = null, redirectTo = -1 } = options
 
   function AuthRequiredRoute(props) {
     const isAuthenticated = useSelector(selectIsAuthenticated)
     const { openLoginModal } = useAuthModal()
     const location = useLocation()
+    const navigate = useNavigate()
 
     useEffect(() => {
       if (!isAuthenticated) {
-        openLoginModal()
+        openLoginModal({
+          onClose: () => {
+            if (typeof redirectTo === 'number') {
+              navigate(redirectTo)
+              return
+            }
+
+            navigate(redirectTo, { replace: true })
+          },
+        })
       }
     }, [
       isAuthenticated,
       location.pathname,
       location.search,
+      navigate,
       openLoginModal,
     ])
 
