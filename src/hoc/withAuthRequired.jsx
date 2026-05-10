@@ -1,15 +1,34 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useAuthModal from '../hooks/useAuthModal.js'
 import { selectIsAuthenticated } from '../store/authSlice.js'
+
+/*
+ * Usage guide:
+ * - Protect a route:
+ *   const ProtectedProfile = withAuthRequired(Profile)
+ *
+ * - Protect only specific user actions:
+ *   const ProductListWithAuth = withAuthRequired(ProductList, {
+ *     protectOnMount: false,
+ *   })
+ *
+ *   Inside ProductList, call:
+ *   props.requireAuthAction(() => doProtectedWork())
+ */
 
 function getComponentName(Component) {
   return Component.displayName || Component.name || 'Component'
 }
 
 function withAuthRequired(WrappedComponent, options = {}) {
-  const { fallback = null, redirectTo = -1 } = options
+  const {
+    authActionProp = 'requireAuthAction',
+    fallback = null,
+    protectOnMount = true,
+    redirectTo = -1,
+  } = options
 
   function AuthRequiredRoute(props) {
     const isAuthenticated = useSelector(selectIsAuthenticated)
@@ -17,19 +36,50 @@ function withAuthRequired(WrappedComponent, options = {}) {
     const location = useLocation()
     const navigate = useNavigate()
 
-    useEffect(() => {
-      if (!isAuthenticated) {
-        openLoginModal({
-          onClose: () => {
-            if (typeof redirectTo === 'number') {
-              navigate(redirectTo)
-              return
-            }
+    const requireAuthAction = useCallback(
+      (action, actionOptions = {}) => {
+        const {
+          onClose,
+          onLoginSuccess,
+          runAfterLogin = true,
+        } = actionOptions
 
-            navigate(redirectTo, { replace: true })
+        if (isAuthenticated) {
+          action?.()
+          return true
+        }
+
+        openLoginModal({
+          onClose,
+          onLoginSuccess: (authData) => {
+            onLoginSuccess?.(authData)
+
+            if (runAfterLogin) {
+              action?.()
+            }
           },
         })
+
+        return false
+      },
+      [isAuthenticated, openLoginModal],
+    )
+
+    useEffect(() => {
+      if (!protectOnMount || isAuthenticated) {
+        return
       }
+
+      openLoginModal({
+        onClose: () => {
+          if (typeof redirectTo === 'number') {
+            navigate(redirectTo)
+            return
+          }
+
+          navigate(redirectTo, { replace: true })
+        },
+      })
     }, [
       isAuthenticated,
       location.pathname,
@@ -38,11 +88,16 @@ function withAuthRequired(WrappedComponent, options = {}) {
       openLoginModal,
     ])
 
-    if (!isAuthenticated) {
+    if (protectOnMount && !isAuthenticated) {
       return fallback
     }
 
-    return <WrappedComponent {...props} />
+    return (
+      <WrappedComponent
+        {...props}
+        {...{ [authActionProp]: requireAuthAction }}
+      />
+    )
   }
 
   AuthRequiredRoute.displayName = `withAuthRequired(${getComponentName(WrappedComponent)})`
