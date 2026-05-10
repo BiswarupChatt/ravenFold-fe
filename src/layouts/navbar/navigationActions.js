@@ -6,9 +6,10 @@ import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded
 const navigationActions = [
   {
     label: 'Profile',
-    path: '/profile',
+    path: '/profile/info',
     isDrawer: false,
     Icon: PersonOutlineRoundedIcon,
+    requiresAuth: true,
   },
   {
     label: 'Cart',
@@ -20,7 +21,7 @@ const navigationActions = [
   },
   {
     label: 'Wishlist',
-    path: '/wishlist',
+    path: '/profile/wishlist',
     isDrawer: false,
     Icon: FavoriteBorderRoundedIcon,
     requiresAuth: true,
