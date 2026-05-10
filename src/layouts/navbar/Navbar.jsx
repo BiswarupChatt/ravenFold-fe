@@ -9,8 +9,8 @@ import {
 } from '@mui/material'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
-import { useEffect, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import { NavLink } from 'react-router-dom'
 import CartDrawer from '../../drawer/CartDrawer.jsx'
 import SearchDrawer from '../../drawer/SearchDrawer.jsx'
 import useScreenSize from '../../hooks/useScreenSize.js'
@@ -21,7 +21,6 @@ function Navbar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [activeDrawer, setActiveDrawer] = useState(null)
   const { isDesktop } = useScreenSize()
-  const { pathname } = useLocation()
 
   const openDrawer = () => setIsDrawerOpen(true)
   const closeDrawer = () => setIsDrawerOpen(false)
@@ -49,11 +48,6 @@ function Navbar() {
     textDecoration: 'none',
     whiteSpace: 'nowrap',
   }
-
-  useEffect(() => {
-    setIsDrawerOpen(false)
-    setActiveDrawer(null)
-  }, [pathname])
 
   return (
     <>

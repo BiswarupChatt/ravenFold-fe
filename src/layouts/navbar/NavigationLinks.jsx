@@ -3,7 +3,7 @@ import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded'
 import { Box, Button, Collapse, Menu, MenuItem, Stack } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { NavLink, matchPath, useLocation } from 'react-router-dom'
 import navigationItems from './navigationItems.js'
 import theme from '../../theme.js'
@@ -293,19 +293,14 @@ function DrawerLeafLink({ item, depth, pathname, onItemClick }) {
 function DrawerDropdownItem({ item, depth = 0, pathname, onItemClick }) {
   const isActive = isItemActive(item, pathname)
   const [isOpen, setIsOpen] = useState(isActive)
+  const isExpanded = isOpen || isActive
   const dropdownItems = getDropdownItems(item)
-
-  useEffect(() => {
-    if (isActive) {
-      setIsOpen(true)
-    }
-  }, [isActive])
 
   return (
     <Box sx={{ width: '100%' }}>
       <Button
         color="inherit"
-        endIcon={isOpen ? <ExpandLessRoundedIcon /> : <ExpandMoreRoundedIcon />}
+        endIcon={isExpanded ? <ExpandLessRoundedIcon /> : <ExpandMoreRoundedIcon />}
         fullWidth
         onClick={() => setIsOpen((previousValue) => !previousValue)}
         sx={[
@@ -318,7 +313,7 @@ function DrawerDropdownItem({ item, depth = 0, pathname, onItemClick }) {
         {item.label}
       </Button>
 
-      <Collapse in={isOpen} timeout="auto" unmountOnExit>
+      <Collapse in={isExpanded} timeout="auto" unmountOnExit>
         <Stack sx={{ pl: 2, width: '100%' }}>
           {dropdownItems.map((child, index) =>
             hasChildren(child) ? (

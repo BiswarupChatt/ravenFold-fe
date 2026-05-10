@@ -1,11 +1,12 @@
 import { Box } from '@mui/material'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import useScreenSize from '../hooks/useScreenSize.js'
 import Footer from './footer/Footer.jsx'
 import Navbar from './navbar/Navbar.jsx'
 
 function MainLayout() {
-  const { isMobile, isTab, isDesktop } = useScreenSize()
+  const { isDesktop } = useScreenSize()
+  const { pathname } = useLocation()
 
   return (
     <Box
@@ -17,7 +18,7 @@ function MainLayout() {
         pb: isDesktop ? 0 : 8,
       }}
     >
-      <Navbar />
+      <Navbar key={pathname} />
 
       <Box component="main" sx={{ flex: 1 }}>
         <Outlet />

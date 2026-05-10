@@ -1,11 +1,10 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
-import { useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
+import useAuthModal from '../hooks/useAuthModal.js'
 import useScreenSize from '../hooks/useScreenSize.js'
-import LoginModal from '../modal/LoginModal.jsx'
 
 function Home() {
-  const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const { openLoginModal } = useAuthModal()
   const { isDesktop, isMobile } = useScreenSize()
 
   return (
@@ -52,7 +51,7 @@ function Home() {
               View Cart
             </Button>
             <Button
-              onClick={() => setIsLoginOpen(true)}
+              onClick={() => openLoginModal()}
               size="large"
               variant="text"
             >
@@ -61,11 +60,6 @@ function Home() {
           </Stack>
         </Stack>
       </Container>
-
-      <LoginModal
-        onClose={() => setIsLoginOpen(false)}
-        open={isLoginOpen}
-      />
     </Box>
   )
 }
