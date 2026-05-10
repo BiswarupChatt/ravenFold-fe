@@ -8,6 +8,13 @@ const initialToastState = {
   queue: [],
 }
 
+const severityAccent = {
+  error: '#9f2f14',
+  info: '#111827',
+  success: '#2f855a',
+  warning: '#d9461f',
+}
+
 function toastReducer(state, action) {
   switch (action.type) {
     case 'enqueue':
@@ -51,6 +58,7 @@ function ToastProvider({ children }) {
     toastReducer,
     initialToastState,
   )
+  const accentColor = severityAccent[currentToast?.severity] ?? severityAccent.info
 
   useEffect(() => {
     return subscribeToast((toast) => {
@@ -74,7 +82,7 @@ function ToastProvider({ children }) {
     <>
       {children}
       <Snackbar
-        anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
         autoHideDuration={currentToast?.autoHideDuration}
         key={currentToast?.id}
         onClose={handleClose}
@@ -84,20 +92,49 @@ function ToastProvider({ children }) {
             onExited: handleExited,
           },
         }}
-        sx={{ mt: 2 }}
+        sx={{
+          mt: { xs: 1, sm: 2 },
+          mx: { xs: 1.5, sm: 0 },
+          width: {
+            xs: 'min(320px, calc(100vw - 24px))',
+            sm: 'auto',
+          },
+        }}
       >
         {currentToast ? (
           <Alert
+            icon={false}
             onClose={handleClose}
             severity={currentToast.severity}
             sx={{
               alignItems: 'center',
-              borderRadius: 1.5,
-              boxShadow: '0 16px 48px rgba(15, 23, 42, 0.16)',
+              backdropFilter: 'blur(8px)',
+              bgcolor: 'rgba(255, 255, 255, 0.8)',
+              border: 1,
+              borderColor: 'divider',
+              borderLeft: 4,
+              borderLeftColor: accentColor,
+              borderRadius: 2,
+              boxShadow: '0 14px 36px rgba(15, 23, 42, 0.08)',
+              color: 'text.primary',
               fontWeight: 600,
-              minWidth: { xs: 'calc(100vw - 32px)', sm: 320 },
+              minHeight: { xs: 44, sm: 50 },
+              minWidth: 0,
+              px: { xs: 1.25, sm: 1.75 },
+              py: { xs: 0.9, sm: 1.25 },
+              width: '100%',
+              '& .MuiAlert-action': {
+                color: 'text.secondary',
+                p: 0,
+                pl: { xs: 1, sm: 2 },
+              },
+              '& .MuiAlert-message': {
+                fontSize: { xs: '0.85rem', sm: '0.95rem' },
+                lineHeight: 1.35,
+                py: 0,
+              },
             }}
-            variant="filled"
+            variant="standard"
           >
             {currentToast.message}
           </Alert>
