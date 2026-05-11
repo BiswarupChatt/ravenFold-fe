@@ -1,6 +1,7 @@
 import ContactMailOutlinedIcon from '@mui/icons-material/ContactMailOutlined'
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined'
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
 import {
   Box,
@@ -10,9 +11,13 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { NavLink, Outlet } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import AppButton from '../../components/AppButton.jsx'
+import { clearStoredAuthSession } from '../../services/authStorage.js'
+import { successToast } from '../../services/toast.js'
+import { clearAuthSession } from '../../store/authSlice.js'
 
 const profileNavItems = [
   {
@@ -42,12 +47,16 @@ const profileNavItems = [
   },
 ]
 
+const profileButtonHeight = 44
+
 const navButtonStyles = {
   borderColor: 'divider',
   color: 'text.primary',
+  height: profileButtonHeight,
   justifyContent: 'flex-start',
-  minHeight: 44,
+  minHeight: profileButtonHeight,
   px: 1.5,
+  whiteSpace: 'nowrap',
   '&:hover': {
     bgcolor: 'rgba(17, 24, 39, 0.04)',
     borderColor: 'primary.main',
@@ -62,6 +71,15 @@ const navButtonStyles = {
 function Profile() {
   const { isDesktop, isMobile, isTab } = useScreenSize()
   const isCompactNav = isMobile || isTab
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    clearStoredAuthSession()
+    dispatch(clearAuthSession())
+    successToast('Logged out successfully.')
+    navigate('/', { replace: true })
+  }
 
   return (
     <Container sx={{ py: isDesktop ? 8 : 5 }}>
@@ -87,6 +105,7 @@ function Profile() {
           alignItems="stretch"
           direction={isDesktop ? 'row' : 'column'}
           spacing={3}
+          sx={{ width: '100%' }}
         >
           <Paper
             component="aside"
@@ -123,6 +142,7 @@ function Profile() {
                   width: isCompactNav ? 'max-content' : '100%',
                   '& .MuiButtonGroup-grouped': {
                     borderColor: 'divider',
+                    height: profileButtonHeight,
                   },
                 }}
                 variant="outlined"
@@ -147,20 +167,76 @@ function Profile() {
                 ))}
               </ButtonGroup>
             </Box>
+
+            {!isCompactNav ? (
+              <AppButton
+                fullWidth
+                onClick={handleLogout}
+                startIcon={<LogoutRoundedIcon />}
+                sx={{
+                  borderColor: 'secondary.main',
+                  color: 'secondary.main',
+                  height: profileButtonHeight,
+                  minHeight: profileButtonHeight,
+                  mt: 2,
+                  whiteSpace: 'nowrap',
+                  '&:hover': {
+                    bgcolor: 'rgba(217, 70, 31, 0.08)',
+                    borderColor: 'secondary.dark',
+                  },
+                }}
+                type="button"
+                variant="outlined"
+              >
+                Logout
+              </AppButton>
+            ) : null}
           </Paper>
 
-          <Paper
-            elevation={0}
+          <Stack
+            spacing={2}
             sx={{
-              border: 1,
-              borderColor: 'divider',
-              flex: 1,
+              flex: '1 1 auto',
               minWidth: 0,
-              p: isDesktop ? 4 : 2.5,
+              width: '100%',
             }}
           >
-            <Outlet />
-          </Paper>
+            <Paper
+              elevation={0}
+              sx={{
+                border: 1,
+                borderColor: 'divider',
+                flex: 1,
+                minWidth: 0,
+                p: isDesktop ? 4 : 2.5,
+              }}
+            >
+              <Outlet />
+            </Paper>
+
+            {isCompactNav ? (
+              <AppButton
+                fullWidth
+                onClick={handleLogout}
+                startIcon={<LogoutRoundedIcon />}
+                sx={{
+                  borderColor: 'secondary.main',
+                  color: 'secondary.main',
+                  height: profileButtonHeight,
+                  minHeight: profileButtonHeight,
+                  whiteSpace: 'nowrap',
+                  '&:hover': {
+                    bgcolor: 'rgba(217, 70, 31, 0.08)',
+                    borderColor: 'secondary.dark',
+                  },
+                }}
+                type="button"
+                variant="outlined"
+              >
+                Logout
+              </AppButton>
+            ) : undefined}
+          </Stack>
         </Stack>
       </Stack>
     </Container>
