@@ -1,6 +1,7 @@
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import { Box, Button, Divider, IconButton, Stack, Typography } from '@mui/material'
+import ProfileIntro from '../../components/ProfileIntro'
 
 const wishlistItems = [
   {
@@ -20,12 +21,10 @@ const wishlistItems = [
 function Wishlist() {
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography variant="h3">Wishlist</Typography>
-        <Typography color="text.secondary" sx={{ mt: 0.75 }}>
-          Pieces saved for later.
-        </Typography>
-      </Box>
+      <ProfileIntro
+        description="Pieces saved for later."
+        title="Wishlist"
+      />
 
       <Divider />
 

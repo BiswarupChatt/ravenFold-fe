@@ -1,6 +1,7 @@
 import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import { Box, Button, Divider, IconButton, Stack, Typography } from '@mui/material'
+import ProfileIntro from '../../components/ProfileIntro'
 
 const addresses = [
   {
@@ -24,23 +25,15 @@ const addresses = [
 function Address() {
   return (
     <Stack spacing={3}>
-      <Stack
-        alignItems={{ xs: 'stretch', sm: 'center' }}
-        direction={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        spacing={2}
-      >
-        <Box>
-          <Typography variant="h3">Addresses</Typography>
-          <Typography color="text.secondary" sx={{ mt: 0.75 }}>
-            Saved delivery locations for faster checkout.
-          </Typography>
-        </Box>
-
-        <Button startIcon={<AddLocationAltOutlinedIcon />} variant="contained">
-          Add Address
-        </Button>
-      </Stack>
+      <ProfileIntro
+        action={(
+          <Button startIcon={<AddLocationAltOutlinedIcon />} variant="text">
+            Add Address
+          </Button>
+        )}
+        description="Saved delivery locations for faster checkout."
+        title="Addresses"
+      />
 
       <Divider />
 

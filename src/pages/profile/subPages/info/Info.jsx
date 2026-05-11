@@ -3,6 +3,7 @@ import { Box, Divider, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
 import AppButton from '../../../../components/AppButton'
 import AppInput from '../../../../components/AppInput'
+import ProfileIntro from '../../components/ProfileIntro'
 
 const initialProfileFields = [
     { label: 'Full name', name: 'fullName', type: 'text', value: 'Biswarup Chatterjee' },
@@ -45,27 +46,13 @@ function Info() {
 
     return (
         <Stack spacing={3}>
-            <Stack
-                alignItems={{ xs: 'stretch', sm: 'center' }}
-                direction={{ xs: 'column', sm: 'row' }}
-                justifyContent="space-between"
-                spacing={2}
-                sx={{ width: '100%' }}
-            >
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography variant="h3">Personal Info</Typography>
-                    <Typography color="text.secondary" sx={{ mt: 0.75 }}>
-                        Your default profile details for orders and account updates.
-                    </Typography>
-                </Box>
-
-                {!isEditing ? (
+            <ProfileIntro
+                action={
+                    !isEditing ? (
                     <AppButton
                         onClick={handleEdit}
                         startIcon={<EditOutlinedIcon />}
                         sx={{
-                            alignSelf: { xs: 'flex-end', sm: 'center' },
-                            ml: { sm: 'auto' },
                             px: 0,
                         }}
                         type="button"
@@ -73,8 +60,11 @@ function Info() {
                     >
                         Edit
                     </AppButton>
-                ) : null}
-            </Stack>
+                    ) : null
+                }
+                description="Your default profile details for orders and account updates."
+                title="Personal Info"
+            />
 
 
             <Stack spacing={0}>

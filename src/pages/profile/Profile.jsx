@@ -3,6 +3,7 @@ import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined'
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
+import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
 import {
   Box,
   ButtonGroup,
@@ -43,7 +44,7 @@ const profileNavItems = [
   {
     label: 'Reviews',
     to: '/profile/reviews',
-    Icon: FavoriteBorderRoundedIcon,
+    Icon: RateReviewOutlinedIcon,
   },
 ]
 

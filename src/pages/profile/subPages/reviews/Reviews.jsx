@@ -1,6 +1,7 @@
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined'
 import StarBorderRoundedIcon from '@mui/icons-material/StarBorderRounded'
 import { Box, Button, Chip, Divider, Rating, Stack, Typography } from '@mui/material'
+import ProfileIntro from '../../components/ProfileIntro'
 
 const reviews = [
   {
@@ -26,23 +27,15 @@ const reviews = [
 function Reviews() {
   return (
     <Stack spacing={3}>
-      <Stack
-        alignItems={{ xs: 'stretch', sm: 'center' }}
-        direction={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        spacing={2}
-      >
-        <Box>
-          <Typography variant="h3">Reviews</Typography>
-          <Typography color="text.secondary" sx={{ mt: 0.75 }}>
-            Ratings and feedback you have shared on purchased pieces.
-          </Typography>
-        </Box>
-
-        <Button startIcon={<RateReviewOutlinedIcon />} variant="contained">
-          Write Review
-        </Button>
-      </Stack>
+      <ProfileIntro
+        action={(
+          <Button startIcon={<RateReviewOutlinedIcon />} variant="contained">
+            Write Review
+          </Button>
+        )}
+        description="Ratings and feedback you have shared on purchased pieces."
+        title="Reviews"
+      />
 
       <Divider />
 

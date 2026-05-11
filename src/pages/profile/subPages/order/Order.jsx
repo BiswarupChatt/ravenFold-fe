@@ -1,6 +1,7 @@
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined'
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
 import { Box, Button, Chip, Divider, Stack, Typography } from '@mui/material'
+import ProfileIntro from '../../components/ProfileIntro'
 
 const orders = [
   {
@@ -22,12 +23,10 @@ const orders = [
 function Order() {
   return (
     <Stack spacing={3}>
-      <Box>
-        <Typography variant="h3">Orders</Typography>
-        <Typography color="text.secondary" sx={{ mt: 0.75 }}>
-          Recent purchases and delivery progress.
-        </Typography>
-      </Box>
+      <ProfileIntro
+        description="Recent purchases and delivery progress."
+        title="Orders"
+      />
 
       <Divider />
 
