@@ -1,4 +1,5 @@
 import { Container, Divider, Paper, Stack, Typography } from '@mui/material'
+import PageIntro from '../components/PageIntro.jsx'
 import useScreenSize from '../hooks/useScreenSize.js'
 
 function PolicyPage({ eyebrow, title, intro, sections }) {
@@ -7,23 +8,13 @@ function PolicyPage({ eyebrow, title, intro, sections }) {
   return (
     <Container sx={{ py: isDesktop ? 8 : 6 }}>
       <Stack spacing={3}>
-        <Stack spacing={2} sx={{ maxWidth: 780 }}>
-          <Typography
-            color="secondary.main"
-            fontWeight={700}
-            letterSpacing={2}
-            textTransform="uppercase"
-            variant="overline"
-          >
-            {eyebrow}
-          </Typography>
-
-          <Typography variant="h2">{title}</Typography>
-
-          <Typography color="text.secondary" sx={{ fontSize: '1.05rem' }}>
-            {intro}
-          </Typography>
-        </Stack>
+        <PageIntro
+          description={intro}
+          eyebrow={eyebrow}
+          spacing={2}
+          sx={{ maxWidth: 780 }}
+          title={title}
+        />
 
         <Paper sx={{ p: isDesktop ? 5 : 3 }} variant="outlined">
           <Stack divider={<Divider flexItem />} spacing={3}>

@@ -1,4 +1,5 @@
-import { Container, Paper, Stack, Typography } from '@mui/material'
+import { Container, Paper, Stack } from '@mui/material'
+import PageIntro from '../components/PageIntro.jsx'
 import { CartDrawerContent } from '../drawer/CartDrawer.jsx'
 import useScreenSize from '../hooks/useScreenSize.js'
 
@@ -9,12 +10,10 @@ function Cart() {
     <Container sx={{ py: isDesktop ? 8 : 6 }}>
       <Paper sx={{ p: isDesktop ? 5 : 3 }}>
         <Stack spacing={3}>
-          <Stack spacing={1}>
-            <Typography variant="h2">Cart</Typography>
-            <Typography color="text.secondary">
-              The drawer and the page now share the same cart experience.
-            </Typography>
-          </Stack>
+          <PageIntro
+            description="The drawer and the page now share the same cart experience."
+            title="Cart"
+          />
 
           <CartDrawerContent />
         </Stack>

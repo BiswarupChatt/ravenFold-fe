@@ -1,5 +1,6 @@
-import { Button, Container, Stack, Typography } from '@mui/material'
+import { Button, Container, Stack } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
+import PageIntro from '../components/PageIntro.jsx'
 import useScreenSize from '../hooks/useScreenSize.js'
 
 function PageSection({
@@ -14,23 +15,11 @@ function PageSection({
   return (
     <Container sx={{ py: isDesktop ? 8 : 6 }}>
       <Stack spacing={3} sx={{ maxWidth: 720 }}>
-        {eyebrow && (
-          <Typography
-            color="secondary.main"
-            fontWeight={700}
-            letterSpacing={2}
-            textTransform="uppercase"
-            variant="overline"
-          >
-            {eyebrow}
-          </Typography>
-        )}
-
-        <Typography variant="h2">{title}</Typography>
-
-        <Typography color="text.secondary" sx={{ fontSize: '1.05rem' }}>
-          {description}
-        </Typography>
+        <PageIntro
+          description={description}
+          eyebrow={eyebrow}
+          title={title}
+        />
 
         {(primaryAction || secondaryAction) && (
           <Stack direction={isMobile ? 'column' : 'row'} spacing={2}>

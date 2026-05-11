@@ -1,4 +1,5 @@
-import { Container, Paper, Stack, Typography } from '@mui/material'
+import { Container, Paper, Stack } from '@mui/material'
+import PageIntro from '../components/PageIntro.jsx'
 import { SearchDrawerContent } from '../drawer/SearchDrawer.jsx'
 import useScreenSize from '../hooks/useScreenSize.js'
 
@@ -9,12 +10,10 @@ function Search() {
     <Container sx={{ py: isDesktop ? 8 : 6 }}>
       <Paper sx={{ p: isDesktop ? 5 : 3 }}>
         <Stack spacing={3}>
-          <Stack spacing={1}>
-            <Typography variant="h2">Search</Typography>
-            <Typography color="text.secondary">
-              The drawer and this route share the same search experience.
-            </Typography>
-          </Stack>
+          <PageIntro
+            description="The drawer and this route share the same search experience."
+            title="Search"
+          />
 
           <SearchDrawerContent />
         </Stack>

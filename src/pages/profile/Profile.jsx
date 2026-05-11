@@ -9,12 +9,12 @@ import {
   Container,
   Paper,
   Stack,
-  Typography,
 } from '@mui/material'
 import { useDispatch } from 'react-redux'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import AppButton from '../../components/AppButton.jsx'
+import PageIntro from '../../components/PageIntro.jsx'
 import { clearStoredAuthSession } from '../../services/authStorage.js'
 import { successToast } from '../../services/toast.js'
 import { clearAuthSession } from '../../store/authSlice.js'
@@ -84,22 +84,12 @@ function Profile() {
   return (
     <Container sx={{ py: isDesktop ? 8 : 5 }}>
       <Stack spacing={4}>
-        <Stack spacing={1.25}>
-          <Typography
-            color="secondary.main"
-            fontWeight={700}
-            letterSpacing={2}
-            textTransform="uppercase"
-            variant="overline"
-          >
-            Account
-          </Typography>
-          <Typography variant="h2">Profile</Typography>
-          <Typography color="text.secondary" sx={{ maxWidth: 680 }}>
-            Manage your personal details, saved addresses, orders, and saved
-            pieces from one place.
-          </Typography>
-        </Stack>
+        <PageIntro
+          description="Manage your personal details, saved addresses, orders, and saved pieces from one place."
+          eyebrow="Account"
+          sx={{ maxWidth: 680 }}
+          title="Profile"
+        />
 
         <Stack
           alignItems="stretch"

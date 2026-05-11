@@ -1,5 +1,6 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
+import PageIntro from '../components/PageIntro.jsx'
 import useScreenSize from '../hooks/useScreenSize.js'
 import { successToast } from '../services/toast.js'
 
@@ -10,14 +11,12 @@ function Home() {
     <Box sx={{ py: isDesktop ? 12 : 8 }}>
       <Container>
         <Stack spacing={4} sx={{ maxWidth: 720 }}>
-          <Typography variant="h1">
-            Build a sharper shopping experience.
-          </Typography>
-          <Typography color="text.secondary" sx={{ fontSize: '1.15rem' }}>
-            A clean MUI and React Router starter for your ecommerce frontend.
-            Add categories, product cards, checkout flows, and account pages on
-            top of this foundation.
-          </Typography>
+          <PageIntro
+            description="A clean MUI and React Router starter for your ecommerce frontend. Add categories, product cards, checkout flows, and account pages on top of this foundation."
+            descriptionSx={{ fontSize: '1.15rem' }}
+            title="Build a sharper shopping experience."
+            titleVariant="h1"
+          />
           <Typography color="text.secondary" sx={{ fontSize: '1.15rem' }}>
             Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nihil distinctio accusamus doloremque soluta iusto ex totam delectus suscipit inventore modi. Eius veniam aspernatur, voluptatum eligendi ullam eaque expedita numquam corporis.
             Consequatur itaque numquam consequuntur sed explicabo id tempore odio, ea dignissimos esse ut voluptatum, nulla magnam optio, aliquam praesentium autem veniam repudiandae rem laborum! Ad deserunt consequatur quis ea voluptatem.

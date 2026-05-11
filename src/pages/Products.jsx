@@ -8,6 +8,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useDispatch } from 'react-redux'
+import PageIntro from '../components/PageIntro.jsx'
 import products from '../data/products.js'
 import useScreenSize from '../hooks/useScreenSize.js'
 import { addItem } from '../store/cartSlice'
@@ -20,12 +21,11 @@ function Products() {
 
   return (
     <Container sx={{ py: isDesktop ? 8 : 6 }}>
-      <Typography variant="h2" sx={{ mb: 1 }}>
-        Products
-      </Typography>
-      <Typography color="text.secondary" sx={{ mb: 4 }}>
-        Starter product cards wired with MUI components.
-      </Typography>
+      <PageIntro
+        description="Starter product cards wired with MUI components."
+        sx={{ mb: 4 }}
+        title="Products"
+      />
 
       <Grid container spacing={3}>
         {products.map((product) => (
