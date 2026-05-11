@@ -10,6 +10,7 @@ import Profile from '../pages/profile/Profile.jsx'
 import Address from '../pages/profile/subPages/address/Address.jsx'
 import Info from '../pages/profile/subPages/info/Info.jsx'
 import Order from '../pages/profile/subPages/order/Order.jsx'
+import Reviews from '../pages/profile/subPages/reviews/Reviews.jsx'
 import Wishlist from '../pages/profile/subPages/wishlist/Wishlist.jsx'
 import Products from '../pages/Products.jsx'
 import ReturnsRefunds from '../pages/ReturnsRefunds.jsx'
@@ -38,6 +39,7 @@ const routes = [
           { path: 'address', element: <Address /> },
           { path: 'order', element: <Order /> },
           { path: 'wishlist', element: <Wishlist /> },
+          { path: 'reviews', element: <Reviews /> },
         ],
       },
       { path: 'cart', element: <Cart /> },

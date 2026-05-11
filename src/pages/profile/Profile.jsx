@@ -35,6 +35,11 @@ const profileNavItems = [
     to: '/profile/wishlist',
     Icon: FavoriteBorderRoundedIcon,
   },
+  {
+    label: 'Reviews',
+    to: '/profile/reviews',
+    Icon: FavoriteBorderRoundedIcon,
+  },
 ]
 
 const navButtonStyles = {
