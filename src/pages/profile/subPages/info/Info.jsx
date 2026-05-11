@@ -1,5 +1,10 @@
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import { Alert, Box, Divider, Stack, Typography } from '@mui/material'
+import {
+    Alert,
+    Box,
+    MenuItem,
+    Stack,
+} from '@mui/material'
 import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import AppButton from '../../../../components/AppButton'
@@ -15,36 +20,131 @@ import {
 } from '../../../../store/authSlice'
 import ProfileIntro from '../../components/ProfileIntro'
 
-const profileFieldDefinitions = [
-    { label: 'Full name', name: 'name', placeholder: 'Add full name', type: 'text' },
-    { label: 'Email', name: 'email', placeholder: 'Add email', type: 'email' },
-    { label: 'Phone', name: 'phone', placeholder: 'Add phone number', type: 'tel' },
-    { label: 'Date of birth', name: 'dob', type: 'date' },
-    {
-        label: 'Member since',
-        name: 'memberSince',
-        placeholder: 'Not available',
-        readOnly: true,
-        type: 'text',
-    },
+const genderOptions = [
+    { label: 'Male', value: 'male' },
+    { label: 'Female', value: 'female' },
+    { label: 'Prefer Not To Say', value: 'prefer-not-to-say' },
+
 ]
 
-const formatMemberSince = (createdAt) => {
-    if (!createdAt) {
-        return ''
-    }
+const profileFieldDefinitions = [
+    {
+        autoComplete: 'name',
+        label: 'Full Name',
+        name: 'name',
+        placeholder: 'Add full name',
+        required: true,
+        type: 'text',
+    },
+    {
+        autoComplete: 'email',
+        label: 'Your Email',
+        name: 'email',
+        placeholder: 'Add email',
+        required: true,
+        type: 'email',
+    },
+    {
+        autoComplete: 'tel',
+        label: 'Mobile No',
+        name: 'phone',
+        placeholder: 'Add phone number',
+        type: 'tel',
+    },
+    { label: 'Gender', name: 'gender', placeholder: 'Select Gender', type: 'select' },
+    { label: 'Date of Birth', name: 'dob', type: 'date' },
+]
 
-    const date = new Date(createdAt)
+const fieldOrder = ['name', 'gender', 'dob', 'email', 'phone']
 
-    if (Number.isNaN(date.getTime())) {
-        return ''
-    }
-
-    return new Intl.DateTimeFormat('en-IN', {
-        month: 'long',
-        year: 'numeric',
-    }).format(date)
+const fieldLayout = {
+    name: { gridColumn: '1 / -1' },
 }
+
+const formFieldSx = {
+    '& .MuiInputBase-input': {
+        '&::placeholder': {
+            color: '#596070',
+            opacity: 1,
+        },
+        color: '#596070',
+        fontSize: '0.8rem',
+        px: 1.5,
+        py: 1.1,
+    },
+    '& .MuiInputBase-input.MuiSelect-select': {
+        alignItems: 'center',
+        display: 'flex',
+        minHeight: 'unset',
+        py: 1.1,
+    },
+    '& .MuiOutlinedInput-root': {
+        backgroundColor: 'background.paper',
+        borderRadius: 1.5,
+        minHeight: 44,
+        '& fieldset': {
+            borderColor: '#e2e5ea',
+        },
+        '&:hover fieldset': {
+            borderColor: 'text.secondary',
+        },
+        '&.Mui-focused fieldset': {
+            borderColor: 'primary.main',
+            borderWidth: 1,
+        },
+    },
+}
+
+const lockedFormFieldSx = {
+    ...formFieldSx,
+    '& .MuiOutlinedInput-root': {
+        ...formFieldSx['& .MuiOutlinedInput-root'],
+        backgroundColor: 'rgba(17, 24, 39, 0.04)',
+    },
+    '& .MuiInputBase-input': {
+        ...formFieldSx['& .MuiInputBase-input'],
+        WebkitTextFillColor: '#596070',
+    },
+}
+
+const fieldLabelSx = {
+    color: 'text.primary',
+    fontSize: '0.85rem',
+    fontWeight: 700,
+    mb: 0.625,
+}
+
+const getFieldByName = (fields, fieldName) =>
+    fields.find((field) => field.name === fieldName)
+
+const normalizeGender = (gender) => {
+    const normalizedGender = String(gender || '').trim().toLowerCase()
+
+    return genderOptions.some((option) => option.value === normalizedGender)
+        ? normalizedGender
+        : ''
+}
+
+const getGenderLabel = (gender) =>
+    genderOptions.find((option) => option.value === gender)?.label || ''
+
+const renderGenderValue = (selectedValue, placeholder) => {
+    const label = getGenderLabel(selectedValue)
+
+    return label || (
+        <Box component="span" sx={{ color: '#596070' }}>
+            {placeholder}
+        </Box>
+    )
+}
+
+const getFieldValue = (field) => (
+    typeof field?.value === 'string' ? field.value : ''
+)
+
+const trimValue = (value) => (
+    typeof value === 'string' ? value.trim() : value
+)
 
 const buildProfileFields = (user = {}) => {
     const sourceUser = user || {}
@@ -52,8 +152,8 @@ const buildProfileFields = (user = {}) => {
     return profileFieldDefinitions.map((field) => ({
         ...field,
         value:
-            field.name === 'memberSince'
-                ? formatMemberSince(sourceUser.createdAt)
+            field.name === 'gender'
+                ? normalizeGender(sourceUser.gender)
                 : sourceUser[field.name] || '',
     }))
 }
@@ -66,10 +166,37 @@ const buildProfilePayload = (fields) => {
 
         return {
             ...payload,
-            [field.name]: field.value,
+            [field.name]: trimValue(field.value),
         }
     }, {})
 }
+
+const validateEmail = (value) => {
+    const email = value.trim()
+
+    if (!email) {
+        return 'Email is required.'
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return 'Enter a valid email address.'
+    }
+
+    return ''
+}
+
+const validateProfileFields = (fields) => {
+    const name = getFieldValue(getFieldByName(fields, 'name')).trim()
+    const email = getFieldValue(getFieldByName(fields, 'email'))
+
+    return {
+        name: name ? '' : 'Full name is required.',
+        email: validateEmail(email),
+    }
+}
+
+const hasValidationErrors = (errors) =>
+    Object.values(errors).some(Boolean)
 
 function Info() {
     const authToken = useSelector(selectAuthToken)
@@ -77,6 +204,7 @@ function Info() {
     const dispatch = useDispatch()
     const [profileFields, setProfileFields] = useState(() => buildProfileFields(authUser))
     const [draftFields, setDraftFields] = useState(() => buildProfileFields(authUser))
+    const [fieldErrors, setFieldErrors] = useState({})
     const [formError, setFormError] = useState('')
     const [isEditing, setIsEditing] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
@@ -102,17 +230,28 @@ function Info() {
         setDraftFields(profileFields)
         setIsEditing(true)
         setFormError('')
+        setFieldErrors({})
     }
 
     const handleCancel = () => {
         setDraftFields(profileFields)
         setIsEditing(false)
         setFormError('')
+        setFieldErrors({})
     }
 
     const handleUpdate = async () => {
-        setIsSaving(true)
         setFormError('')
+
+        const nextFieldErrors = validateProfileFields(draftFields)
+
+        setFieldErrors(nextFieldErrors)
+
+        if (hasValidationErrors(nextFieldErrors)) {
+            return
+        }
+
+        setIsSaving(true)
 
         try {
             const user = await updateCurrentUserProfile(buildProfilePayload(draftFields))
@@ -120,6 +259,7 @@ function Info() {
 
             setProfileFields(nextFields)
             setDraftFields(nextFields)
+            setFieldErrors({})
             syncAuthUser(user)
             setIsEditing(false)
             successToast('Profile updated successfully.')
@@ -134,16 +274,81 @@ function Info() {
     }
 
     const handleFieldChange = (fieldName) => (event) => {
+        if (!isEditing) {
+            return
+        }
+
         const nextValue = event.target.value
 
         setDraftFields((currentFields) =>
             currentFields.map((field) =>
-                field.name === fieldName
+                field.name === fieldName && !field.readOnly
                     ? { ...field, value: nextValue }
                     : field,
             ),
         )
+        setFieldErrors((currentErrors) => ({
+            ...currentErrors,
+            [fieldName]: '',
+        }))
+        setFormError('')
     }
+
+    const renderProfileField = (field) => {
+        const isLocked = !isEditing || field.readOnly
+        const isGenderField = field.name === 'gender'
+
+        return (
+            <Box key={field.name} sx={fieldLayout[field.name]}>
+                <AppInput
+                    autoComplete={field.autoComplete}
+                    error={Boolean(fieldErrors[field.name])}
+                    errorText={fieldErrors[field.name]}
+                    fieldSx={isLocked ? lockedFormFieldSx : formFieldSx}
+                    label={field.label}
+                    labelSx={fieldLabelSx}
+                    name={field.name}
+                    onChange={handleFieldChange(field.name)}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    select={isGenderField}
+                    slotProps={{
+                        select: isGenderField
+                            ? {
+                                displayEmpty: true,
+                                renderValue: (selectedValue) =>
+                                    renderGenderValue(selectedValue, field.placeholder),
+                            }
+                            : undefined,
+                        input: {
+                            readOnly: isLocked,
+                        },
+                    }}
+                    type={isGenderField ? undefined : field.type}
+                    value={field.value}
+                >
+                    {isGenderField ? (
+                        <MenuItem value="">
+                            <Box component="span" sx={{ color: '#596070' }}>
+                                Select Gender
+                            </Box>
+                        </MenuItem>
+                    ) : null}
+                    {isGenderField
+                        ? genderOptions.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))
+                        : null}
+                </AppInput>
+            </Box>
+        )
+    }
+
+    const orderedFields = fieldOrder
+        .map((fieldName) => getFieldByName(draftFields, fieldName))
+        .filter(Boolean)
 
     return (
         <Stack spacing={3}>
@@ -173,51 +378,15 @@ function Info() {
                 </Alert>
             ) : null}
 
-            <Stack spacing={0}>
-                <Divider />
-                {draftFields.map((field) => (
-                    <Box
-                        key={field.label}
-                        sx={{
-                            borderBottom: 1,
-                            borderColor: 'divider',
-                            display: 'grid',
-                            gap: 1,
-                            gridTemplateColumns: { xs: '1fr', sm: '180px 1fr' },
-                            py: 2,
-                        }}
-                    >
-                        <Typography color="text.secondary" fontWeight={700} sx={{ alignContent: "center" }}>
-                            {field.label}
-                        </Typography>
-                        <AppInput
-                            fieldSx={
-                                !isEditing || field.readOnly
-                                    ? {
-                                        '& .MuiOutlinedInput-root': {
-                                            backgroundColor: 'rgba(17, 24, 39, 0.04)',
-                                        },
-                                        '& .MuiInputBase-input': {
-                                            color: 'text.secondary',
-                                            WebkitTextFillColor: 'currentColor',
-                                        },
-                                    }
-                                    : undefined
-                            }
-                            name={field.name}
-                            onChange={handleFieldChange(field.name)}
-                            placeholder={field.placeholder}
-                            slotProps={{
-                                input: {
-                                    readOnly: !isEditing || field.readOnly,
-                                },
-                            }}
-                            type={field.type}
-                            value={field.value}
-                        />
-                    </Box>
-                ))}
-            </Stack>
+            <Box
+                sx={{
+                    display: 'grid',
+                    gap: { xs: 2, md: 2.5 },
+                    gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
+                }}
+            >
+                {orderedFields.map(renderProfileField)}
+            </Box>
 
             {isEditing ? (
                 <Stack
