@@ -19,7 +19,6 @@ const profileFieldDefinitions = [
     { label: 'Full name', name: 'name', placeholder: 'Add full name', type: 'text' },
     { label: 'Email', name: 'email', placeholder: 'Add email', type: 'email' },
     { label: 'Phone', name: 'phone', placeholder: 'Add phone number', type: 'tel' },
-    { label: 'Gender', name: 'gender', placeholder: 'Add gender', type: 'text' },
     { label: 'Date of birth', name: 'dob', type: 'date' },
     {
         label: 'Member since',

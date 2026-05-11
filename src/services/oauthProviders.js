@@ -37,7 +37,7 @@ export const requestGoogleLogin = async ({ clientId }) => {
       error_callback: (error) => {
         reject(new Error(error?.message || error?.type || 'Google sign in failed.'))
       },
-      scope: 'openid email profile https://www.googleapis.com/auth/user.gender.read',
+      scope: 'openid email profile',
     })
 
     tokenClient.requestAccessToken({
@@ -90,7 +90,7 @@ export const requestFacebookLogin = async ({ appId, version }) => {
       },
       {
         return_scopes: true,
-        scope: 'email,public_profile,user_gender',
+        scope: 'email,public_profile',
       },
     )
   })
