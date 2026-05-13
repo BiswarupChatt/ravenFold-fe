@@ -1,35 +1,196 @@
 import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import { Box, Button, Divider, IconButton, Stack, Typography } from '@mui/material'
+import { Alert, Box, CircularProgress, Divider, Stack, Typography } from '@mui/material'
+import { useCallback, useEffect, useState } from 'react'
+import AppButton from '../../../../components/AppButton'
+import { getApiErrorMessage } from '../../../../services/apiClient'
+import {
+  createUserAddress,
+  deleteUserAddress,
+  getUserAddresses,
+  updateUserAddress,
+} from '../../../../services/addressApi'
+import { errorToast, successToast } from '../../../../services/toast'
 import ProfileIntro from '../../components/ProfileIntro'
+import AddEditAddressModal from './components/AddEditAddressModal'
+import AddressCard from './components/AddressCard'
 
-const addresses = [
-  {
-    id: 'home',
-    label: 'Home',
-    name: 'Biswarup Chatterjee',
-    lineOne: '221B Lake Road',
-    lineTwo: 'Kolkata, West Bengal 700029',
-    phone: '+91 98765 43210',
-  },
-  {
-    id: 'work',
-    label: 'Work',
-    name: 'Biswarup Chatterjee',
-    lineOne: 'Sector V, Salt Lake',
-    lineTwo: 'Kolkata, West Bengal 700091',
-    phone: '+91 98765 43210',
-  },
-]
+const addressPageSize = 10
 
 function Address() {
+  const [addresses, setAddresses] = useState([])
+  const [pagination, setPagination] = useState(null)
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [deletingId, setDeletingId] = useState('')
+  const [pageError, setPageError] = useState('')
+  const [modalError, setModalError] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalKey, setModalKey] = useState(0)
+  const [selectedAddress, setSelectedAddress] = useState(null)
+
+  const loadAddresses = useCallback(async (nextPage = 1, { append = false } = {}) => {
+    if (append) {
+      setLoadingMore(true)
+    } else {
+      setLoading(true)
+    }
+
+    setPageError('')
+
+    try {
+      const addressData = await getUserAddresses({
+        limit: addressPageSize,
+        page: nextPage,
+      })
+
+      setAddresses((currentAddresses) => (
+        append
+          ? [...currentAddresses, ...addressData.items]
+          : addressData.items
+      ))
+      setPagination(addressData.pagination)
+      setPage(nextPage)
+    } catch (error) {
+      const message = getApiErrorMessage(error)
+
+      setPageError(message)
+      errorToast(message)
+    } finally {
+      setLoading(false)
+      setLoadingMore(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      loadAddresses()
+    }, 0)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
+  }, [loadAddresses])
+
+  const handleAddAddress = () => {
+    setSelectedAddress(null)
+    setModalError('')
+    setModalKey((currentKey) => currentKey + 1)
+    setIsModalOpen(true)
+  }
+
+  const handleEditAddress = (address) => {
+    setSelectedAddress(address)
+    setModalError('')
+    setModalKey((currentKey) => currentKey + 1)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    if (saving) {
+      return
+    }
+
+    setIsModalOpen(false)
+    setSelectedAddress(null)
+    setModalError('')
+  }
+
+  const handleSubmitAddress = async (addressPayload) => {
+    setSaving(true)
+    setModalError('')
+
+    try {
+      const savedAddress = selectedAddress?.id
+        ? await updateUserAddress(selectedAddress.id, addressPayload)
+        : await createUserAddress(addressPayload)
+
+      setAddresses((currentAddresses) => {
+        if (!selectedAddress?.id) {
+          return [
+            savedAddress,
+            ...(
+              savedAddress.isDefault
+                ? currentAddresses.map((address) => ({ ...address, isDefault: false }))
+                : currentAddresses
+            ),
+          ]
+        }
+
+        return currentAddresses.map((address) => {
+          if (address.id === savedAddress.id) {
+            return savedAddress
+          }
+
+          if (savedAddress.isDefault) {
+            return {
+              ...address,
+              isDefault: false,
+            }
+          }
+
+          return address
+        })
+      })
+
+      setIsModalOpen(false)
+      setSelectedAddress(null)
+      successToast(selectedAddress?.id ? 'Address updated successfully.' : 'Address added successfully.')
+      loadAddresses(1)
+    } catch (error) {
+      const message = getApiErrorMessage(error)
+
+      setModalError(message)
+      errorToast(message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleDeleteAddress = async (address) => {
+    const shouldDelete = window.confirm('Delete this address?')
+
+    if (!shouldDelete) {
+      return
+    }
+
+    setDeletingId(address.id)
+
+    try {
+      await deleteUserAddress(address.id)
+      successToast('Address deleted successfully.')
+      loadAddresses(1)
+    } catch (error) {
+      const message = getApiErrorMessage(error)
+
+      errorToast(message)
+    } finally {
+      setDeletingId('')
+    }
+  }
+
+  const handleLoadMore = () => {
+    if (!pagination?.hasNextPage || loadingMore) {
+      return
+    }
+
+    loadAddresses(page + 1, { append: true })
+  }
+
   return (
     <Stack spacing={3}>
       <ProfileIntro
         action={(
-          <Button startIcon={<AddLocationAltOutlinedIcon />} variant="text">
+          <AppButton
+            onClick={handleAddAddress}
+            startIcon={<AddLocationAltOutlinedIcon />}
+            sx={{ px: 0 }}
+            type="button"
+            variant="text"
+          >
             Add Address
-          </Button>
+          </AppButton>
         )}
         description="Saved delivery locations for faster checkout."
         title="Addresses"
@@ -37,37 +198,70 @@ function Address() {
 
       <Divider />
 
-      <Stack spacing={2}>
-        {addresses.map((address) => (
+      {pageError ? (
+        <Alert severity="error" sx={{ borderRadius: 1.5 }}>
+          {pageError}
+        </Alert>
+      ) : null}
+
+      {loading ? (
+        <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', py: 5 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Stack spacing={2}>
+          {addresses.length ? (
+            addresses.map((address) => (
+              <Box key={address.id} sx={{ opacity: deletingId === address.id ? 0.56 : 1 }}>
+                <AddressCard
+                  address={address}
+                  onDelete={handleDeleteAddress}
+                  onEdit={handleEditAddress}
+                />
+              </Box>
+            ))
+          ) : (
           <Box
-            key={address.id}
             sx={{
               border: 1,
               borderColor: 'divider',
-              p: 2,
+              borderRadius: 1,
+              p: 3,
+              textAlign: 'center',
             }}
           >
-            <Stack
-              alignItems="flex-start"
-              direction="row"
-              justifyContent="space-between"
-              spacing={2}
-            >
-              <Stack spacing={0.75}>
-                <Typography fontWeight={800}>{address.label}</Typography>
-                <Typography>{address.name}</Typography>
-                <Typography color="text.secondary">{address.lineOne}</Typography>
-                <Typography color="text.secondary">{address.lineTwo}</Typography>
-                <Typography color="text.secondary">{address.phone}</Typography>
-              </Stack>
-
-              <IconButton aria-label={`Edit ${address.label} address`}>
-                <EditOutlinedIcon />
-              </IconButton>
-            </Stack>
+            <Typography fontWeight={800}>No addresses saved yet</Typography>
+            <Typography color="text.secondary" sx={{ mt: 0.75 }}>
+              Add a delivery address to use it during checkout.
+            </Typography>
           </Box>
-        ))}
-      </Stack>
+          )}
+
+          {pagination?.hasNextPage ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', pt: 1 }}>
+              <AppButton
+                loading={loadingMore}
+                loadingText="Loading..."
+                onClick={handleLoadMore}
+                type="button"
+                variant="outlined"
+              >
+                Load More
+              </AppButton>
+            </Box>
+          ) : null}
+        </Stack>
+      )}
+
+      <AddEditAddressModal
+        address={selectedAddress}
+        error={modalError}
+        key={modalKey}
+        loading={saving}
+        onClose={handleCloseModal}
+        onSubmit={handleSubmitAddress}
+        open={isModalOpen}
+      />
     </Stack>
   )
 }
