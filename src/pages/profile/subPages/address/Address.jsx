@@ -24,6 +24,7 @@ function Address() {
   const [loadingMore, setLoadingMore] = useState(false)
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState('')
+  const [settingDefaultId, setSettingDefaultId] = useState('')
   const [pageError, setPageError] = useState('')
   const [modalError, setModalError] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -170,6 +171,35 @@ function Address() {
     }
   }
 
+  const handleSetDefaultAddress = async (address) => {
+    if (address.isDefault || settingDefaultId) {
+      return
+    }
+
+    setSettingDefaultId(address.id)
+
+    try {
+      const savedAddress = await updateUserAddress(address.id, {
+        isDefault: true,
+      })
+
+      setAddresses((currentAddresses) => (
+        currentAddresses.map((currentAddress) => ({
+          ...currentAddress,
+          isDefault: currentAddress.id === savedAddress.id,
+        }))
+      ))
+      successToast('Default address updated successfully.')
+      loadAddresses(1)
+    } catch (error) {
+      const message = getApiErrorMessage(error)
+
+      errorToast(message)
+    } finally {
+      setSettingDefaultId('')
+    }
+  }
+
   const handleLoadMore = () => {
     if (!pagination?.hasNextPage || loadingMore) {
       return
@@ -185,7 +215,7 @@ function Address() {
           <AppButton
             onClick={handleAddAddress}
             startIcon={<AddLocationAltOutlinedIcon />}
-            sx={{ px: 0 }}
+            sx={{ px: 1 }}
             type="button"
             variant="text"
           >
@@ -209,14 +239,22 @@ function Address() {
           <CircularProgress />
         </Box>
       ) : (
-        <Stack spacing={2}>
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 2,
+            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
+          }}
+        >
           {addresses.length ? (
             addresses.map((address) => (
               <Box key={address.id} sx={{ opacity: deletingId === address.id ? 0.56 : 1 }}>
                 <AddressCard
                   address={address}
+                  isSettingDefault={settingDefaultId === address.id}
                   onDelete={handleDeleteAddress}
                   onEdit={handleEditAddress}
+                  onSetDefault={handleSetDefaultAddress}
                 />
               </Box>
             ))
@@ -226,6 +264,7 @@ function Address() {
               border: 1,
               borderColor: 'divider',
               borderRadius: 1,
+              gridColumn: '1 / -1',
               p: 3,
               textAlign: 'center',
             }}
@@ -238,7 +277,7 @@ function Address() {
           )}
 
           {pagination?.hasNextPage ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', pt: 1 }}>
+            <Box sx={{ display: 'flex', gridColumn: '1 / -1', justifyContent: 'center', pt: 1 }}>
               <AppButton
                 loading={loadingMore}
                 loadingText="Loading..."
@@ -250,7 +289,7 @@ function Address() {
               </AppButton>
             </Box>
           ) : null}
-        </Stack>
+        </Box>
       )}
 
       <AddEditAddressModal
