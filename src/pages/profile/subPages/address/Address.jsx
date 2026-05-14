@@ -11,8 +11,9 @@ import {
 } from '../../../../services/addressApi'
 import { errorToast, successToast } from '../../../../services/toast'
 import ProfileIntro from '../../components/ProfileIntro'
-import AddEditAddressModal from './components/AddEditAddressModal'
+import AddEditAddressModal from '../../../../modal/AddEditAddressModal'
 import AddressCard from './components/AddressCard'
+import DeleteAddressModal from './components/DeleteAddressModal'
 
 const addressPageSize = 10
 
@@ -30,6 +31,7 @@ function Address() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalKey, setModalKey] = useState(0)
   const [selectedAddress, setSelectedAddress] = useState(null)
+  const [deleteAddressCandidate, setDeleteAddressCandidate] = useState(null)
 
   const loadAddresses = useCallback(async (nextPage = 1, { append = false } = {}) => {
     if (append) {
@@ -149,18 +151,29 @@ function Address() {
     }
   }
 
-  const handleDeleteAddress = async (address) => {
-    const shouldDelete = window.confirm('Delete this address?')
+  const handleDeleteAddress = (address) => {
+    setDeleteAddressCandidate(address)
+  }
 
-    if (!shouldDelete) {
+  const handleCloseDeleteModal = () => {
+    if (deletingId) {
       return
     }
 
-    setDeletingId(address.id)
+    setDeleteAddressCandidate(null)
+  }
+
+  const handleConfirmDeleteAddress = async () => {
+    if (!deleteAddressCandidate) {
+      return
+    }
+
+    setDeletingId(deleteAddressCandidate.id)
 
     try {
-      await deleteUserAddress(address.id)
+      await deleteUserAddress(deleteAddressCandidate.id)
       successToast('Address deleted successfully.')
+      setDeleteAddressCandidate(null)
       loadAddresses(1)
     } catch (error) {
       const message = getApiErrorMessage(error)
@@ -225,8 +238,6 @@ function Address() {
         description="Saved delivery locations for faster checkout."
         title="Addresses"
       />
-
-      <Divider />
 
       {pageError ? (
         <Alert severity="error" sx={{ borderRadius: 1.5 }}>
@@ -300,6 +311,13 @@ function Address() {
         onClose={handleCloseModal}
         onSubmit={handleSubmitAddress}
         open={isModalOpen}
+      />
+      <DeleteAddressModal
+        address={deleteAddressCandidate}
+        loading={Boolean(deletingId)}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleConfirmDeleteAddress}
+        open={Boolean(deleteAddressCandidate)}
       />
     </Stack>
   )

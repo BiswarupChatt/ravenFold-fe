@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
-import { Alert, Box, Checkbox, FormControlLabel, MenuItem, Stack } from '@mui/material'
-import AppButton from '../../../../../components/AppButton'
-import AppInput from '../../../../../components/AppInput'
-import AppModal from '../../../../../components/AppModal'
+import { useMemo, useRef, useState } from 'react'
+import { Alert, Box, Checkbox, CircularProgress, FormControlLabel, MenuItem, Stack } from '@mui/material'
+import AppButton from '../components/AppButton'
+import AppInput from '../components/AppInput'
+import AppModal from '../components/AppModal'
+import { getPostalPincodeDetails } from '../services/postalPincodeApi'
 
 const initialFormState = {
   fullName: '',
@@ -31,7 +32,7 @@ const requiredFields = [
 const requiredFieldMessages = {
   addressLine1: 'Enter your house number, street, or area.',
   addressType: 'Choose where this address should be saved.',
-  city: 'Enter your city.',
+  city: 'Enter your district.',
   country: 'Enter your country.',
   fullName: 'Enter the recipient full name.',
   phone: 'Enter the recipient phone number.',
@@ -49,7 +50,9 @@ const addressFields = [
   },
   {
     autoComplete: 'tel',
+    inputMode: 'numeric',
     label: 'Phone',
+    maxLength: 10,
     name: 'phone',
     placeholder: 'Mobile number',
     required: true,
@@ -71,10 +74,19 @@ const addressFields = [
     placeholder: 'Apartment, landmark, floor',
   },
   {
+    autoComplete: 'postal-code',
+    inputMode: 'numeric',
+    label: 'Pincode',
+    maxLength: 6,
+    name: 'pincode',
+    placeholder: 'Postal code',
+    required: true,
+  },
+  {
     autoComplete: 'address-level2',
-    label: 'City',
+    label: 'District',
     name: 'city',
-    placeholder: 'City',
+    placeholder: 'District',
     required: true,
   },
   {
@@ -82,13 +94,6 @@ const addressFields = [
     label: 'State',
     name: 'state',
     placeholder: 'State',
-    required: true,
-  },
-  {
-    autoComplete: 'postal-code',
-    label: 'Pincode',
-    name: 'pincode',
-    placeholder: 'Postal code',
     required: true,
   },
   {
@@ -186,6 +191,20 @@ const validateAddress = (formState) => {
 
 const getDigits = (value) => String(value || '').replace(/\D/g, '')
 
+const getNumericInputValue = (fieldName, value) => {
+  const numericValue = getDigits(value)
+
+  if (fieldName === 'phone') {
+    return numericValue.slice(0, 10)
+  }
+
+  if (fieldName === 'pincode') {
+    return numericValue.slice(0, 6)
+  }
+
+  return value
+}
+
 const validateAddressField = (fieldName, value) => {
   const trimmedValue = String(value || '').trim()
 
@@ -204,8 +223,12 @@ const validateAddressField = (fieldName, value) => {
   if (fieldName === 'phone') {
     const phoneDigits = getDigits(trimmedValue)
 
-    if (phoneDigits.length < 10 || phoneDigits.length > 15) {
-      return 'Enter a valid phone number with 10 to 15 digits.'
+    if (phoneDigits.length !== 10) {
+      return 'Mobile number must be exactly 10 digits.'
+    }
+
+    if (!/^[6-9]\d{9}$/.test(phoneDigits)) {
+      return 'Invalid mobile number.'
     }
   }
 
@@ -214,7 +237,7 @@ const validateAddressField = (fieldName, value) => {
   }
 
   if (fieldName === 'city' && trimmedValue.length < 2) {
-    return 'City must be at least 2 characters.'
+    return 'District must be at least 2 characters.'
   }
 
   if (fieldName === 'state' && trimmedValue.length < 2) {
@@ -225,8 +248,8 @@ const validateAddressField = (fieldName, value) => {
     return 'Country must be at least 2 characters.'
   }
 
-  if (fieldName === 'pincode' && !/^[a-zA-Z0-9][a-zA-Z0-9 -]{2,9}$/.test(trimmedValue)) {
-    return 'Enter a valid pincode using 3 to 10 letters, numbers, spaces, or hyphens.'
+  if (fieldName === 'pincode' && !/^\d{6}$/.test(trimmedValue)) {
+    return 'Pincode must be exactly 6 digits.'
   }
 
   return ''
@@ -242,6 +265,8 @@ function AddEditAddressModal({
 }) {
   const [formState, setFormState] = useState(() => buildFormState(address))
   const [fieldErrors, setFieldErrors] = useState({})
+  const [isPincodeLookupLoading, setIsPincodeLookupLoading] = useState(false)
+  const pincodeRequestRef = useRef(0)
   const isEditing = Boolean(address?.id)
   const title = isEditing ? 'Edit Address' : 'Add Address'
 
@@ -254,8 +279,50 @@ function AddEditAddressModal({
     [isEditing],
   )
 
+  const lookupPincode = async (pincode) => {
+    const requestId = pincodeRequestRef.current + 1
+
+    pincodeRequestRef.current = requestId
+    setIsPincodeLookupLoading(true)
+
+    try {
+      const locationData = await getPostalPincodeDetails(pincode)
+
+      if (pincodeRequestRef.current !== requestId) {
+        return
+      }
+
+      setFormState((currentState) => ({
+        ...currentState,
+        city: locationData.city,
+        country: locationData.country,
+        state: locationData.state,
+      }))
+      setFieldErrors((currentErrors) => ({
+        ...currentErrors,
+        city: '',
+        country: '',
+        pincode: '',
+        state: '',
+      }))
+    } catch (lookupError) {
+      if (pincodeRequestRef.current !== requestId) {
+        return
+      }
+
+      setFieldErrors((currentErrors) => ({
+        ...currentErrors,
+        pincode: lookupError.message || 'No records found for this pincode.',
+      }))
+    } finally {
+      if (pincodeRequestRef.current === requestId) {
+        setIsPincodeLookupLoading(false)
+      }
+    }
+  }
+
   const handleFieldChange = (fieldName) => (event) => {
-    const value = event.target.value
+    const value = getNumericInputValue(fieldName, event.target.value)
 
     setFormState((currentState) => ({
       ...currentState,
@@ -265,6 +332,16 @@ function AddEditAddressModal({
       ...currentErrors,
       [fieldName]: '',
     }))
+
+    if (fieldName === 'pincode') {
+      if (value.length === 6) {
+        lookupPincode(value)
+        return
+      }
+
+      pincodeRequestRef.current += 1
+      setIsPincodeLookupLoading(false)
+    }
   }
 
   const handleFieldBlur = (fieldName) => () => {
@@ -349,6 +426,17 @@ function AddEditAddressModal({
                 onChange={handleFieldChange(field.name)}
                 placeholder={field.placeholder}
                 required={field.required}
+                rightAdornment={
+                  field.name === 'pincode' && isPincodeLookupLoading
+                    ? <CircularProgress color="inherit" size={16} thickness={5} />
+                    : undefined
+                }
+                slotProps={{
+                  htmlInput: {
+                    inputMode: field.inputMode,
+                    maxLength: field.maxLength,
+                  },
+                }}
                 sx={{ gridColumn: field.gridColumn }}
                 type={field.type || 'text'}
                 value={formState[field.name]}
