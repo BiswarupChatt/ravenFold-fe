@@ -5,17 +5,51 @@ import {
   Drawer,
   IconButton,
   Toolbar,
-  Typography,
 } from '@mui/material'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import brandLogo from '../../assets/Logo_TextIcon Black.png'
 import CartDrawer from '../../drawer/CartDrawer.jsx'
 import SearchDrawer from '../../drawer/SearchDrawer.jsx'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import NavigationActions from './NavigationActions.jsx'
 import NavigationLinks from './NavigationLinks.jsx'
+
+function BrandLogoLink({ onClick, placement = 'desktop' }) {
+  const logoHeight = placement === 'drawer' ? 42 : 38
+  const logoWidth = placement === 'mobile' ? 172 : 188
+
+  return (
+    <Box
+      aria-label="Raven Fold home"
+      component={NavLink}
+      onClick={onClick}
+      sx={{
+        alignItems: 'center',
+        display: 'inline-flex',
+        height: logoHeight,
+        maxWidth: '100%',
+        textDecoration: 'none',
+      }}
+      to="/"
+    >
+      <Box
+        alt="Raven Fold"
+        component="img"
+        src={brandLogo}
+        sx={{
+          display: 'block',
+          height: logoHeight,
+          objectFit: 'contain',
+          objectPosition: 'left center',
+          width: logoWidth,
+        }}
+      />
+    </Box>
+  )
+}
 
 function Navbar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -40,13 +74,6 @@ function Navbar() {
     maxWidth: '100vw',
     p: 3,
     width: '100vw',
-  }
-  const brandStyles = {
-    color: 'text.primary',
-    fontWeight: 800,
-    letterSpacing: 0.4,
-    textDecoration: 'none',
-    whiteSpace: 'nowrap',
   }
 
   return (
@@ -87,14 +114,7 @@ function Navbar() {
                 <Box
                   sx={{ display: 'flex', justifyContent: 'flex-end', minWidth: 0 }}
                 >
-                  <Typography
-                    component={NavLink}
-                    sx={brandStyles}
-                    to="/"
-                    variant="h6"
-                  >
-                    Raven Fold
-                  </Typography>
+                  <BrandLogoLink placement="mobile" />
                 </Box>
               </Toolbar>
             </Container>
@@ -121,15 +141,7 @@ function Navbar() {
                 mb: 3,
               }}
             >
-              <Typography
-                component={NavLink}
-                onClick={closeDrawer}
-                sx={brandStyles}
-                to="/"
-                variant="h6"
-              >
-                Raven Fold
-              </Typography>
+              <BrandLogoLink onClick={closeDrawer} placement="drawer" />
 
               <IconButton
                 aria-label="Close navigation menu"
@@ -184,14 +196,7 @@ function Navbar() {
                 <Box
                   sx={{ alignItems: 'center', display: 'flex', minWidth: 0 }}
                 >
-                  <Typography
-                    component={NavLink}
-                    sx={brandStyles}
-                    to="/"
-                    variant="h6"
-                  >
-                    Raven Fold
-                  </Typography>
+                  <BrandLogoLink />
                 </Box>
 
                 <Box sx={{ justifySelf: 'center' }}>

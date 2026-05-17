@@ -5,6 +5,7 @@ import Cart from '../pages/Cart.jsx'
 import Contacts from '../pages/Contacts.jsx'
 import withAuthRequired from '../hoc/withAuthRequired.jsx'
 import Home from '../pages/Home.jsx'
+import NotFound from '../pages/NotFound.jsx'
 import PrivacyPolicy from '../pages/PrivacyPolicy.jsx'
 import Profile from '../pages/profile/Profile.jsx'
 import Address from '../pages/profile/subPages/address/Address.jsx'
@@ -49,12 +50,7 @@ const routes = [
       { path: 'privacy-policy', element: <PrivacyPolicy /> },
       { path: 'shipping-and-returns', element: <ShippingReturns /> },
       { path: 'returns-and-refunds', element: <ReturnsRefunds /> },
-      {
-        path: '*',
-        element: (
-          <>not found</>
-        ),
-      },
+      { path: '*', element: <NotFound /> },
     ],
   },
 ]

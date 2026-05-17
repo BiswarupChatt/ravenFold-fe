@@ -4,9 +4,9 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#111827',
-      light: '#374151',
-      dark: '#030712',
+      main: '#1e2952',
+      light: '#3f4d7c',
+      dark: '#121936',
       contrastText: '#ffffff',
     },
     secondary: {

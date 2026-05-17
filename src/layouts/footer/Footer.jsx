@@ -4,8 +4,8 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import YouTubeIcon from '@mui/icons-material/YouTube'
 import { Box, Container, Divider, Link, Stack, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
+import brandLogo from '../../assets/Logo_TextIcon Black.png'
 import useScreenSize from '../../hooks/useScreenSize.js'
-import theme from '../../theme.js'
 
 const quickLinks = [
     { label: 'Home', to: '/' },
@@ -144,34 +144,17 @@ function Footer() {
                                 }}
                             >
                                 <Box
+                                    alt="Raven Fold"
+                                    component="img"
+                                    src={brandLogo}
                                     sx={{
-                                        alignItems: 'center',
-                                        bgcolor: 'secondary.main',
-                                        borderRadius:  theme.shape.borderRadius,
-                                        color: 'secondary.contrastText',
-                                        display: 'inline-flex',
-                                        fontSize: '0.92rem',
-                                        fontWeight: 800,
+                                        display: 'block',
                                         height: 40,
-                                        justifyContent: 'center',
-                                        letterSpacing: 0.6,
-                                        width: 40,
+                                        objectFit: 'contain',
+                                        objectPosition: 'left center',
+                                        width: 190,
                                     }}
-                                >
-                                    RF
-                                </Box>
-
-                                <Typography
-                                    component="span"
-                                    sx={{
-                                        color: 'inherit',
-                                        fontSize: '1.15rem',
-                                        fontWeight: 800,
-                                        letterSpacing: 0.4,
-                                    }}
-                                >
-                                    Raven Fold
-                                </Typography>
+                                />
                             </Link>
 
                             <Typography sx={{ color: 'text.secondary', lineHeight: 1.7 }}>
