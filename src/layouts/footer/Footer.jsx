@@ -4,7 +4,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import YouTubeIcon from '@mui/icons-material/YouTube'
 import { Box, Container, Divider, Link, Stack, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
-import brandLogo from '../../assets/Logo_TextIcon Black.png'
+import brandLogo from '../../assets/Logo_Main-05.png'
 import useScreenSize from '../../hooks/useScreenSize.js'
 
 const quickLinks = [
