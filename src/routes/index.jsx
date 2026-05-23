@@ -14,7 +14,6 @@ import Order from '../pages/profile/subPages/order/Order.jsx'
 import Reviews from '../pages/profile/subPages/reviews/Reviews.jsx'
 import Wishlist from '../pages/profile/subPages/wishlist/Wishlist.jsx'
 import ReturnsRefunds from '../pages/ReturnsRefunds.jsx'
-import Search from '../pages/Search.jsx'
 import ShippingReturns from '../pages/ShippingReturns.jsx'
 import TermsConditions from '../pages/TermsConditions.jsx'
 import Shop from '../pages/shop/Shop.jsx'
@@ -43,7 +42,6 @@ const routes = [
       },
       { path: 'cart', element: <Cart /> },
       { path: 'wishlist', element: <Navigate replace to="/profile/wishlist" /> },
-      { path: 'search', element: <Search /> },
       { path: 'terms-and-conditions', element: <TermsConditions /> },
       { path: 'privacy-policy', element: <PrivacyPolicy /> },
       { path: 'shipping-and-returns', element: <ShippingReturns /> },
