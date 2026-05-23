@@ -8,7 +8,8 @@ import {
   Typography,
 } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import PageIntro from '../../components/PageIntro.jsx'
 import ProductCard from '../../components/ProductCard.jsx'
 import useScreenSize from '../../hooks/useScreenSize.js'
@@ -16,6 +17,10 @@ import { getApiErrorMessage } from '../../services/apiClient.js'
 import { getProducts } from '../../services/productApi.js'
 import { errorToast, successToast } from '../../services/toast.js'
 import { addItem } from '../../store/cartSlice.js'
+import {
+  selectWishlistItems,
+  toggleWishlistItem,
+} from '../../store/wishlistSlice.js'
 
 const productLimit = 12
 
@@ -91,7 +96,9 @@ const mapBackendProductToCard = (product) => {
 
 function Shop() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { isDesktop } = useScreenSize()
+  const wishlistItems = useSelector(selectWishlistItems)
   const [catalogProducts, setCatalogProducts] = useState([])
   const [pagination, setPagination] = useState(emptyPagination)
   const [page, setPage] = useState(1)
@@ -149,9 +156,31 @@ function Shop() {
     [catalogProducts],
   )
 
+  const wishlistIds = useMemo(
+    () => new Set(wishlistItems.map((item) => item.id)),
+    [wishlistItems],
+  )
+
   const handleAddToCart = (product) => {
     dispatch(addItem(product))
     successToast(`${product.name} added to cart.`)
+  }
+
+  const handleBuyNow = (product) => {
+    dispatch(addItem(product))
+    successToast(`${product.name} added to cart.`)
+    navigate('/cart')
+  }
+
+  const handleToggleWishlist = (product) => {
+    const isWishlisted = wishlistIds.has(product.id)
+
+    dispatch(toggleWishlistItem(product))
+    successToast(
+      isWishlisted
+        ? `${product.name} removed from wishlist.`
+        : `${product.name} added to wishlist.`,
+    )
   }
 
   return (
@@ -197,8 +226,11 @@ function Shop() {
             >
               {products.map((product) => (
                 <ProductCard
+                  isWishlisted={wishlistIds.has(product.id)}
                   key={product.id}
                   onAddToCart={handleAddToCart}
+                  onBuyNow={handleBuyNow}
+                  onToggleWishlist={handleToggleWishlist}
                   product={product}
                 />
               ))}

@@ -1,13 +1,18 @@
+import AddShoppingCartRoundedIcon from '@mui/icons-material/AddShoppingCartRounded'
+import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
+import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import {
   Box,
-  Button,
   Card,
   CardContent,
+  IconButton,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import formatPrice from '../utils/formatPrice.js'
+import AppButton from './AppButton.jsx'
 
 function ProductVisual({ product }) {
   const productColor = product.color || '#1e2952'
@@ -21,7 +26,7 @@ function ProductVisual({ product }) {
         sx={{
           display: 'block',
           height: '100%',
-          maxHeight: 275,
+          maxHeight: 245,
           objectFit: 'contain',
           objectPosition: 'center',
           width: '100%',
@@ -104,7 +109,13 @@ function ProductVisual({ product }) {
   )
 }
 
-function ProductCard({ product, onAddToCart }) {
+function ProductCard({
+  product,
+  isWishlisted = false,
+  onAddToCart,
+  onBuyNow,
+  onToggleWishlist,
+}) {
   const compareAtPrice = Number(product.compareAtPrice || 0)
   const showComparePrice = compareAtPrice > Number(product.price || 0)
   const discountPercent = showComparePrice
@@ -123,7 +134,7 @@ function ProductCard({ product, onAddToCart }) {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        minHeight: { xs: 420, sm: 470, lg: 515 },
+        minHeight: { xs: 430, sm: 460, lg: 490 },
         overflow: 'hidden',
         position: 'relative',
         transition: 'border-color 180ms ease, transform 180ms ease',
@@ -131,22 +142,12 @@ function ProductCard({ product, onAddToCart }) {
           borderColor: '#d8c8b8',
           transform: 'translateY(-3px)',
         },
-        '&:hover .product-card-action': {
-          opacity: 1,
-          transform: 'translate(-50%, 0)',
-        },
-        '@media (hover: none)': {
-          '& .product-card-action': {
-            opacity: 1,
-            transform: 'translate(-50%, 0)',
-          },
-        },
       }}
       variant="outlined"
     >
       <Box
         sx={{
-          height: { xs: 250, sm: 300, lg: 350 },
+          height: { xs: 230, sm: 260, lg: 290 },
           px: { xs: 2, sm: 2.5 },
           pt: { xs: 2.25, sm: 2.75 },
           position: 'relative',
@@ -157,13 +158,13 @@ function ProductCard({ product, onAddToCart }) {
             sx={{
               bgcolor: product.badgeColor || '#a1a600',
               color: '#ffffff',
-              fontSize: { xs: '0.95rem', sm: '1.05rem' },
+              fontSize: { xs: '0.8rem', sm: '0.88rem' },
               fontWeight: 900,
               left: { xs: 20, sm: 24 },
               lineHeight: 1,
-              minWidth: 82,
-              px: 1.5,
-              py: 0.85,
+              minWidth: 66,
+              px: 1.25,
+              py: 0.75,
               position: 'absolute',
               textAlign: 'center',
               top: { xs: 20, sm: 24 },
@@ -174,39 +175,61 @@ function ProductCard({ product, onAddToCart }) {
           </Box>
         ) : null}
 
-        <ProductVisual product={product} />
+        <Tooltip title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}>
+          <IconButton
+            aria-label={
+              isWishlisted
+                ? `Remove ${product.name} from wishlist`
+                : `Add ${product.name} to wishlist`
+            }
+            onClick={() => onToggleWishlist?.(product)}
+            sx={{
+                 bgcolor: 'background.default',
+              border: 1,
+              color: isWishlisted ? 'secondary.main' : 'text.primary',
+              height: 38,
+              position: 'absolute',
+              right: { xs: 20, sm: 24 },
+              top: { xs: 18, sm: 22 },
+              width: 38,
+              zIndex: 4,
+              '&:hover': {
+                bgcolor: '#ffffff',
+                borderColor: isWishlisted ? 'secondary.main' : 'text.primary',
+              },
+            }}
+          >
+            {isWishlisted ? (
+              <FavoriteRoundedIcon fontSize="small" />
+            ) : (
+              <FavoriteBorderRoundedIcon fontSize="small" />
+            )}
+          </IconButton>
+        </Tooltip>
 
-        <Button
-          className="product-card-action"
-          onClick={() => onAddToCart?.(product)}
-          startIcon={<ShoppingBagOutlinedIcon />}
-          variant="contained"
-          sx={{
-            bottom: 18,
-            left: '50%',
-            opacity: 0,
-            position: 'absolute',
-            transform: 'translate(-50%, 8px)',
-            transition: 'opacity 180ms ease, transform 180ms ease',
-            whiteSpace: 'nowrap',
-            zIndex: 4,
-          }}
-        >
-          Quick Add
-        </Button>
+        <ProductVisual product={product} />
       </Box>
 
       <CardContent
         sx={{
+          display: 'flex',
           flex: 1,
+          flexDirection: 'column',
           px: { xs: 2, sm: 3 },
           pb: { xs: 2.5, sm: 3 },
-          pt: { xs: 1.5, sm: 2 },
+          pt: { xs: 1.25, sm: 1.75 },
           textAlign: 'center',
         }}
       >
-        <Stack alignItems="center" spacing={1.05}>
-          <Typography color="text.secondary" sx={{ fontSize: { xs: '0.95rem', sm: '1rem' } }}>
+        <Stack alignItems="center" spacing={0.9} sx={{ flex: 1, width: '100%' }}>
+          <Typography
+            color="text.secondary"
+            sx={{
+              fontSize: { xs: '0.95rem', sm: '1rem' },
+              textAlign: 'center',
+              width: '100%',
+            }}
+          >
             {kicker}
           </Typography>
 
@@ -214,28 +237,97 @@ function ProductCard({ product, onAddToCart }) {
             component="h3"
             sx={{
               color: 'text.primary',
-              fontSize: { xs: '1.15rem', sm: '1.25rem' },
+              fontSize: { xs: '1.05rem', sm: '1.15rem' },
               fontWeight: 500,
               lineHeight: 1.2,
+              textAlign: 'center',
+              width: '100%',
             }}
           >
             {product.name}
           </Typography>
 
-          <Stack direction="row" spacing={1.15} alignItems="baseline" justifyContent="center">
-            <Typography sx={{ fontSize: { xs: '1.15rem', sm: '1.25rem' }, fontWeight: 800 }}>
+          <Box
+            sx={{
+              alignItems: 'baseline',
+              columnGap: 1,
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              minHeight: 30,
+              mx: 'auto',
+              rowGap: 0.35,
+              textAlign: 'center',
+              width: '100%',
+            }}
+          >
+            <Typography
+              sx={{
+                color: 'text.primary',
+                fontSize: { xs: '1.12rem', sm: '1.2rem' },
+                fontWeight: 800,
+                lineHeight: 1.15,
+              }}
+            >
               {formatPrice(product.price)}
             </Typography>
 
             {showComparePrice ? (
               <Typography
                 color="text.secondary"
-                sx={{ fontSize: { xs: '0.9rem', sm: '0.95rem' }, textDecoration: 'line-through' }}
+                sx={{
+                  fontSize: { xs: '0.88rem', sm: '0.94rem' },
+                  fontWeight: 500,
+                  lineHeight: 1.15,
+                  textDecoration: 'line-through',
+                  textDecorationThickness: 1,
+                }}
               >
                 {formatPrice(compareAtPrice)}
               </Typography>
             ) : null}
-          </Stack>
+          </Box>
+        </Stack>
+
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ mt: 2, width: '100%' }}
+        >
+          <AppButton
+            fullWidth
+            onClick={() => onBuyNow?.(product)}
+            startIcon={<ShoppingBagOutlinedIcon />}
+            sx={{
+              minHeight: 42,
+              whiteSpace: 'nowrap',
+            }}
+            variant="contained"
+          >
+            Buy Now
+          </AppButton>
+
+          <Tooltip title="Add to cart">
+            <IconButton
+              aria-label={`Add ${product.name} to cart`}
+              onClick={() => onAddToCart?.(product)}
+              sx={{
+                border: 1,
+                borderColor: 'primary.main',
+                borderRadius: 2,
+                color: 'primary.main',
+                flex: '0 0 42px',
+                height: 42,
+                width: 42,
+                '&:hover': {
+                  bgcolor: 'rgba(30, 41, 82, 0.08)',
+                  borderColor: 'primary.dark',
+                },
+              }}
+            >
+              <AddShoppingCartRoundedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Stack>
       </CardContent>
     </Card>

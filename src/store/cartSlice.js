@@ -1,22 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  items: [
-    {
-      id: 'structured-tote',
-      name: 'Structured Tote',
-      price: 8900,
-      category: 'Bags',
-      quantity: 1,
-    },
-    {
-      id: 'travel-fold-wallet',
-      name: 'Travel Fold Wallet',
-      price: 4200,
-      category: 'Accessories',
-      quantity: 2,
-    },
-  ],
+  items: [],
 }
 
 const cartSlice = createSlice({
