@@ -1,4 +1,4 @@
-import { Box, Button, Container, Stack, Typography } from '@mui/material'
+import { Button, Container, Stack, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import useScreenSize from '../hooks/useScreenSize.js'
 
@@ -57,10 +57,10 @@ function NotFound() {
           <Button
             component={RouterLink}
             sx={{ minWidth: isMobile ? '100%' : 160 }}
-            to="/products"
+            to="/shop"
             variant="outlined"
           >
-            Browse Products
+            Visit Shop
           </Button>
         </Stack>
       </Stack>

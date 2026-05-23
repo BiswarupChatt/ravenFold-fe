@@ -5,9 +5,9 @@ function Contacts() {
     <PageSection
       description="This contact page is ready for your support details, store hours, and a proper inquiry form when you add one."
       eyebrow="Get In Touch"
-      primaryAction={{ label: 'Browse Products', to: '/products' }}
+      primaryAction={{ label: 'Visit Shop', to: '/shop' }}
       secondaryAction={{ label: 'Read The Blog', to: '/blog' }}
-      title="Contacts"
+      title="Contact"
     />
   )
 }

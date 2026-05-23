@@ -1,5 +1,5 @@
 import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined'
-import { Alert, Box, CircularProgress, Divider, Stack, Typography } from '@mui/material'
+import { Alert, Box, CircularProgress, Stack, Typography } from '@mui/material'
 import { useCallback, useEffect, useState } from 'react'
 import AppButton from '../../../../components/AppButton'
 import { getApiErrorMessage } from '../../../../services/apiClient'

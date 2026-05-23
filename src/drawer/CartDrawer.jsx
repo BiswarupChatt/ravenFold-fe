@@ -51,7 +51,7 @@ function CartDrawerContent({ layout = 'page', onNavigate }) {
             fullWidth={isDrawer}
             onClick={onNavigate}
             sx={{ alignSelf: isDrawer || isMobile ? 'stretch' : 'flex-start' }}
-            to="/products"
+            to="/shop"
             variant="contained"
           >
             Continue Shopping
@@ -142,7 +142,7 @@ function CartDrawerContent({ layout = 'page', onNavigate }) {
               fullWidth={isDrawer}
               onClick={onNavigate}
               sx={{ alignSelf: isDrawer || isMobile ? 'stretch' : 'auto' }}
-              to="/products"
+              to="/shop"
               variant="contained"
             >
               Continue Shopping

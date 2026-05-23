@@ -10,8 +10,8 @@ import useScreenSize from '../../hooks/useScreenSize.js'
 const quickLinks = [
     { label: 'Home', to: '/' },
     { label: 'Shop', to: '/shop' },
-    { label: 'Products', to: '/products' },
-    { label: 'Contacts', to: '/contacts' },
+    { label: 'Blog', to: '/blog' },
+    { label: 'Contact', to: '/contacts' },
 ]
 
 const legalLinks = [

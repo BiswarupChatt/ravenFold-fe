@@ -68,17 +68,17 @@ function SearchDrawerContent({ autoFocus = false, layout = 'page', onNavigate })
           </Typography>
           <Typography color="text.secondary">
             {normalizedQuery
-              ? 'Refine the search term or jump straight into the full product grid.'
-              : 'Use the drawer for quick discovery, or browse every item in the products page.'}
+              ? 'Refine the search term or jump straight into the shop.'
+              : 'Use the drawer for quick discovery, or continue through the shop page.'}
           </Typography>
           <Button
             component={RouterLink}
             onClick={onNavigate}
             sx={{ alignSelf: 'flex-start' }}
-            to="/products"
+            to="/shop"
             variant="outlined"
           >
-            Browse Products
+            Visit Shop
           </Button>
         </Stack>
       </Paper>
@@ -144,10 +144,10 @@ function SearchDrawerContent({ autoFocus = false, layout = 'page', onNavigate })
               component={RouterLink}
               onClick={onNavigate}
               sx={{ alignSelf: 'flex-start' }}
-              to="/products"
+              to="/shop"
               variant="contained"
             >
-              View Full Catalog
+              Visit Shop
             </Button>
           </Stack>
         </Paper>

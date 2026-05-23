@@ -35,10 +35,10 @@ function Home() {
             <Button
               component={RouterLink}
               size="large"
-              to="/products"
+              to="/shop"
               variant="contained"
             >
-              Browse Products
+              Visit Shop
             </Button>
             <Button
               component={RouterLink}

@@ -13,12 +13,11 @@ import Info from '../pages/profile/subPages/info/Info.jsx'
 import Order from '../pages/profile/subPages/order/Order.jsx'
 import Reviews from '../pages/profile/subPages/reviews/Reviews.jsx'
 import Wishlist from '../pages/profile/subPages/wishlist/Wishlist.jsx'
-import Products from '../pages/Products.jsx'
 import ReturnsRefunds from '../pages/ReturnsRefunds.jsx'
 import Search from '../pages/Search.jsx'
-import Shop from '../pages/Shop.jsx'
 import ShippingReturns from '../pages/ShippingReturns.jsx'
 import TermsConditions from '../pages/TermsConditions.jsx'
+import Shop from '../pages/shop/Shop.jsx'
 
 const ProtectedProfile = withAuthRequired(Profile)
 
@@ -28,7 +27,6 @@ const routes = [
     children: [
       { index: true, element: <Home /> },
       { path: 'shop', element: <Shop /> },
-      { path: 'products', element: <Products /> },
       { path: 'contacts', element: <Contacts /> },
       { path: 'blog', element: <Blog /> },
       {

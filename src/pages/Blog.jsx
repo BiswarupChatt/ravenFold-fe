@@ -6,7 +6,7 @@ function Blog() {
       description="Use this area for product stories, launch notes, buying guides, and editorial content that supports the brand."
       eyebrow="Journal"
       primaryAction={{ label: 'Visit Shop', to: '/shop' }}
-      secondaryAction={{ label: 'Browse Products', to: '/products' }}
+      secondaryAction={{ label: 'Contact Us', to: '/contacts' }}
       title="Blog"
     />
   )
