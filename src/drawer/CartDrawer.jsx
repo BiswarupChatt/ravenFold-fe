@@ -3,11 +3,21 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link as RouterLink } from 'react-router-dom'
 import AppDrawer from '../components/AppDrawer.jsx'
 import useScreenSize from '../hooks/useScreenSize.js'
+import { getApiErrorMessage } from '../services/apiClient.js'
+import {
+  clearCart as clearServerCart,
+  mapServerCartItems,
+  removeCartItem,
+  updateCartItem,
+} from '../services/cartApi.js'
+import { errorToast } from '../services/toast.js'
+import { selectIsAuthenticated } from '../store/authSlice.js'
 import {
   addItem,
-  clearCart,
+  clearCart as clearCartItems,
   decreaseItemQuantity,
   removeItem,
+  replaceCartItems,
   selectCartItems,
   selectCartQuantity,
   selectCartSubtotal,
@@ -19,8 +29,71 @@ function CartDrawerContent({ layout = 'page', onNavigate }) {
   const items = useSelector(selectCartItems)
   const quantity = useSelector(selectCartQuantity)
   const subtotal = useSelector(selectCartSubtotal)
+  const isAuthenticated = useSelector(selectIsAuthenticated)
   const { isDesktop, isMobile } = useScreenSize()
   const isDrawer = layout === 'drawer'
+
+  const replaceWithServerCart = (cart) => {
+    dispatch(replaceCartItems(mapServerCartItems(cart.items)))
+  }
+
+  const handleClearCart = async () => {
+    if (!isAuthenticated) {
+      dispatch(clearCartItems())
+      return
+    }
+
+    try {
+      replaceWithServerCart(await clearServerCart())
+    } catch (error) {
+      errorToast(getApiErrorMessage(error))
+    }
+  }
+
+  const handleDecreaseQuantity = async (item) => {
+    if (!isAuthenticated) {
+      dispatch(decreaseItemQuantity(item.id))
+      return
+    }
+
+    try {
+      const cart = item.quantity <= 1
+        ? await removeCartItem(item.cartItemId)
+        : await updateCartItem(item.cartItemId, { quantity: item.quantity - 1 })
+
+      replaceWithServerCart(cart)
+    } catch (error) {
+      errorToast(getApiErrorMessage(error))
+    }
+  }
+
+  const handleIncreaseQuantity = async (item) => {
+    if (!isAuthenticated) {
+      dispatch(addItem(item))
+      return
+    }
+
+    try {
+      replaceWithServerCart(
+        await updateCartItem(item.cartItemId, { quantity: item.quantity + 1 }),
+      )
+    } catch (error) {
+      errorToast(getApiErrorMessage(error))
+    }
+  }
+
+  const handleRemoveItem = async (item) => {
+    if (!isAuthenticated) {
+      dispatch(removeItem(item.id))
+      return
+    }
+
+    try {
+      replaceWithServerCart(await removeCartItem(item.cartItemId))
+    } catch (error) {
+      errorToast(getApiErrorMessage(error))
+    }
+  }
 
   return (
     <Stack spacing={isDrawer ? 2.5 : 3}>
@@ -35,7 +108,7 @@ function CartDrawerContent({ layout = 'page', onNavigate }) {
         </Typography>
 
         {items.length > 0 ? (
-          <Button color="secondary" onClick={() => dispatch(clearCart())}>
+          <Button color="secondary" onClick={handleClearCart}>
             Clear Cart
           </Button>
         ) : null}
@@ -97,7 +170,7 @@ function CartDrawerContent({ layout = 'page', onNavigate }) {
                 >
                   <IconButton
                     aria-label={`Decrease ${item.name} quantity`}
-                    onClick={() => dispatch(decreaseItemQuantity(item.id))}
+                    onClick={() => handleDecreaseQuantity(item)}
                     size="small"
                   >
                     -
@@ -110,14 +183,14 @@ function CartDrawerContent({ layout = 'page', onNavigate }) {
                   </Typography>
                   <IconButton
                     aria-label={`Increase ${item.name} quantity`}
-                    onClick={() => dispatch(addItem(item))}
+                    onClick={() => handleIncreaseQuantity(item)}
                     size="small"
                   >
                     +
                   </IconButton>
                   <Button
                     color="secondary"
-                    onClick={() => dispatch(removeItem(item.id))}
+                    onClick={() => handleRemoveItem(item)}
                   >
                     Remove
                   </Button>

@@ -14,9 +14,14 @@ import PageIntro from '../../components/PageIntro.jsx'
 import ProductCard from '../../components/ProductCard.jsx'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import { getApiErrorMessage } from '../../services/apiClient.js'
-import { getProducts } from '../../services/productApi.js'
+import {
+  addCartItem,
+  mapServerCartItems,
+} from '../../services/cartApi.js'
+import { getProducts, getProductVariants } from '../../services/productApi.js'
 import { errorToast, successToast } from '../../services/toast.js'
-import { addItem } from '../../store/cartSlice.js'
+import { selectIsAuthenticated } from '../../store/authSlice.js'
+import { addItem, replaceCartItems } from '../../store/cartSlice.js'
 import {
   selectWishlistItems,
   toggleWishlistItem,
@@ -65,6 +70,16 @@ const getMaterial = (product) => {
   return material?.value || ''
 }
 
+const getVariantLabel = (variant) => {
+  if (!Array.isArray(variant.optionValues) || !variant.optionValues.length) {
+    return ''
+  }
+
+  return variant.optionValues
+    .map((option) => `${option.optionName}: ${option.value}`)
+    .join(', ')
+}
+
 const mapBackendProductToCard = (product) => {
   const basePrice = toNumber(product.basePrice)
   const salePrice =
@@ -91,6 +106,8 @@ const mapBackendProductToCard = (product) => {
     image: getPrimaryImage(product),
     material: getMaterial(product),
     price: hasSalePrice ? salePrice : basePrice,
+    productId: product.id || product._id,
+    variantId: '',
   }
 }
 
@@ -98,6 +115,7 @@ function Shop() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { isDesktop } = useScreenSize()
+  const isAuthenticated = useSelector(selectIsAuthenticated)
   const wishlistItems = useSelector(selectWishlistItems)
   const [catalogProducts, setCatalogProducts] = useState([])
   const [pagination, setPagination] = useState(emptyPagination)
@@ -161,15 +179,81 @@ function Shop() {
     [wishlistItems],
   )
 
-  const handleAddToCart = (product) => {
-    dispatch(addItem(product))
-    successToast(`${product.name} added to cart.`)
+  const resolveCartProduct = async (product) => {
+    if (!product.hasVariants || product.variantId) {
+      return product
+    }
+
+    const variantData = await getProductVariants(product.productId || product.id, {
+      limit: 1,
+    })
+    const [variant] = variantData.items
+
+    if (!variant) {
+      throw new Error('This product does not have an active variant to add.')
+    }
+
+    const variantBasePrice = Number(variant.price || product.price || 0)
+    const variantSalePrice =
+      variant.salePrice === null || variant.salePrice === undefined
+        ? null
+        : Number(variant.salePrice)
+    const hasVariantSalePrice =
+      variantSalePrice !== null && variantSalePrice < variantBasePrice
+    const variantImage = Array.isArray(variant.images) && variant.images[0]
+      ? variant.images[0]
+      : product.image
+
+    return {
+      ...product,
+      compareAtPrice: hasVariantSalePrice ? variantBasePrice : product.compareAtPrice,
+      id: `${product.productId || product.id}:${variant.id}`,
+      image: variantImage,
+      price: hasVariantSalePrice ? variantSalePrice : variantBasePrice,
+      productId: product.productId || product.id,
+      sku: variant.sku || product.sku,
+      variantId: variant.id,
+      variantLabel: getVariantLabel(variant),
+    }
   }
 
-  const handleBuyNow = (product) => {
-    dispatch(addItem(product))
-    successToast(`${product.name} added to cart.`)
-    navigate('/cart')
+  const persistCartProduct = async (product) => {
+    const cartProduct = await resolveCartProduct(product)
+
+    if (!isAuthenticated) {
+      dispatch(addItem(cartProduct))
+      return cartProduct
+    }
+
+    const cart = await addCartItem({
+      productId: cartProduct.productId || cartProduct.id,
+      quantity: 1,
+      variantId: cartProduct.variantId || '',
+    })
+
+    dispatch(replaceCartItems(mapServerCartItems(cart.items)))
+    return cartProduct
+  }
+
+  const handleAddToCart = async (product) => {
+    try {
+      const cartProduct = await persistCartProduct(product)
+
+      successToast(`${cartProduct.name} added to cart.`)
+    } catch (error) {
+      errorToast(getApiErrorMessage(error))
+    }
+  }
+
+  const handleBuyNow = async (product) => {
+    try {
+      const cartProduct = await persistCartProduct(product)
+
+      successToast(`${cartProduct.name} added to cart.`)
+      navigate('/cart')
+    } catch (error) {
+      errorToast(getApiErrorMessage(error))
+    }
   }
 
   const handleToggleWishlist = (product) => {
@@ -198,7 +282,6 @@ function Shop() {
               sx={{ maxWidth: 640 }}
               title="All Products"
             />
-
           </Stack>
 
           {loadError ? (
@@ -215,7 +298,7 @@ function Shop() {
             <Box
               sx={{
                 display: 'grid',
-                gap: 2 ,
+                gap: 2,
                 gridTemplateColumns: {
                   xs: '1fr',
                   sm: 'repeat(2, minmax(0, 1fr))',

@@ -29,3 +29,17 @@ export const getProducts = async ({
 
   return unwrapProductListResponse(response)
 }
+
+export const getProductVariants = async (productId, {
+  page = 1,
+  limit = 12,
+} = {}) => {
+  const response = await apiClient.get(`/products/${productId}/variants`, {
+    params: {
+      page,
+      limit,
+    },
+  })
+
+  return unwrapProductListResponse(response)
+}

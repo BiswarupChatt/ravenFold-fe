@@ -1,7 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { getStoredAuthSession } from '../services/authStorage.js'
+import { getStoredGuestCartItems } from '../services/cartStorage.js'
+
+const getCartItemKey = (item = {}) => {
+  const productId = item.productId || item.id
+  const variantId = item.variantId || ''
+
+  return `${productId}:${variantId}`
+}
 
 const initialState = {
-  items: [],
+  items: getStoredAuthSession().token ? [] : getStoredGuestCartItems(),
 }
 
 const cartSlice = createSlice({
@@ -10,18 +19,20 @@ const cartSlice = createSlice({
   reducers: {
     addItem: (state, action) => {
       const existingItem = state.items.find(
-        (item) => item.id === action.payload.id,
+        (item) => getCartItemKey(item) === getCartItemKey(action.payload),
       )
 
       if (existingItem) {
-        existingItem.quantity += 1
+        existingItem.quantity += Number(action.payload.quantity || 1)
         return
       }
 
-      state.items.push({ ...action.payload, quantity: 1 })
+      state.items.push({ ...action.payload, quantity: Number(action.payload.quantity || 1) })
     },
     decreaseItemQuantity: (state, action) => {
-      const item = state.items.find((cartItem) => cartItem.id === action.payload)
+      const item = state.items.find((cartItem) => (
+        cartItem.id === action.payload || getCartItemKey(cartItem) === action.payload
+      ))
 
       if (!item) {
         return
@@ -29,7 +40,7 @@ const cartSlice = createSlice({
 
       if (item.quantity === 1) {
         state.items = state.items.filter(
-          (cartItem) => cartItem.id !== action.payload,
+          (cartItem) => cartItem.id !== action.payload && getCartItemKey(cartItem) !== action.payload,
         )
         return
       }
@@ -37,7 +48,12 @@ const cartSlice = createSlice({
       item.quantity -= 1
     },
     removeItem: (state, action) => {
-      state.items = state.items.filter((item) => item.id !== action.payload)
+      state.items = state.items.filter((item) => (
+        item.id !== action.payload && getCartItemKey(item) !== action.payload
+      ))
+    },
+    replaceCartItems: (state, action) => {
+      state.items = Array.isArray(action.payload) ? action.payload : []
     },
     clearCart: (state) => {
       state.items = []
@@ -45,7 +61,7 @@ const cartSlice = createSlice({
   },
 })
 
-export const { addItem, clearCart, decreaseItemQuantity, removeItem } =
+export const { addItem, clearCart, decreaseItemQuantity, removeItem, replaceCartItems } =
   cartSlice.actions
 
 export const selectCartItems = (state) => state.cart.items

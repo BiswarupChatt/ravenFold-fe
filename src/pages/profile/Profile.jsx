@@ -16,9 +16,11 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import AppButton from '../../components/AppButton.jsx'
 import PageIntro from '../../components/PageIntro.jsx'
+import { clearStoredGuestCartItems } from '../../services/cartStorage.js'
 import { clearStoredAuthSession } from '../../services/authStorage.js'
 import { successToast } from '../../services/toast.js'
 import { clearAuthSession } from '../../store/authSlice.js'
+import { clearCart } from '../../store/cartSlice.js'
 
 const profileNavItems = [
   {
@@ -77,7 +79,9 @@ function Profile() {
 
   const handleLogout = () => {
     clearStoredAuthSession()
+    clearStoredGuestCartItems()
     dispatch(clearAuthSession())
+    dispatch(clearCart())
     successToast('Logged out successfully.')
     navigate('/', { replace: true })
   }
