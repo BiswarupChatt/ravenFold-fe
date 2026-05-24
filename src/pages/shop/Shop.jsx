@@ -267,6 +267,10 @@ function Shop() {
     )
   }
 
+  const handleViewProduct = (product) => {
+    navigate(`/shop/${product.slug || product.productId || product.id}`)
+  }
+
   return (
     <Box sx={{ py: isDesktop ? 8 : 5 }}>
       <Container>
@@ -314,6 +318,7 @@ function Shop() {
                   onAddToCart={handleAddToCart}
                   onBuyNow={handleBuyNow}
                   onToggleWishlist={handleToggleWishlist}
+                  onViewProduct={handleViewProduct}
                   product={product}
                 />
               ))}

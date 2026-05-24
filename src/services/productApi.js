@@ -10,6 +10,16 @@ const unwrapProductListResponse = (response) => {
   return productData
 }
 
+const unwrapProductResponse = (response) => {
+  const productData = response.data?.data
+
+  if (!productData?.id) {
+    throw new Error(response.data?.message || 'Invalid product response.')
+  }
+
+  return productData
+}
+
 export const getProducts = async ({
   page = 1,
   limit = 12,
@@ -28,6 +38,12 @@ export const getProducts = async ({
   })
 
   return unwrapProductListResponse(response)
+}
+
+export const getProduct = async (productIdOrSlug) => {
+  const response = await apiClient.get(`/products/${productIdOrSlug}`)
+
+  return unwrapProductResponse(response)
 }
 
 export const getProductVariants = async (productId, {

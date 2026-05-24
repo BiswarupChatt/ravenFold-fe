@@ -16,6 +16,7 @@ import Wishlist from '../pages/profile/subPages/wishlist/Wishlist.jsx'
 import ReturnsRefunds from '../pages/ReturnsRefunds.jsx'
 import ShippingReturns from '../pages/ShippingReturns.jsx'
 import TermsConditions from '../pages/TermsConditions.jsx'
+import ProductDetails from '../pages/shop/ProductDetails.jsx'
 import Shop from '../pages/shop/Shop.jsx'
 
 const ProtectedProfile = withAuthRequired(Profile)
@@ -26,6 +27,7 @@ const routes = [
     children: [
       { index: true, element: <Home /> },
       { path: 'shop', element: <Shop /> },
+      { path: 'shop/:productIdOrSlug', element: <ProductDetails /> },
       { path: 'contacts', element: <Contacts /> },
       { path: 'blog', element: <Blog /> },
       {

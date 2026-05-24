@@ -115,6 +115,7 @@ function ProductCard({
   onAddToCart,
   onBuyNow,
   onToggleWishlist,
+  onViewProduct,
 }) {
   const compareAtPrice = Number(product.compareAtPrice || 0)
   const showComparePrice = compareAtPrice > Number(product.price || 0)
@@ -123,9 +124,30 @@ function ProductCard({
     : 0
   const badgeLabel = product.discountLabel || (discountPercent ? `-${discountPercent}%` : product.badge?.toUpperCase())
   const kicker = product.collection || product.category
+  const handleActionClick = (event, action) => {
+    event.stopPropagation()
+    action?.(product)
+  }
+
+  const handleCardKeyDown = (event) => {
+    if (event.target !== event.currentTarget) {
+      return
+    }
+
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return
+    }
+
+    event.preventDefault()
+    onViewProduct?.(product)
+  }
 
   return (
     <Card
+      onClick={() => onViewProduct?.(product)}
+      onKeyDown={handleCardKeyDown}
+      role={onViewProduct ? 'button' : undefined}
+      tabIndex={onViewProduct ? 0 : undefined}
       sx={{
         bgcolor: '#fbf7f1',
         borderColor: '#e8ddd0',
@@ -138,6 +160,7 @@ function ProductCard({
         overflow: 'hidden',
         position: 'relative',
         transition: 'border-color 180ms ease, transform 180ms ease',
+        cursor: onViewProduct ? 'pointer' : 'default',
         '&:hover': {
           borderColor: '#d8c8b8',
           transform: 'translateY(-3px)',
@@ -182,7 +205,7 @@ function ProductCard({
                 ? `Remove ${product.name} from wishlist`
                 : `Add ${product.name} to wishlist`
             }
-            onClick={() => onToggleWishlist?.(product)}
+            onClick={(event) => handleActionClick(event, onToggleWishlist)}
             sx={{
                  bgcolor: 'background.default',
               border: 1,
@@ -296,7 +319,7 @@ function ProductCard({
         >
           <AppButton
             fullWidth
-            onClick={() => onBuyNow?.(product)}
+            onClick={(event) => handleActionClick(event, onBuyNow)}
             startIcon={<ShoppingBagOutlinedIcon />}
             sx={{
               minHeight: 42,
@@ -310,7 +333,7 @@ function ProductCard({
           <Tooltip title="Add to cart">
             <IconButton
               aria-label={`Add ${product.name} to cart`}
-              onClick={() => onAddToCart?.(product)}
+              onClick={(event) => handleActionClick(event, onAddToCart)}
               sx={{
                 border: 1,
                 borderColor: 'primary.main',
