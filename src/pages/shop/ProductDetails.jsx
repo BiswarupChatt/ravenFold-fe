@@ -1,22 +1,21 @@
-import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import {
   Alert,
   Box,
   CircularProgress,
   Container,
   Stack,
-  Typography,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import AppButton from '../../components/AppButton.jsx'
+import { useParams } from 'react-router-dom'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import { getApiErrorMessage } from '../../services/apiClient.js'
 import { getProduct, getProductVariants } from '../../services/productApi.js'
 import { errorToast } from '../../services/toast.js'
+import ProductDetailsBreadcrumb from './components/ProductDetailsBreadcrumb.jsx'
+import ProductDetailsGallery from './components/ProductDetailsGallery.jsx'
+import ProductDetailsInfo from './components/ProductDetailsInfo.jsx'
 
 function ProductDetails() {
-  const navigate = useNavigate()
   const { productIdOrSlug } = useParams()
   const { isDesktop } = useScreenSize()
   const [product, setProduct] = useState(null)
@@ -70,16 +69,6 @@ function ProductDetails() {
     <Box sx={{ py: isDesktop ? 8 : 5 }}>
       <Container>
         <Stack spacing={3}>
-          <AppButton
-            onClick={() => navigate(-1)}
-            startIcon={<ArrowBackRoundedIcon />}
-            sx={{ alignSelf: 'flex-start', px: 0 }}
-            type="button"
-            variant="text"
-          >
-            Back
-          </AppButton>
-
           {pageError ? (
             <Alert severity="error" sx={{ borderRadius: 1 }}>
               {pageError}
@@ -91,21 +80,20 @@ function ProductDetails() {
               <CircularProgress />
             </Box>
           ) : product ? (
-            <Stack spacing={2}>
-              <Typography color="text.secondary" fontWeight={700}>
-                {product.category?.name || product.categoryName || 'Product'}
-              </Typography>
-              <Typography component="h1" variant="h2">
-                {product.name}
-              </Typography>
-              <Typography color="text.secondary" sx={{ maxWidth: 760 }}>
-                {product.shortDescription || product.description || 'Product details will be added here.'}
-              </Typography>
-              <Typography color="text.secondary" variant="body2">
-                {variants.length
-                  ? `${variants.length} variant${variants.length === 1 ? '' : 's'} loaded`
-                  : 'No variants loaded'}
-              </Typography>
+            <Stack spacing={4}>
+              <ProductDetailsBreadcrumb product={product} />
+
+              <Box
+                sx={{
+                  display: 'grid',
+                  gap: { xs: 4, lg: 6 },
+                  gridTemplateColumns: { xs: '1fr', lg: '1.08fr 0.92fr' },
+                  alignItems: 'start',
+                }}
+              >
+                <ProductDetailsGallery product={product} variants={variants} />
+                <ProductDetailsInfo product={product} variants={variants} />
+              </Box>
             </Stack>
           ) : null}
         </Stack>
