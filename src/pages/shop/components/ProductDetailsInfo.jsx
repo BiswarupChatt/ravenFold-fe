@@ -1,6 +1,4 @@
-import LocalFireDepartmentRoundedIcon from '@mui/icons-material/LocalFireDepartmentRounded'
 import StarRoundedIcon from '@mui/icons-material/StarRounded'
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { Box, Stack, Typography } from '@mui/material'
 import formatPrice from '../../../utils/formatPrice.js'
 import ProductDetailsOptions from './ProductDetailsOptions.jsx'
@@ -79,21 +77,6 @@ function ProductDetailsInfo({ product, variants }) {
           </Box>
         </Typography>
       ) : null}
-
-      <Box
-        sx={{
-          alignItems: 'center',
-          bgcolor: 'rgba(255,255,255,0.55)',
-          borderRadius: 999,
-          display: 'inline-flex',
-          gap: 1,
-          px: 2,
-          py: 1,
-          width: 'fit-content',
-        }}
-      >
-      
-      </Box>
 
       <ProductDetailsOptions variants={variants} />
     </Stack>

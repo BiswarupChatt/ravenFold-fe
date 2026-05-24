@@ -1,3 +1,4 @@
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import {
   Alert,
   Box,
@@ -6,7 +7,8 @@ import {
   Stack,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import AppButton from '../../components/AppButton.jsx'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import { getApiErrorMessage } from '../../services/apiClient.js'
 import { getProduct, getProductVariants } from '../../services/productApi.js'
@@ -16,12 +18,16 @@ import ProductDetailsGallery from './components/ProductDetailsGallery.jsx'
 import ProductDetailsInfo from './components/ProductDetailsInfo.jsx'
 
 function ProductDetails() {
+  const navigate = useNavigate()
   const { productIdOrSlug } = useParams()
-  const { isDesktop } = useScreenSize()
+  const { isDesktop, isMobile, isTab } = useScreenSize()
   const [product, setProduct] = useState(null)
   const [variants, setVariants] = useState([])
   const [loading, setLoading] = useState(true)
   const [pageError, setPageError] = useState('')
+  const pagePaddingY = isDesktop ? 8 : isTab ? 6 : 5
+  const detailsGridColumns = isDesktop ? '1.08fr 0.92fr' : '1fr'
+  const detailsGridGap = isDesktop ? 6 : isMobile ? 3 : 4
 
   useEffect(() => {
     let isActive = true
@@ -66,7 +72,7 @@ function ProductDetails() {
   }, [productIdOrSlug])
 
   return (
-    <Box sx={{ py: isDesktop ? 8 : 5 }}>
+    <Box sx={{ py: pagePaddingY }}>
       <Container>
         <Stack spacing={3}>
           {pageError ? (
@@ -81,14 +87,31 @@ function ProductDetails() {
             </Box>
           ) : product ? (
             <Stack spacing={4}>
-              <ProductDetailsBreadcrumb product={product} />
+              <Stack alignItems="flex-start" spacing={1.25} sx={{ width: '100%' }}>
+                <AppButton
+                  onClick={() => navigate(-1)}
+                  startIcon={<ArrowBackRoundedIcon />}
+                  size="small"
+                  sx={{
+                    alignSelf: 'flex-start',
+                    fontSize: '0.85rem',
+                    minHeight: 32,
+                    px: 0,
+                  }}
+                  type="button"
+                  variant="text"
+                >
+                  Back
+                </AppButton>
+                <ProductDetailsBreadcrumb product={product} />
+              </Stack>
 
               <Box
                 sx={{
-                  display: 'grid',
-                  gap: { xs: 4, lg: 6 },
-                  gridTemplateColumns: { xs: '1fr', lg: '1.08fr 0.92fr' },
                   alignItems: 'start',
+                  display: 'grid',
+                  gap: detailsGridGap,
+                  gridTemplateColumns: detailsGridColumns,
                 }}
               >
                 <ProductDetailsGallery product={product} variants={variants} />
