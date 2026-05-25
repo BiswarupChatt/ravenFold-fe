@@ -12,10 +12,10 @@ function ProductDetailsBreadcrumb({ product }) {
       }}
     >
       <Link color="inherit" component={RouterLink} to="/" underline="hover">
-        home
+        Home
       </Link>
       <Link color="inherit" component={RouterLink} to="/shop" underline="hover">
-        shop
+        Shop
       </Link>
       <Typography color="text.secondary">
         {product?.name || 'product'}
