@@ -38,7 +38,13 @@ const chunkItems = (items, size) => {
   return chunks
 }
 
-function ProductImageTile({ image, onOpen, priority = false, productName }) {
+function ProductImageTile({
+  image,
+  onOpen,
+  overlayCount = 0,
+  priority = false,
+  productName,
+}) {
   const isClickable = Boolean(image && onOpen)
 
   return (
@@ -56,6 +62,7 @@ function ProductImageTile({ image, onOpen, priority = false, productName }) {
         justifyContent: 'center',
         overflow: 'hidden',
         p: 0,
+        position: 'relative',
         width: '100%',
         '&:focus-visible': {
           outline: '2px solid',
@@ -87,6 +94,37 @@ function ProductImageTile({ image, onOpen, priority = false, productName }) {
           Product image
         </Typography>
       )}
+
+      {overlayCount > 0 ? (
+        <Box
+          sx={{
+            alignItems: 'center',
+            bgcolor: 'rgba(17, 24, 39, 0.75)',
+            display: 'flex',
+            inset: 0,
+            justifyContent: 'center',
+            pointerEvents: 'none',
+            position: 'absolute',
+          }}
+        >
+          <Typography
+            component="span"
+            sx={{
+              color: 'rgba(255, 255, 255, 0.8)',
+              fontSize: { md: '2.8rem', lg: '3.15rem' },
+              fontWeight: 500,
+              letterSpacing: 0,
+              lineHeight: 1,
+              textShadow: [
+                '0 2px 8px rgba(0, 0, 0, 0.34)',
+                '0 14px 34px rgba(0, 0, 0, 0.42)',
+              ].join(', '),
+            }}
+          >
+            +{overlayCount}
+          </Typography>
+        </Box>
+      ) : null}
     </Box>
   )
 }
@@ -110,6 +148,7 @@ function ProductDetailsGallery({ product, variants }) {
         }]
   ), [images])
   const desktopImages = galleryItems.slice(0, 4)
+  const desktopRemainingCount = Math.max(images.length - desktopImages.length, 0)
   const sliderPages = isTab
     ? chunkItems(galleryItems, 2)
     : galleryItems.map((item) => [item])
@@ -180,11 +219,12 @@ function ProductDetailsGallery({ product, variants }) {
           gridTemplateColumns: isDesktop ? 'repeat(2, minmax(0, 1fr))' : '1fr',
         }}
       >
-        {desktopImages.map((item) => (
+        {desktopImages.map((item, index) => (
           <ProductImageTile
             image={item.image}
             key={item.key}
             onOpen={() => handleOpenLightbox(item.imageIndex)}
+            overlayCount={index === desktopImages.length - 1 ? desktopRemainingCount : 0}
             priority={item.imageIndex === 0}
             productName={product?.name}
           />
