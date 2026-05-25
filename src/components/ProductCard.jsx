@@ -1,7 +1,5 @@
-import AddShoppingCartRoundedIcon from '@mui/icons-material/AddShoppingCartRounded'
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
-import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import {
   Box,
   Card,
@@ -12,7 +10,6 @@ import {
   Typography,
 } from '@mui/material'
 import formatPrice from '../utils/formatPrice.js'
-import AppButton from './AppButton.jsx'
 
 function ProductVisual({ product }) {
   const productColor = product.color || '#1e2952'
@@ -26,7 +23,7 @@ function ProductVisual({ product }) {
         sx={{
           display: 'block',
           height: '100%',
-          maxHeight: 245,
+          maxHeight: '100%',
           objectFit: 'contain',
           objectPosition: 'center',
           width: '100%',
@@ -112,8 +109,6 @@ function ProductVisual({ product }) {
 function ProductCard({
   product,
   isWishlisted = false,
-  onAddToCart,
-  onBuyNow,
   onToggleWishlist,
   onViewProduct,
 }) {
@@ -123,7 +118,6 @@ function ProductCard({
     ? Math.round(((compareAtPrice - Number(product.price || 0)) / compareAtPrice) * 100)
     : 0
   const badgeLabel = product.discountLabel || (discountPercent ? `-${discountPercent}%` : product.badge?.toUpperCase())
-  const kicker = product.collection || product.category
   const handleActionClick = (event, action) => {
     event.stopPropagation()
     action?.(product)
@@ -149,20 +143,21 @@ function ProductCard({
       role={onViewProduct ? 'button' : undefined}
       tabIndex={onViewProduct ? 0 : undefined}
       sx={{
-        bgcolor: '#fbf7f1',
-        borderColor: '#e8ddd0',
+        bgcolor: 'background.default',
+        border: '1px solid',
+        borderColor: 'divider',
         borderRadius: 0,
         boxShadow: 'none',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        minHeight: { xs: 430, sm: 460, lg: 490 },
         overflow: 'hidden',
         position: 'relative',
-        transition: 'border-color 180ms ease, transform 180ms ease',
+        transition: 'border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease',
         cursor: onViewProduct ? 'pointer' : 'default',
         '&:hover': {
-          borderColor: '#d8c8b8',
+          borderColor: 'rgba(24, 24, 27, 0.18)',
+          boxShadow: '0 14px 32px rgba(15, 23, 42, 0.12)',
           transform: 'translateY(-3px)',
         },
       }}
@@ -170,9 +165,13 @@ function ProductCard({
     >
       <Box
         sx={{
-          height: { xs: 230, sm: 260, lg: 290 },
-          px: { xs: 2, sm: 2.5 },
-          pt: { xs: 2.25, sm: 2.75 },
+          alignItems: 'center',
+          aspectRatio: '1 / 1',
+          bgcolor: 'background.default',
+          display: 'flex',
+          justifyContent: 'center',
+          px: { xs: 0.75, sm: 1 },
+          pt: { xs: 1, sm: 1.25 },
           position: 'relative',
         }}
       >
@@ -181,16 +180,16 @@ function ProductCard({
             sx={{
               bgcolor: product.badgeColor || '#a1a600',
               color: '#ffffff',
-              fontSize: { xs: '0.8rem', sm: '0.88rem' },
+              fontSize: { xs: '0.68rem', sm: '0.72rem' },
               fontWeight: 900,
               left: { xs: 20, sm: 24 },
               lineHeight: 1,
-              minWidth: 66,
-              px: 1.25,
-              py: 0.75,
+              minWidth: 48,
+              px: 0.8,
+              py: 0.6,
               position: 'absolute',
               textAlign: 'center',
-              top: { xs: 20, sm: 24 },
+              top: { xs: 12, sm: 14 },
               zIndex: 3,
             }}
           >
@@ -207,18 +206,18 @@ function ProductCard({
             }
             onClick={(event) => handleActionClick(event, onToggleWishlist)}
             sx={{
-                 bgcolor: 'background.default',
-              border: 1,
+              bgcolor: 'rgba(255, 255, 255, 0.86)',
+              border: '1px solid rgba(24, 24, 27, 0.08)',
               color: isWishlisted ? 'secondary.main' : 'text.primary',
-              height: 38,
+              height: 36,
               position: 'absolute',
-              right: { xs: 20, sm: 24 },
-              top: { xs: 18, sm: 22 },
-              width: 38,
+              right: { xs: 16, sm: 20 },
+              top: { xs: 12, sm: 14 },
+              width: 36,
               zIndex: 4,
               '&:hover': {
                 bgcolor: '#ffffff',
-                borderColor: isWishlisted ? 'secondary.main' : 'text.primary',
+                borderColor: isWishlisted ? 'secondary.main' : 'rgba(24, 24, 27, 0.3)',
               },
             }}
           >
@@ -236,34 +235,22 @@ function ProductCard({
       <CardContent
         sx={{
           display: 'flex',
-          flex: 1,
           flexDirection: 'column',
-          px: { xs: 2, sm: 3 },
-          pb: { xs: 2.5, sm: 3 },
-          pt: { xs: 1.25, sm: 1.75 },
-          textAlign: 'center',
+          px: { xs: 0.875, sm: 1 },
+          pb: { xs: 1.5, sm: 1.75 },
+          pt: { xs: 1.25, sm: 1.5 },
+          textAlign: 'left',
         }}
       >
-        <Stack alignItems="center" spacing={0.9} sx={{ flex: 1, width: '100%' }}>
-          <Typography
-            color="text.secondary"
-            sx={{
-              fontSize: { xs: '0.95rem', sm: '1rem' },
-              textAlign: 'center',
-              width: '100%',
-            }}
-          >
-            {kicker}
-          </Typography>
-
+        <Stack spacing={0.35} sx={{ width: '100%' }}>
           <Typography
             component="h3"
             sx={{
-              color: 'text.primary',
-              fontSize: { xs: '1.05rem', sm: '1.15rem' },
-              fontWeight: 500,
-              lineHeight: 1.2,
-              textAlign: 'center',
+              color: 'text.secondary',
+              fontSize: { xs: '1rem', sm: '1.05rem' },
+              fontWeight: 700,
+              lineHeight: 1.3,
+              textAlign: 'left',
               width: '100%',
             }}
           >
@@ -276,19 +263,18 @@ function ProductCard({
               columnGap: 1,
               display: 'flex',
               flexWrap: 'wrap',
-              justifyContent: 'center',
+              justifyContent: 'flex-start',
               minHeight: 30,
-              mx: 'auto',
               rowGap: 0.35,
-              textAlign: 'center',
+              textAlign: 'left',
               width: '100%',
             }}
           >
             <Typography
               sx={{
                 color: 'text.primary',
-                fontSize: { xs: '1.12rem', sm: '1.2rem' },
-                fontWeight: 800,
+                fontSize: { xs: '1.25rem', sm: '1.35rem' },
+                fontWeight: 900,
                 lineHeight: 1.15,
               }}
             >
@@ -302,6 +288,7 @@ function ProductCard({
                   fontSize: { xs: '0.88rem', sm: '0.94rem' },
                   fontWeight: 500,
                   lineHeight: 1.15,
+                  opacity: 0.55,
                   textDecoration: 'line-through',
                   textDecorationThickness: 1,
                 }}
@@ -310,47 +297,6 @@ function ProductCard({
               </Typography>
             ) : null}
           </Box>
-        </Stack>
-
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{ mt: 2, width: '100%' }}
-        >
-          <AppButton
-            fullWidth
-            onClick={(event) => handleActionClick(event, onBuyNow)}
-            startIcon={<ShoppingBagOutlinedIcon />}
-            sx={{
-              minHeight: 42,
-              whiteSpace: 'nowrap',
-            }}
-            variant="contained"
-          >
-            Buy Now
-          </AppButton>
-
-          <Tooltip title="Add to cart">
-            <IconButton
-              aria-label={`Add ${product.name} to cart`}
-              onClick={(event) => handleActionClick(event, onAddToCart)}
-              sx={{
-                border: 1,
-                borderColor: 'primary.main',
-                borderRadius: 2,
-                color: 'primary.main',
-                flex: '0 0 42px',
-                height: 42,
-                width: 42,
-                '&:hover': {
-                  bgcolor: 'rgba(30, 41, 82, 0.08)',
-                  borderColor: 'primary.dark',
-                },
-              }}
-            >
-              <AddShoppingCartRoundedIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
         </Stack>
       </CardContent>
     </Card>
