@@ -19,6 +19,7 @@ import {
   selectCartItems,
 } from '../../../store/cartSlice.js'
 import { selectWishlistItems, toggleWishlistItem } from '../../../store/wishlistSlice.js'
+import useResponsiveView from '../../../hooks/useResponsiveView.js'
 import ProductDetailsOptions from './ProductDetailsOptions.jsx'
 import ProductDetailsAttributes from './productDetailsInfo/ProductDetailsAttributes.jsx'
 import ProductDetailsHeader from './productDetailsInfo/ProductDetailsHeader.jsx'
@@ -49,6 +50,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const isAuthenticated = useSelector(selectIsAuthenticated)
+  const { isDesktop } = useResponsiveView()
   const cartItems = useSelector(selectCartItems)
   const wishlistItems = useSelector(selectWishlistItems)
   const [cartLoading, setCartLoading] = useState(false)
@@ -293,8 +295,8 @@ function ProductDetailsInfo({ product, variants = [] }) {
     <Stack
       spacing={2.7}
       sx={{
-        position: { lg: 'sticky' },
-        top: { lg: 96 },
+        position: isDesktop ? 'sticky' : 'static',
+        top: isDesktop ? 96 : 'auto',
       }}
     >
       <ProductDetailsHeader

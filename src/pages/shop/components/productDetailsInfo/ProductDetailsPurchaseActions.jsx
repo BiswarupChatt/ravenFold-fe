@@ -4,6 +4,7 @@ import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded'
 import { Box, IconButton, Stack, Typography } from '@mui/material'
 import AppButton from '../../../../components/AppButton.jsx'
+import useResponsiveView from '../../../../hooks/useResponsiveView.js'
 
 function ProductDetailsPurchaseActions({
   buyNowLoading,
@@ -15,45 +16,37 @@ function ProductDetailsPurchaseActions({
   onBuyNow,
   onCartQuantityChange,
 }) {
+  const { isDesktop, isMobile, isTablet } = useResponsiveView()
+  const isCompactView = isMobile || isTablet
   const mobileSpacerHeight = canPurchase ? 144 : 172
+  const actionHeight = isDesktop ? 52 : 48
+  const quantityButtonWidth = isDesktop ? 56 : isTablet ? 48 : 40
 
   return (
     <>
       <Stack
-        spacing={{ xs: 0.75, md: 1 }}
+        spacing={isDesktop ? 1 : 0.75}
         sx={{
-          bgcolor: { xs: 'background.paper', md: 'transparent' },
-          border: { xs: '1px solid', md: 0 },
-          borderColor: { xs: 'divider', md: 'transparent' },
-          borderRadius: { xs: 2, md: 0 },
-          bottom: {
-            xs: 'calc(env(safe-area-inset-bottom) + 68px)',
-            sm: 'calc(env(safe-area-inset-bottom) + 72px)',
-            md: 'auto',
-          },
-          boxShadow: {
-            xs: '0 18px 56px rgba(15, 23, 42, 0.22)',
-            md: 'none',
-          },
-          left: { xs: 12, sm: 16, md: 'auto' },
-          p: {
-            xs: 1.25,
-            sm: 1.5,
-            md: 0,
-          },
-          position: { xs: 'fixed', md: 'static' },
-          right: { xs: 12, sm: 16, md: 'auto' },
-          zIndex: { xs: (theme) => theme.zIndex.appBar + 2, md: 'auto' },
+          bgcolor: isCompactView ? 'background.paper' : 'transparent',
+          border: isCompactView ? '1px solid' : 0,
+          borderColor: isCompactView ? 'divider' : 'transparent',
+          borderRadius: isCompactView ? 2 : 0,
+          bottom: isDesktop
+            ? 'auto'
+            : `calc(env(safe-area-inset-bottom) + ${isTablet ? 72 : 68}px)`,
+          boxShadow: isCompactView ? '0 18px 56px rgba(15, 23, 42, 0.22)' : 'none',
+          left: isDesktop ? 'auto' : isTablet ? 16 : 12,
+          p: isDesktop ? 0 : isTablet ? 1.5 : 1.25,
+          position: isCompactView ? 'fixed' : 'static',
+          right: isDesktop ? 'auto' : isTablet ? 16 : 12,
+          zIndex: isCompactView ? (theme) => theme.zIndex.appBar + 2 : 'auto',
         }}
       >
       <Box
         sx={{
           display: 'grid',
           gap: 1,
-          gridTemplateColumns: {
-            xs: 'minmax(0, 1fr) minmax(0, 1fr)',
-            md: 'minmax(0, 1fr) minmax(0, 1fr)',
-          },
+          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
         }}
       >
         {isAddedToCart ? (
@@ -66,7 +59,7 @@ function ProductDetailsPurchaseActions({
               borderColor: 'text.primary',
               borderRadius: 2,
               color: 'text.primary',
-              height: { xs: 48, md: 52 },
+              height: actionHeight,
               minWidth: 0,
               overflow: 'hidden',
             }}
@@ -79,7 +72,7 @@ function ProductDetailsPurchaseActions({
                 borderRadius: 0,
                 color: 'inherit',
                 height: '100%',
-                width: { xs: 40, sm: 48, md: 56 },
+                width: quantityButtonWidth,
                 '&:hover': {
                   bgcolor: 'rgba(24, 24, 27, 0.06)',
                 },
@@ -119,7 +112,7 @@ function ProductDetailsPurchaseActions({
                 borderRadius: 0,
                 color: 'inherit',
                 height: '100%',
-                width: { xs: 40, sm: 48, md: 56 },
+                width: quantityButtonWidth,
                 '&:hover': {
                   bgcolor: 'rgba(24, 24, 27, 0.06)',
                 },
@@ -139,7 +132,7 @@ function ProductDetailsPurchaseActions({
             onClick={onAddToCart}
             startIcon={<AddShoppingCartRoundedIcon />}
             sx={{
-              minHeight: { xs: 48, md: 52 },
+              minHeight: actionHeight,
             }}
             variant="outlined"
           >
@@ -154,7 +147,7 @@ function ProductDetailsPurchaseActions({
           onClick={onBuyNow}
           startIcon={<BoltRoundedIcon />}
           sx={{
-            minHeight: { xs: 48, md: 52 },
+            minHeight: actionHeight,
           }}
           variant="contained"
         >
@@ -172,7 +165,7 @@ function ProductDetailsPurchaseActions({
       <Box
         aria-hidden="true"
         sx={{
-          display: { xs: 'block', md: 'none' },
+          display: isCompactView ? 'block' : 'none',
           height: mobileSpacerHeight,
         }}
       />

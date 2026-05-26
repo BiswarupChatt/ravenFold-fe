@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import AppOverlayDialog from '../../../components/AppOverlayDialog.jsx'
+import useResponsiveView from '../../../hooks/useResponsiveView.js'
 
 const getOptionKey = (option = {}) => option.id || option.name
 const getValueKey = (value = {}) => value.id || value.value
@@ -22,6 +23,7 @@ function ProductDetailsOptions({
   selectedOptions = {},
 }) {
   const [activeSizeGuide, setActiveSizeGuide] = useState(null)
+  const { isDesktop, isMobile } = useResponsiveView()
 
   if (!groups.length) {
     return null
@@ -235,8 +237,8 @@ function ProductDetailsOptions({
               bgcolor: 'background.paper',
               boxShadow: '0 28px 90px rgba(0, 0, 0, 0.36)',
               display: 'block',
-              maxHeight: { xs: '86dvh', sm: '88dvh' },
-              maxWidth: { xs: '92vw', sm: '78vw', lg: '64vw' },
+              maxHeight: isMobile ? '86dvh' : '88dvh',
+              maxWidth: isDesktop ? '64vw' : isMobile ? '92vw' : '78vw',
               objectFit: 'contain',
               userSelect: 'none',
             }}

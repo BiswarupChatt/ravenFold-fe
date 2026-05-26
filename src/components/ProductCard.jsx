@@ -9,6 +9,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+import useResponsiveView from '../hooks/useResponsiveView.js'
 import formatPrice from '../utils/formatPrice.js'
 
 function ProductVisual({ product }) {
@@ -112,6 +113,7 @@ function ProductCard({
   onToggleWishlist,
   onViewProduct,
 }) {
+  const { isMobile } = useResponsiveView()
   const compareAtPrice = Number(product.compareAtPrice || 0)
   const showComparePrice = compareAtPrice > Number(product.price || 0)
   const discountPercent = showComparePrice
@@ -170,8 +172,8 @@ function ProductCard({
           bgcolor: 'background.default',
           display: 'flex',
           justifyContent: 'center',
-          px: { xs: 0.75, sm: 1 },
-          pt: { xs: 1, sm: 1.25 },
+          px: isMobile ? 0.75 : 1,
+          pt: isMobile ? 1 : 1.25,
           position: 'relative',
         }}
       >
@@ -180,16 +182,16 @@ function ProductCard({
             sx={{
               bgcolor: product.badgeColor || '#a1a600',
               color: '#ffffff',
-              fontSize: { xs: '0.68rem', sm: '0.72rem' },
+              fontSize: isMobile ? '0.68rem' : '0.72rem',
               fontWeight: 900,
-              left: { xs: 20, sm: 24 },
+              left: isMobile ? 20 : 24,
               lineHeight: 1,
               minWidth: 48,
               px: 0.8,
               py: 0.6,
               position: 'absolute',
               textAlign: 'center',
-              top: { xs: 12, sm: 14 },
+              top: isMobile ? 12 : 14,
               zIndex: 3,
             }}
           >
@@ -211,8 +213,8 @@ function ProductCard({
               color: isWishlisted ? 'secondary.main' : 'text.primary',
               height: 36,
               position: 'absolute',
-              right: { xs: 16, sm: 20 },
-              top: { xs: 12, sm: 14 },
+              right: isMobile ? 16 : 20,
+              top: isMobile ? 12 : 14,
               width: 36,
               zIndex: 4,
               '&:hover': {
@@ -236,9 +238,9 @@ function ProductCard({
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          px: { xs: 0.875, sm: 1 },
-          pb: { xs: 1.5, sm: 1.75 },
-          pt: { xs: 1.25, sm: 1.5 },
+          px: isMobile ? 0.875 : 1,
+          pb: isMobile ? 1.5 : 1.75,
+          pt: isMobile ? 1.25 : 1.5,
           textAlign: 'left',
         }}
       >
@@ -247,7 +249,7 @@ function ProductCard({
             component="h3"
             sx={{
               color: 'text.secondary',
-              fontSize: { xs: '1rem', sm: '1.05rem' },
+              fontSize: isMobile ? '1rem' : '1.05rem',
               fontWeight: 700,
               lineHeight: 1.3,
               textAlign: 'left',
@@ -273,7 +275,7 @@ function ProductCard({
             <Typography
               sx={{
                 color: 'text.primary',
-                fontSize: { xs: '1.25rem', sm: '1.35rem' },
+                fontSize: isMobile ? '1.25rem' : '1.35rem',
                 fontWeight: 900,
                 lineHeight: 1.15,
               }}
@@ -285,7 +287,7 @@ function ProductCard({
               <Typography
                 color="text.secondary"
                 sx={{
-                  fontSize: { xs: '0.88rem', sm: '0.94rem' },
+                  fontSize: isMobile ? '0.88rem' : '0.94rem',
                   fontWeight: 500,
                   lineHeight: 1.15,
                   opacity: 0.55,

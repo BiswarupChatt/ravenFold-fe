@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import ProfileIntro from '../../components/ProfileIntro'
+import useResponsiveView from '../../../../hooks/useResponsiveView'
 import { addItem } from '../../../../store/cartSlice'
 import {
   removeWishlistItem,
@@ -21,6 +22,7 @@ import formatPrice from '../../../../utils/formatPrice'
 function Wishlist() {
   const dispatch = useDispatch()
   const wishlistItems = useSelector(selectWishlistItems)
+  const { isMobile } = useResponsiveView()
 
   const handleAddToCart = (item) => {
     dispatch(addItem(item))
@@ -53,8 +55,8 @@ function Wishlist() {
               }}
             >
               <Stack
-                alignItems={{ xs: 'flex-start', sm: 'center' }}
-                direction={{ xs: 'column', sm: 'row' }}
+                alignItems={isMobile ? 'flex-start' : 'center'}
+                direction={isMobile ? 'column' : 'row'}
                 justifyContent="space-between"
                 spacing={2}
               >

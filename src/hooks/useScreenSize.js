@@ -1,15 +1,11 @@
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { useTheme } from '@mui/material/styles'
+import useResponsiveView from './useResponsiveView.js'
 
 function useScreenSize() {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.only('xs'))
-  const isTab = useMediaQuery(theme.breakpoints.only('sm'))
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'))
+  const { isDesktop, isMobile, isTablet } = useResponsiveView()
 
   return {
     isMobile,
-    isTab,
+    isTab: isTablet,
     isDesktop,
   }
 }

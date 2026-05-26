@@ -1,5 +1,6 @@
 import { Box, Button, Chip, Stack, Typography } from '@mui/material'
 import { Fragment } from 'react'
+import useResponsiveView from '../../../../../hooks/useResponsiveView'
 
 const getAddressTypeLabel = (addressType) => {
   return addressType === 'work' ? 'Work' : 'Home'
@@ -12,6 +13,7 @@ function AddressCard({
   onEdit,
   onSetDefault,
 }) {
+  const { isMobile } = useResponsiveView()
   const locationLine = [
     address.city,
     address.state,
@@ -68,7 +70,7 @@ function AddressCard({
         sx={{
           flex: 1,
           justifyContent: 'space-between',
-          p: { xs: 2, sm: 2.5 },
+          p: isMobile ? 2 : 2.5,
         }}
       >
         <Box>

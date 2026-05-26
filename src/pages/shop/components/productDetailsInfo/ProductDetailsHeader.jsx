@@ -1,6 +1,7 @@
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import { IconButton, Stack, Tooltip, Typography } from '@mui/material'
+import useResponsiveView from '../../../../hooks/useResponsiveView.js'
 
 function ProductDetailsHeader({
   category,
@@ -8,6 +9,8 @@ function ProductDetailsHeader({
   name,
   onToggleWishlist,
 }) {
+  const { isDesktop } = useResponsiveView()
+
   return (
     <Stack spacing={1.15}>
       <Stack alignItems="center" direction="row" flexWrap="wrap" gap={1}>
@@ -29,7 +32,7 @@ function ProductDetailsHeader({
           component="h1"
           sx={{
             flex: 1,
-            fontSize: { xs: '2rem', md: '2.65rem' },
+            fontSize: isDesktop ? '2.65rem' : '2rem',
             fontWeight: 900,
             letterSpacing: 0,
             lineHeight: 1.05,
@@ -46,9 +49,9 @@ function ProductDetailsHeader({
             sx={{
               color: isWishlisted ? 'secondary.main' : 'text.primary',
               flexShrink: 0,
-              height: { xs: 42, md: 46 },
-              mt: { xs: 0.15, md: 0.35 },
-              width: { xs: 42, md: 46 },
+              height: isDesktop ? 46 : 42,
+              mt: isDesktop ? 0.35 : 0.15,
+              width: isDesktop ? 46 : 42,
             }}
           >
             {isWishlisted ? <FavoriteRoundedIcon /> : <FavoriteBorderRoundedIcon />}

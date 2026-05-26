@@ -3,6 +3,7 @@ import { Alert, Box, Checkbox, CircularProgress, FormControlLabel, MenuItem, Sta
 import AppButton from '../components/AppButton'
 import AppInput from '../components/AppInput'
 import AppModal from '../components/AppModal'
+import useResponsiveView from '../hooks/useResponsiveView'
 import { getPostalPincodeDetails } from '../services/postalPincodeApi'
 
 const initialFormState = {
@@ -267,6 +268,7 @@ function AddEditAddressModal({
   const [fieldErrors, setFieldErrors] = useState({})
   const [isPincodeLookupLoading, setIsPincodeLookupLoading] = useState(false)
   const pincodeRequestRef = useRef(0)
+  const { isDesktop, isMobile } = useResponsiveView()
   const isEditing = Boolean(address?.id)
   const title = isEditing ? 'Edit Address' : 'Add Address'
 
@@ -391,8 +393,8 @@ function AddEditAddressModal({
           <Box
             sx={{
               display: 'grid',
-              gap: { xs: 2, md: 2.25 },
-              gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
+              gap: isDesktop ? 2.25 : 2,
+              gridTemplateColumns: isDesktop ? 'repeat(2, minmax(0, 1fr))' : '1fr',
             }}
           >
             <AppInput
@@ -455,7 +457,7 @@ function AddEditAddressModal({
           />
 
           <Stack
-            direction={{ xs: 'column', sm: 'row' }}
+            direction={isMobile ? 'column' : 'row'}
             justifyContent="flex-end"
             spacing={1.5}
           >

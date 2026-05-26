@@ -1,6 +1,7 @@
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined'
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
 import { Box, Button, Chip, Divider, Stack, Typography } from '@mui/material'
+import useResponsiveView from '../../../../hooks/useResponsiveView'
 import ProfileIntro from '../../components/ProfileIntro'
 
 const orders = [
@@ -21,6 +22,8 @@ const orders = [
 ]
 
 function Order() {
+  const { isMobile } = useResponsiveView()
+
   return (
     <Stack spacing={3}>
       <ProfileIntro
@@ -41,8 +44,8 @@ function Order() {
             }}
           >
             <Stack
-              alignItems={{ xs: 'flex-start', sm: 'center' }}
-              direction={{ xs: 'column', sm: 'row' }}
+              alignItems={isMobile ? 'flex-start' : 'center'}
+              direction={isMobile ? 'column' : 'row'}
               justifyContent="space-between"
               spacing={2}
             >

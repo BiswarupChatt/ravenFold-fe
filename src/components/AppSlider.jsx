@@ -1,5 +1,6 @@
 import { Box, IconButton, Stack } from '@mui/material'
 import { useCallback, useRef, useState } from 'react'
+import useResponsiveView from '../hooks/useResponsiveView.js'
 
 const appSliderOverlayButtonSx = {
   bgcolor: 'rgba(255, 255, 255, 0.12)',
@@ -18,7 +19,7 @@ const appSliderOverlayArrowSx = {
 }
 
 const appSliderOverlayDotsSx = {
-  bottom: { xs: 18, sm: 26 },
+  bottom: 26,
   left: '50%',
   position: 'absolute',
   transform: 'translateX(-50%)',
@@ -117,6 +118,8 @@ function AppSlider({
   transition = 'transform 520ms cubic-bezier(0.22, 1, 0.36, 1)',
   viewportSx,
 }) {
+  const { isMobile } = useResponsiveView()
+  const arrowOffset = isMobile ? 12 : 24
   const trackRef = useRef(null)
   const [internalActiveIndex, setInternalActiveIndex] = useState(0)
   const currentIndex = activeIndex ?? internalActiveIndex
@@ -210,8 +213,8 @@ function AppSlider({
         sx={[
           appSliderOverlayArrowSx,
           isPrevious
-            ? { left: { xs: 12, sm: 24 } }
-            : { right: { xs: 12, sm: 24 } },
+            ? { left: arrowOffset }
+            : { right: arrowOffset },
           ...toSxArray(arrowSx),
           ...toSxArray(isPrevious ? previousArrowSx : nextArrowSx),
           ...toSxArray(arrowButtonProps?.sx),

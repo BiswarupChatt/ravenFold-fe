@@ -1,14 +1,17 @@
 import { Box, Stack, Typography } from '@mui/material'
+import useResponsiveView from '../../../hooks/useResponsiveView'
 
 function ProfileIntro({
   title,
   description,
   action,
 }) {
+  const { isMobile } = useResponsiveView()
+
   return (
     <Stack
-      alignItems={{ xs: 'stretch', sm: 'center' }}
-      direction={{ xs: 'column', sm: 'row' }}
+      alignItems={isMobile ? 'stretch' : 'center'}
+      direction={isMobile ? 'column' : 'row'}
       justifyContent="space-between"
       spacing={2}
       sx={{ width: '100%' }}
@@ -25,8 +28,8 @@ function ProfileIntro({
       {action ? (
         <Box
           sx={{
-            alignSelf: { xs: 'flex-end', sm: 'center' },
-            ml: { sm: 'auto' },
+            alignSelf: isMobile ? 'flex-end' : 'center',
+            ml: isMobile ? 0 : 'auto',
           }}
         >
           {action}

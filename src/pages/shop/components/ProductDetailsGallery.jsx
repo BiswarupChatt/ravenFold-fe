@@ -40,6 +40,7 @@ const chunkItems = (items, size) => {
 
 function ProductImageTile({
   image,
+  isDesktop = false,
   onOpen,
   overlayCount = 0,
   priority = false,
@@ -109,9 +110,9 @@ function ProductImageTile({
         >
           <Typography
             component="span"
-            sx={{
-              color: 'rgba(255, 255, 255, 0.8)',
-              fontSize: { md: '2.8rem', lg: '3.15rem' },
+	            sx={{
+	              color: 'rgba(255, 255, 255, 0.8)',
+	              fontSize: isDesktop ? '3.15rem' : '2.8rem',
               fontWeight: 500,
               letterSpacing: 0,
               lineHeight: 1,
@@ -193,9 +194,10 @@ function ProductDetailsGallery({ product, variants }) {
               }}
             >
               {page.map((item) => (
-                <ProductImageTile
-                  image={item.image}
-                  key={item.key}
+	                <ProductImageTile
+	                  image={item.image}
+	                  isDesktop={isDesktop}
+	                  key={item.key}
                   onOpen={() => handleOpenLightbox(item.imageIndex)}
                   priority={item.imageIndex === 0}
                   productName={product?.name}
@@ -220,9 +222,10 @@ function ProductDetailsGallery({ product, variants }) {
         }}
       >
         {desktopImages.map((item, index) => (
-          <ProductImageTile
-            image={item.image}
-            key={item.key}
+	          <ProductImageTile
+	            image={item.image}
+	            isDesktop={isDesktop}
+	            key={item.key}
             onOpen={() => handleOpenLightbox(item.imageIndex)}
             overlayCount={index === desktopImages.length - 1 ? desktopRemainingCount : 0}
             priority={item.imageIndex === 0}

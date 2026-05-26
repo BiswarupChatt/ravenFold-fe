@@ -1,5 +1,6 @@
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import { Box, Dialog, IconButton, Tooltip } from '@mui/material'
+import useResponsiveView from '../hooks/useResponsiveView.js'
 
 function toSxArray(value) {
   if (!value) {
@@ -31,6 +32,8 @@ function AppOverlayDialog({
   slotProps,
   ...dialogProps
 }) {
+  const { isMobile } = useResponsiveView()
+
   return (
     <Dialog
       aria-label={dialogProps['aria-label'] || closeButtonLabel}
@@ -74,7 +77,7 @@ function AppOverlayDialog({
           {
             height: '100dvh',
             overflow: 'hidden',
-            p: { xs: 2, sm: 3 },
+            p: isMobile ? 2 : 3,
             position: 'relative',
             width: '100vw',
           },
@@ -85,8 +88,8 @@ function AppOverlayDialog({
           <Box
             sx={{
               position: 'absolute',
-              right: { xs: 12, sm: 24 },
-              top: { xs: 12, sm: 24 },
+              right: isMobile ? 12 : 24,
+              top: isMobile ? 12 : 24,
               zIndex: 4,
             }}
           >

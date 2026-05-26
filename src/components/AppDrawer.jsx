@@ -34,7 +34,7 @@ function AppDrawer({
               height: '100dvh',
               maxHeight: '100dvh',
               maxWidth: '100vw',
-              p: { xs: 2.5, sm: 3 },
+              p: isMobile ? 2.5 : 3,
               width: isMobile ? '100vw' : width,
             },
             paperSx,

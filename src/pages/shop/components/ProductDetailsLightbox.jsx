@@ -4,6 +4,7 @@ import { Box } from '@mui/material'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import AppOverlayDialog from '../../../components/AppOverlayDialog.jsx'
 import AppSlider from '../../../components/AppSlider.jsx'
+import useResponsiveView from '../../../hooks/useResponsiveView.js'
 
 const wrapIndex = (index, length) => ((index % length) + length) % length
 
@@ -20,6 +21,7 @@ function ProductDetailsLightbox({
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 })
   const pointerStartRef = useRef(null)
   const panStartRef = useRef({ x: 0, y: 0 })
+  const { isMobile } = useResponsiveView()
   const activeImage = images[activeIndex]
   const hasMultipleImages = images.length > 1
   const {
@@ -190,7 +192,7 @@ function ProductDetailsLightbox({
           arrowButtonProps={{ onPointerDown: handleNavigationPointerDown }}
           dotButtonProps={{ onPointerDown: handleNavigationPointerDown }}
           dotItems={images}
-          dotsSx={AppSlider.overlayDotsSx}
+          dotsSx={{ ...AppSlider.overlayDotsSx, bottom: isMobile ? 18 : 26 }}
           dotSx={AppSlider.overlayDotSx}
           dragOffset={hasMultipleImages ? dragOffset : 0}
           gap={0}
@@ -238,8 +240,8 @@ function ProductDetailsLightbox({
                   sx={{
                     cursor: isDragging ? 'grabbing' : isMaxZoom ? 'zoom-out' : 'zoom-in',
                     display: 'block',
-                    maxHeight: { xs: '82dvh', sm: '86dvh' },
-                    maxWidth: { xs: '88vw', sm: '82vw' },
+                      maxHeight: isMobile ? '82dvh' : '86dvh',
+                      maxWidth: isMobile ? '88vw' : '82vw',
                     objectFit: 'contain',
                     pointerEvents: isActive ? 'auto' : 'none',
                     transform: isActive

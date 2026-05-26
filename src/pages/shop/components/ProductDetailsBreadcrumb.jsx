@@ -1,14 +1,17 @@
 import { Breadcrumbs, Link, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
+import useResponsiveView from '../../../hooks/useResponsiveView.js'
 
 function ProductDetailsBreadcrumb({ product }) {
+  const { isDesktop } = useResponsiveView()
+
   return (
     <Breadcrumbs
       aria-label="Product path"
       separator="/"
       sx={{
         color: 'text.secondary',
-        fontSize: { xs: '0.95rem', md: '1.05rem' },
+        fontSize: isDesktop ? '1.05rem' : '0.95rem',
       }}
     >
       <Link color="inherit" component={RouterLink} to="/" underline="hover">

@@ -276,8 +276,8 @@ function Shop() {
       <Container>
         <Stack spacing={4}>
           <Stack
-            alignItems={{ xs: 'flex-start', md: 'flex-end' }}
-            direction={{ xs: 'column', md: 'row' }}
+            alignItems={isDesktop ? 'flex-end' : 'flex-start'}
+            direction={isDesktop ? 'row' : 'column'}
             justifyContent="space-between"
             spacing={2.5}
           >
@@ -303,12 +303,7 @@ function Shop() {
               sx={{
                 display: 'grid',
                 gap: 2,
-                gridTemplateColumns: {
-                  xs: '1fr',
-                  sm: 'repeat(2, minmax(0, 1fr))',
-                  lg: 'repeat(3, minmax(0, 1fr))',
-                  xl: 'repeat(4, minmax(0, 1fr))',
-                },
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 240px), 1fr))',
               }}
             >
               {products.map((product) => (
@@ -328,7 +323,7 @@ function Shop() {
               sx={{
                 border: 1,
                 borderColor: 'divider',
-                p: { xs: 3, md: 5 },
+                p: isDesktop ? 5 : 3,
                 textAlign: 'center',
               }}
             >

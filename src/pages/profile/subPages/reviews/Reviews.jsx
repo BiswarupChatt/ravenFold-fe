@@ -1,6 +1,7 @@
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined'
 import StarBorderRoundedIcon from '@mui/icons-material/StarBorderRounded'
 import { Box, Button, Chip, Divider, Rating, Stack, Typography } from '@mui/material'
+import useResponsiveView from '../../../../hooks/useResponsiveView'
 import ProfileIntro from '../../components/ProfileIntro'
 
 const reviews = [
@@ -25,6 +26,8 @@ const reviews = [
 ]
 
 function Reviews() {
+  const { isMobile } = useResponsiveView()
+
   return (
     <Stack spacing={3}>
       <ProfileIntro
@@ -51,8 +54,8 @@ function Reviews() {
           >
             <Stack spacing={2}>
               <Stack
-                alignItems={{ xs: 'flex-start', sm: 'center' }}
-                direction={{ xs: 'column', sm: 'row' }}
+                alignItems={isMobile ? 'flex-start' : 'center'}
+                direction={isMobile ? 'column' : 'row'}
                 justifyContent="space-between"
                 spacing={1.5}
               >

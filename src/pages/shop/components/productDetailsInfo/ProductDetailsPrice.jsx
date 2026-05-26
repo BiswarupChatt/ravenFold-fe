@@ -1,14 +1,17 @@
 import { Stack, Typography } from '@mui/material'
+import useResponsiveView from '../../../../hooks/useResponsiveView.js'
 import formatPrice from '../../../../utils/formatPrice.js'
 
 function ProductDetailsPrice({ compareAtPrice, discountAmount, price }) {
+  const { isDesktop } = useResponsiveView()
+
   return (
     <Stack spacing={0.85}>
       <Stack alignItems="baseline" direction="row" flexWrap="wrap" gap={1.2}>
         <Typography
           sx={{
             color: '#1f2433',
-            fontSize: { xs: '2.15rem', md: '2.45rem' },
+            fontSize: isDesktop ? '2.45rem' : '2.15rem',
             fontWeight: 900,
             letterSpacing: 0,
             lineHeight: 1,
@@ -21,7 +24,7 @@ function ProductDetailsPrice({ compareAtPrice, discountAmount, price }) {
           <Typography
             sx={{
               color: '#088a35',
-              fontSize: { xs: '1.25rem', md: '1.45rem' },
+              fontSize: isDesktop ? '1.45rem' : '1.25rem',
               fontWeight: 900,
               letterSpacing: 0.4,
               lineHeight: 1,
@@ -38,7 +41,7 @@ function ProductDetailsPrice({ compareAtPrice, discountAmount, price }) {
             <Typography
               sx={{
                 color: 'text.secondary',
-                fontSize: { xs: '0.98rem', md: '1.04rem' },
+                fontSize: isDesktop ? '1.04rem' : '0.98rem',
                 fontWeight: 600,
                 lineHeight: 1.25,
               }}
@@ -49,7 +52,7 @@ function ProductDetailsPrice({ compareAtPrice, discountAmount, price }) {
             <Typography
               sx={{
                 color: 'text.secondary',
-                fontSize: { xs: '0.98rem', md: '1.04rem' },
+                fontSize: isDesktop ? '1.04rem' : '0.98rem',
                 fontWeight: 700,
                 lineHeight: 1.25,
                 opacity: 0.78,
@@ -64,7 +67,7 @@ function ProductDetailsPrice({ compareAtPrice, discountAmount, price }) {
         <Typography
           color="text.secondary"
           sx={{
-            fontSize: { xs: '0.98rem', md: '1.04rem' },
+            fontSize: isDesktop ? '1.04rem' : '0.98rem',
             fontWeight: 500,
             lineHeight: 1.25,
             marginLeft: compareAtPrice ? 1 : 0,

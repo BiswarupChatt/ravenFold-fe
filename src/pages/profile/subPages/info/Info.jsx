@@ -9,6 +9,7 @@ import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import AppButton from '../../../../components/AppButton'
 import AppInput from '../../../../components/AppInput'
+import useResponsiveView from '../../../../hooks/useResponsiveView'
 import { getApiErrorMessage } from '../../../../services/apiClient'
 import { saveAuthSession } from '../../../../services/authStorage'
 import { errorToast, successToast } from '../../../../services/toast'
@@ -199,6 +200,7 @@ const hasValidationErrors = (errors) =>
     Object.values(errors).some(Boolean)
 
 function Info() {
+    const { isDesktop, isMobile } = useResponsiveView()
     const authToken = useSelector(selectAuthToken)
     const authUser = useSelector(selectAuthUser)
     const dispatch = useDispatch()
@@ -381,8 +383,8 @@ function Info() {
             <Box
                 sx={{
                     display: 'grid',
-                    gap: { xs: 2, md: 2.5 },
-                    gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
+                    gap: isDesktop ? 2.5 : 2,
+                    gridTemplateColumns: isDesktop ? 'repeat(2, minmax(0, 1fr))' : '1fr',
                 }}
             >
                 {orderedFields.map(renderProfileField)}
@@ -390,7 +392,7 @@ function Info() {
 
             {isEditing ? (
                 <Stack
-                    direction={{ xs: 'column', sm: 'row' }}
+                    direction={isMobile ? 'column' : 'row'}
                     justifyContent="flex-end"
                     spacing={1.5}
                 >

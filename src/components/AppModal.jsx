@@ -65,12 +65,9 @@ function AppModal({
               flexDirection: 'column',
               maxHeight: isMobile
                 ? '100dvh'
-                : {
-                    xs: 'calc(100dvh - 24px)',
-                    sm: 'calc(100dvh - 64px)',
-                  },
+                : 'calc(100dvh - 64px)',
               overflow: 'hidden',
-              p: { xs: 2.5, sm: 3 },
+              p: isMobile ? 2.5 : 3,
               width: '100%',
             },
             ...toSxArray(slotProps?.paper?.sx),

@@ -3,6 +3,7 @@ import { Alert, Box, CircularProgress, Stack, Typography } from '@mui/material'
 import { useCallback, useEffect, useState } from 'react'
 import AppButton from '../../../../components/AppButton'
 import { getApiErrorMessage } from '../../../../services/apiClient'
+import useResponsiveView from '../../../../hooks/useResponsiveView'
 import {
   createUserAddress,
   deleteUserAddress,
@@ -18,6 +19,7 @@ import DeleteAddressModal from './components/DeleteAddressModal'
 const addressPageSize = 10
 
 function Address() {
+  const { isDesktop } = useResponsiveView()
   const [addresses, setAddresses] = useState([])
   const [pagination, setPagination] = useState(null)
   const [page, setPage] = useState(1)
@@ -254,7 +256,7 @@ function Address() {
           sx={{
             display: 'grid',
             gap: 2,
-            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
+            gridTemplateColumns: isDesktop ? 'repeat(2, minmax(0, 1fr))' : '1fr',
           }}
         >
           {addresses.length ? (

@@ -1,6 +1,7 @@
 import { Box, Stack, Typography } from '@mui/material'
 import AppButton from '../../../../../components/AppButton'
 import AppModal from '../../../../../components/AppModal'
+import useResponsiveView from '../../../../../hooks/useResponsiveView'
 
 function DeleteAddressModal({
   address,
@@ -9,6 +10,7 @@ function DeleteAddressModal({
   onConfirm,
   open,
 }) {
+  const { isMobile } = useResponsiveView()
   const locationLine = [
     address?.city,
     address?.state,
@@ -48,7 +50,7 @@ function DeleteAddressModal({
         ) : null}
 
         <Stack
-          direction={{ xs: 'column', sm: 'row' }}
+          direction={isMobile ? 'column' : 'row'}
           justifyContent="flex-end"
           spacing={1.5}
         >

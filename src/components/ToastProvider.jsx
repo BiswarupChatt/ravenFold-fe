@@ -1,5 +1,6 @@
 import { Alert, Snackbar } from '@mui/material'
 import { useEffect, useReducer } from 'react'
+import useResponsiveView from '../hooks/useResponsiveView.js'
 import { subscribeToast } from '../services/toast.js'
 
 const initialToastState = {
@@ -54,6 +55,7 @@ function toastReducer(state, action) {
 }
 
 function ToastProvider({ children }) {
+  const { isMobile } = useResponsiveView()
   const [{ currentToast, isOpen }, dispatch] = useReducer(
     toastReducer,
     initialToastState,
@@ -93,12 +95,9 @@ function ToastProvider({ children }) {
           },
         }}
         sx={{
-          mt: { xs: 1, sm: 2 },
-          mx: { xs: 1.5, sm: 0 },
-          width: {
-            xs: 'min(320px, calc(100vw - 24px))',
-            sm: 'auto',
-          },
+          mt: isMobile ? 1 : 2,
+          mx: isMobile ? 1.5 : 0,
+          width: isMobile ? 'min(320px, calc(100vw - 24px))' : 'auto',
         }}
       >
         {currentToast ? (
@@ -118,18 +117,18 @@ function ToastProvider({ children }) {
               boxShadow: '0 14px 36px rgba(15, 23, 42, 0.08)',
               color: 'text.primary',
               fontWeight: 600,
-              minHeight: { xs: 44, sm: 50 },
+              minHeight: isMobile ? 44 : 50,
               minWidth: 0,
-              px: { xs: 1.25, sm: 1.75 },
-              py: { xs: 0.9, sm: 1.25 },
+              px: isMobile ? 1.25 : 1.75,
+              py: isMobile ? 0.9 : 1.25,
               width: '100%',
               '& .MuiAlert-action': {
                 color: 'text.secondary',
                 p: 0,
-                pl: { xs: 1, sm: 2 },
+                pl: isMobile ? 1 : 2,
               },
               '& .MuiAlert-message': {
-                fontSize: { xs: '0.85rem', sm: '0.95rem' },
+                fontSize: isMobile ? '0.85rem' : '0.95rem',
                 lineHeight: 1.35,
                 py: 0,
               },
