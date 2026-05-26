@@ -297,7 +297,12 @@ function ProductDetailsInfo({ product, variants = [] }) {
         top: { lg: 96 },
       }}
     >
-      <ProductDetailsHeader category={category} name={product.name} />
+      <ProductDetailsHeader
+        category={category}
+        isWishlisted={isWishlisted}
+        name={product.name}
+        onToggleWishlist={handleToggleWishlist}
+      />
       <ProductDetailsPrice
         compareAtPrice={compareAtPrice}
         discountAmount={discountAmount}
@@ -324,11 +329,9 @@ function ProductDetailsInfo({ product, variants = [] }) {
         cartLoading={cartLoading}
         cartQuantity={cartQuantity}
         isAddedToCart={isAddedToCart}
-        isWishlisted={isWishlisted}
         onAddToCart={handleAddToCart}
         onBuyNow={handleBuyNow}
         onCartQuantityChange={handleCartQuantityChange}
-        onToggleWishlist={handleToggleWishlist}
       />
 
       <ProductDetailsMeta details={details} />

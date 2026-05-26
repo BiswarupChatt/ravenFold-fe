@@ -1,10 +1,8 @@
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import AddShoppingCartRoundedIcon from '@mui/icons-material/AddShoppingCartRounded'
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
-import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
-import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded'
-import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material'
+import { Box, IconButton, Stack, Typography } from '@mui/material'
 import AppButton from '../../../../components/AppButton.jsx'
 
 function ProductDetailsPurchaseActions({
@@ -13,21 +11,48 @@ function ProductDetailsPurchaseActions({
   cartLoading,
   cartQuantity,
   isAddedToCart,
-  isWishlisted,
   onAddToCart,
   onBuyNow,
   onCartQuantityChange,
-  onToggleWishlist,
 }) {
+  const mobileSpacerHeight = canPurchase ? 144 : 172
+
   return (
-    <Stack spacing={1}>
+    <>
+      <Stack
+        spacing={{ xs: 0.75, md: 1 }}
+        sx={{
+          bgcolor: { xs: 'background.paper', md: 'transparent' },
+          border: { xs: '1px solid', md: 0 },
+          borderColor: { xs: 'divider', md: 'transparent' },
+          borderRadius: { xs: 2, md: 0 },
+          bottom: {
+            xs: 'calc(env(safe-area-inset-bottom) + 68px)',
+            sm: 'calc(env(safe-area-inset-bottom) + 72px)',
+            md: 'auto',
+          },
+          boxShadow: {
+            xs: '0 18px 56px rgba(15, 23, 42, 0.22)',
+            md: 'none',
+          },
+          left: { xs: 12, sm: 16, md: 'auto' },
+          p: {
+            xs: 1.25,
+            sm: 1.5,
+            md: 0,
+          },
+          position: { xs: 'fixed', md: 'static' },
+          right: { xs: 12, sm: 16, md: 'auto' },
+          zIndex: { xs: (theme) => theme.zIndex.appBar + 2, md: 'auto' },
+        }}
+      >
       <Box
         sx={{
           display: 'grid',
           gap: 1,
           gridTemplateColumns: {
-            xs: 'minmax(0, 1fr) 52px',
-            sm: 'minmax(0, 1fr) minmax(0, 1fr) 52px',
+            xs: 'minmax(0, 1fr) minmax(0, 1fr)',
+            md: 'minmax(0, 1fr) minmax(0, 1fr)',
           },
         }}
       >
@@ -41,7 +66,7 @@ function ProductDetailsPurchaseActions({
               borderColor: 'text.primary',
               borderRadius: 2,
               color: 'text.primary',
-              height: 52,
+              height: { xs: 48, md: 52 },
               minWidth: 0,
               overflow: 'hidden',
             }}
@@ -54,7 +79,7 @@ function ProductDetailsPurchaseActions({
                 borderRadius: 0,
                 color: 'inherit',
                 height: '100%',
-                width: 56,
+                width: { xs: 40, sm: 48, md: 56 },
                 '&:hover': {
                   bgcolor: 'rgba(24, 24, 27, 0.06)',
                 },
@@ -94,7 +119,7 @@ function ProductDetailsPurchaseActions({
                 borderRadius: 0,
                 color: 'inherit',
                 height: '100%',
-                width: 56,
+                width: { xs: 40, sm: 48, md: 56 },
                 '&:hover': {
                   bgcolor: 'rgba(24, 24, 27, 0.06)',
                 },
@@ -114,13 +139,9 @@ function ProductDetailsPurchaseActions({
             onClick={onAddToCart}
             startIcon={<AddShoppingCartRoundedIcon />}
             sx={{
-              bgcolor: 'text.primary',
-              minHeight: 52,
-              '&:hover': {
-                bgcolor: 'primary.dark',
-              },
+              minHeight: { xs: 48, md: 52 },
             }}
-            variant="contained"
+            variant="outlined"
           >
             Add to Cart
           </AppButton>
@@ -133,32 +154,12 @@ function ProductDetailsPurchaseActions({
           onClick={onBuyNow}
           startIcon={<BoltRoundedIcon />}
           sx={{
-            borderColor: 'text.primary',
-            color: 'text.primary',
-            gridColumn: { xs: '1 / -1', sm: 'auto' },
-            minHeight: 52,
+            minHeight: { xs: 48, md: 52 },
           }}
-          variant="outlined"
+          variant="contained"
         >
           Buy Now
         </AppButton>
-
-        <Tooltip title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}>
-          <IconButton
-            aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-            onClick={onToggleWishlist}
-            sx={{
-              border: '1px solid',
-              borderColor: isWishlisted ? 'secondary.main' : 'divider',
-              borderRadius: 2,
-              color: isWishlisted ? 'secondary.main' : 'text.primary',
-              height: 52,
-              width: 52,
-            }}
-          >
-            {isWishlisted ? <FavoriteRoundedIcon /> : <FavoriteBorderRoundedIcon />}
-          </IconButton>
-        </Tooltip>
       </Box>
 
       {!canPurchase ? (
@@ -166,7 +167,16 @@ function ProductDetailsPurchaseActions({
           This option combination is unavailable.
         </Typography>
       ) : null}
-    </Stack>
+      </Stack>
+
+      <Box
+        aria-hidden="true"
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          height: mobileSpacerHeight,
+        }}
+      />
+    </>
   )
 }
 
