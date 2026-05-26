@@ -1,39 +1,9 @@
 import StraightenRoundedIcon from '@mui/icons-material/StraightenRounded'
-import { Box, Button, ButtonBase, Stack, Tooltip, Typography } from '@mui/material'
+import { Box, Button, ButtonBase, MenuItem, Stack, TextField, Tooltip, Typography } from '@mui/material'
 
-const colorMap = {
-  ash: '#d6d3cc',
-  beige: '#d7c5a9',
-  black: '#111111',
-  blue: '#245f9f',
-  brown: '#8b5e3c',
-  chestnut: '#9a724d',
-  cream: '#f3ead7',
-  forest: '#3f4a32',
-  green: '#4f5b3d',
-  grey: '#7a7a7a',
-  gray: '#7a7a7a',
-  ivory: '#f7f2e7',
-  navy: '#1e2952',
-  olive: '#777c45',
-  red: '#b91c1c',
-  tan: '#c4a484',
-  white: '#f7f4ef',
-}
-
-const isColorOption = (name = '') => /colou?r/i.test(name)
-
-const getSwatchColor = (value = '') => {
-  const normalizedValue = value.trim().toLowerCase()
-
-  if (/^#([0-9a-f]{3}){1,2}$/i.test(normalizedValue)) {
-    return normalizedValue
-  }
-
-  const matchedColor = Object.entries(colorMap).find(([name]) => normalizedValue.includes(name))
-
-  return matchedColor?.[1] || '#9ca3af'
-}
+const getOptionKey = (option = {}) => option.id || option.name
+const getValueKey = (value = {}) => value.id || value.value
+const getValueLabel = (value = {}) => value.label || value.value
 
 function ProductDetailsOptions({
   groups = [],
@@ -48,12 +18,16 @@ function ProductDetailsOptions({
   return (
     <Stack spacing={2.35}>
       {groups.map((group) => {
-        const activeValue = selectedOptions[group.name] || group.values[0] || ''
-        const isColor = isColorOption(group.name)
-        const showSizeGuide = !isColor && /size|fit/i.test(group.name)
+        const optionKey = getOptionKey(group)
+        const activeValueKey = selectedOptions[optionKey] || getValueKey(group.values[0])
+        const activeValue = group.values.find((value) => getValueKey(value) === activeValueKey)
+        const displayStyle = group.displayStyle || (group.optionType === 'color' ? 'swatch' : 'button')
+        const shouldRenderSwatches = group.optionType === 'color' || displayStyle === 'swatch'
+        const shouldRenderDropdown = displayStyle === 'dropdown'
+        const sizeGuideUrl = group.optionType === 'size' ? group.sizeGuideImageUrl : ''
 
         return (
-          <Stack key={group.name} spacing={1.15}>
+          <Stack key={optionKey} spacing={1.15}>
             <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
               <Typography
                 sx={{
@@ -67,14 +41,17 @@ function ProductDetailsOptions({
                 {activeValue ? (
                   <Box component="span" sx={{ color: 'text.primary', fontWeight: 800 }}>
                     {' '}
-                    / {activeValue}
+                    / {getValueLabel(activeValue)}
                   </Box>
                 ) : null}
               </Typography>
 
-              {showSizeGuide ? (
+              {sizeGuideUrl ? (
                 <Button
                   color="secondary"
+                  component="a"
+                  href={sizeGuideUrl}
+                  rel="noreferrer"
                   size="small"
                   startIcon={<StraightenRoundedIcon fontSize="small" />}
                   sx={{
@@ -82,6 +59,7 @@ function ProductDetailsOptions({
                     minHeight: 30,
                     px: 0,
                   }}
+                  target="_blank"
                   variant="text"
                 >
                   Size Guide
@@ -89,85 +67,121 @@ function ProductDetailsOptions({
               ) : null}
             </Stack>
 
-            <Stack direction="row" flexWrap="wrap" gap={1}>
-              {group.values.map((value) => {
-                const isActive = value === activeValue
-                const isAvailable = isValueAvailable(group.name, value)
+            {shouldRenderDropdown ? (
+              <TextField
+                select
+                size="small"
+                value={activeValueKey || ''}
+                onChange={(event) => {
+                  const nextValue = group.values.find((value) => getValueKey(value) === event.target.value)
 
-                if (isColor) {
+                  if (nextValue) {
+                    onSelectOption?.(group, nextValue)
+                  }
+                }}
+                sx={{ maxWidth: 280 }}
+              >
+                {group.values.map((value) => {
+                  const valueKey = getValueKey(value)
+                  const isAvailable = isValueAvailable(group, value)
+
                   return (
-                    <Tooltip key={value} title={value}>
-                      <Box
-                        aria-label={`${group.name}: ${value}`}
-                        component="button"
-                        disabled={!isAvailable}
-                        onClick={() => onSelectOption?.(group.name, value)}
-                        sx={{
-                          alignItems: 'center',
-                          appearance: 'none',
-                          bgcolor: 'transparent',
-                          border: '1px solid',
-                          borderColor: isActive ? 'text.primary' : 'transparent',
-                          borderRadius: '50%',
-                          cursor: isAvailable ? 'pointer' : 'not-allowed',
-                          display: 'inline-flex',
-                          height: 34,
-                          justifyContent: 'center',
-                          opacity: isAvailable ? 1 : 0.36,
-                          p: 0,
-                          transition: 'border-color 160ms ease, opacity 160ms ease',
-                          width: 34,
-                          '&:focus-visible': {
-                            outline: '2px solid',
-                            outlineColor: 'primary.main',
-                            outlineOffset: 2,
-                          },
-                        }}
-                        type="button"
-                      >
-                        <Box
-                          sx={{
-                            bgcolor: getSwatchColor(value),
-                            border: '1px solid rgba(24, 24, 27, 0.14)',
-                            borderRadius: '50%',
-                            height: 24,
-                            width: 24,
-                          }}
-                        />
-                      </Box>
-                    </Tooltip>
+                    <MenuItem disabled={!isAvailable} key={valueKey} value={valueKey}>
+                      {getValueLabel(value)}
+                    </MenuItem>
                   )
-                }
+                })}
+              </TextField>
+            ) : (
+              <Stack direction="row" flexWrap="wrap" gap={1}>
+                {group.values.map((value) => {
+                  const valueKey = getValueKey(value)
+                  const isActive = valueKey === activeValueKey
+                  const isAvailable = isValueAvailable(group, value)
 
-                return (
-                  <ButtonBase
-                    disabled={!isAvailable}
-                    key={value}
-                    onClick={() => onSelectOption?.(group.name, value)}
-                    sx={{
-                      border: '1px solid',
-                      borderColor: isActive ? 'text.primary' : 'divider',
-                      color: isActive ? 'background.default' : 'text.primary',
-                      bgcolor: isActive ? 'text.primary' : 'transparent',
-                      cursor: isAvailable ? 'pointer' : 'not-allowed',
-                      fontSize: '0.9rem',
-                      fontWeight: 800,
-                      minHeight: 42,
-                      minWidth: 58,
-                      opacity: isAvailable ? 1 : 0.38,
-                      px: 1.45,
-                      textDecoration: isAvailable ? 'none' : 'line-through',
-                      transition: 'background-color 160ms ease, border-color 160ms ease, color 160ms ease',
-                      '&:hover': {
-                        borderColor: 'text.primary',
-                      },
-                    }}
-                  >
-                    {value}
-                  </ButtonBase>
-                )
-              })}
-            </Stack>
+                  if (shouldRenderSwatches) {
+                    return (
+                      <Tooltip key={valueKey} title={getValueLabel(value)}>
+                        <Box
+                          aria-label={`${group.name}: ${getValueLabel(value)}`}
+                          component="button"
+                          disabled={!isAvailable}
+                          onClick={() => onSelectOption?.(group, value)}
+                          sx={{
+                            alignItems: 'center',
+                            appearance: 'none',
+                            bgcolor: 'transparent',
+                            border: '1px solid',
+                            borderColor: isActive ? 'text.primary' : 'transparent',
+                            borderRadius: '50%',
+                            cursor: isAvailable ? 'pointer' : 'not-allowed',
+                            display: 'inline-flex',
+                            height: 34,
+                            justifyContent: 'center',
+                            opacity: isAvailable ? 1 : 0.36,
+                            p: 0,
+                            transition: 'border-color 160ms ease, opacity 160ms ease',
+                            width: 34,
+                            '&:focus-visible': {
+                              outline: '2px solid',
+                              outlineColor: 'primary.main',
+                              outlineOffset: 2,
+                            },
+                          }}
+                          type="button"
+                        >
+                          <Box
+                            sx={{
+                              alignItems: 'center',
+                              bgcolor: value.colorHex || 'transparent',
+                              border: '1px solid rgba(24, 24, 27, 0.18)',
+                              borderRadius: '50%',
+                              color: 'text.secondary',
+                              display: 'flex',
+                              fontSize: '0.62rem',
+                              fontWeight: 900,
+                              height: 24,
+                              justifyContent: 'center',
+                              width: 24,
+                            }}
+                          >
+                            {value.colorHex ? null : getValueLabel(value).slice(0, 1)}
+                          </Box>
+                        </Box>
+                      </Tooltip>
+                    )
+                  }
+
+                  return (
+                    <ButtonBase
+                      disabled={!isAvailable}
+                      key={valueKey}
+                      onClick={() => onSelectOption?.(group, value)}
+                      sx={{
+                        bgcolor: isActive ? 'text.primary' : 'transparent',
+                        border: '1px solid',
+                        borderColor: isActive ? 'text.primary' : 'divider',
+                        color: isActive ? 'background.default' : 'text.primary',
+                        cursor: isAvailable ? 'pointer' : 'not-allowed',
+                        fontSize: '0.9rem',
+                        fontWeight: 800,
+                        minHeight: 42,
+                        minWidth: 58,
+                        opacity: isAvailable ? 1 : 0.38,
+                        px: 1.45,
+                        textDecoration: isAvailable ? 'none' : 'line-through',
+                        transition: 'background-color 160ms ease, border-color 160ms ease, color 160ms ease',
+                        '&:hover': {
+                          borderColor: 'text.primary',
+                        },
+                      }}
+                    >
+                      {getValueLabel(value)}
+                    </ButtonBase>
+                  )
+                })}
+              </Stack>
+            )}
           </Stack>
         )
       })}
