@@ -55,13 +55,11 @@ const getPriceData = (source, fallbackSource = {}) => {
   const hasSalePrice = salePrice !== null && salePrice < basePrice
   const price = hasSalePrice ? salePrice : basePrice
   const compareAtPrice = hasSalePrice ? basePrice : 0
-  const discountPercent = compareAtPrice
-    ? Math.round(((compareAtPrice - price) / compareAtPrice) * 100)
-    : 0
+  const discountAmount = compareAtPrice ? compareAtPrice - price : 0
 
   return {
     compareAtPrice,
-    discountPercent,
+    discountAmount,
     price,
   }
 }
@@ -279,7 +277,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
   )
   const displayVariant = selectedVariant || activeVariants[0] || null
   const displayPriceSource = displayVariant || product
-  const { compareAtPrice, discountPercent, price } = getPriceData(displayPriceSource, product)
+  const { compareAtPrice, discountAmount, price } = getPriceData(displayPriceSource, product)
   const sku = displayVariant?.sku || product.sku || ''
   const description = product.shortDescription || product.description || ''
   const shipping = mergeDisplayShipping(product.shipping, displayVariant?.shipping)
@@ -493,53 +491,79 @@ function ProductDetailsInfo({ product, variants = [] }) {
         </Typography>
       </Stack>
 
-      <Stack spacing={0.7}>
-        <Stack alignItems="baseline" direction="row" flexWrap="wrap" gap={1.15}>
-          <Typography sx={{ fontSize: { xs: '1.85rem', md: '2.05rem' }, fontWeight: 900 }}>
+      <Stack spacing={0.85}>
+        <Stack alignItems="baseline" direction="row" flexWrap="wrap" gap={1.2}>
+          <Typography
+            sx={{
+              color: '#1f2433',
+              fontSize: { xs: '2.15rem', md: '2.45rem' },
+              fontWeight: 900,
+              letterSpacing: 0,
+              lineHeight: 1,
+            }}
+          >
             {formatPrice(price)}
           </Typography>
 
-          {compareAtPrice ? (
+          {discountAmount ? (
             <Typography
-              color="text.secondary"
               sx={{
-                fontSize: '1.02rem',
-                opacity: 0.58,
-                textDecoration: 'line-through',
+                color: '#088a35',
+                fontSize: { xs: '1.25rem', md: '1.45rem' },
+                fontWeight: 900,
+                letterSpacing: 0.4,
+                lineHeight: 1,
               }}
             >
-              {formatPrice(compareAtPrice)}
+              {formatPrice(discountAmount)} OFF
             </Typography>
           ) : null}
+        </Stack>
 
-          {discountPercent ? (
-            <Chip
-              label={`${discountPercent}% off`}
-              size="small"
-              sx={{
-                bgcolor: 'rgba(179, 0, 0, 0.08)',
-                color: '#9f1d1d',
-                fontWeight: 900,
-                height: 24,
-              }}
-            />
+        <Stack alignItems="center" direction="row" flexWrap="wrap" gap={1}>
+          {compareAtPrice ? (
+            <Stack alignItems="baseline" direction="row" spacing={0.55}>
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: { xs: '0.98rem', md: '1.04rem' },
+                  fontWeight: 600,
+                  lineHeight: 1.25,
+                }}
+              >
+                MRP:
+              </Typography>
+
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: { xs: '0.98rem', md: '1.04rem' },
+                  fontWeight: 700,
+                  lineHeight: 1.25,
+                  opacity: 0.78,
+                  textDecoration: 'line-through',
+                }}
+              >
+                {formatPrice(compareAtPrice)}
+              </Typography>
+            </Stack>
           ) : null}
+
+          <Typography
+            color="text.secondary"
+            sx={{
+              fontSize: { xs: '0.98rem', md: '1.04rem' },
+              fontWeight: 500,
+              lineHeight: 1.25,
+              marginLeft: compareAtPrice ? 1 : 0,
+            }}
+          >
+            Inclusive of all Taxes
+          </Typography>
         </Stack>
 
       </Stack>
 
-      {description ? (
-        <Typography
-          color="text.secondary"
-          sx={{
-            fontSize: '1rem',
-            lineHeight: 1.7,
-            maxWidth: 620,
-          }}
-        >
-          {description}
-        </Typography>
-      ) : null}
 
       {hasVariants ? (
         <>
