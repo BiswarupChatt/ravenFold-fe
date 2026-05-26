@@ -75,35 +75,80 @@ const getVariantLabel = (variant) => {
     .join(', ')
 }
 
-const getOptionValue = (variant, optionName) => {
-  return variant?.optionValues?.find((option) => option.optionName === optionName)?.value || ''
+const getOptionKey = (option = {}) => option.id || option.name
+const getValueKey = (value = {}) => value.id || value.value
+
+const getVariantOptionValue = (variant, option) => {
+  const optionKey = getOptionKey(option)
+
+  return variant?.optionValues?.find((optionValue) => (
+    optionValue.optionId === option.id ||
+    optionValue.optionName === option.name ||
+    optionValue.optionId === optionKey
+  )) || null
 }
 
-const buildOptionGroups = (variants = []) => {
+const getVariantOptionValueKey = (variant, option) => {
+  const variantOptionValue = getVariantOptionValue(variant, option)
+
+  if (!variantOptionValue) {
+    return ''
+  }
+
+  const matchingValue = option.values?.find((value) => (
+    value.id === variantOptionValue.valueId ||
+    value.value === variantOptionValue.value
+  ))
+
+  return variantOptionValue.valueId || getValueKey(matchingValue) || variantOptionValue.value
+}
+
+const buildOptionGroups = (product = {}, variants = []) => {
+  if (Array.isArray(product.options) && product.options.length) {
+    return product.options
+      .filter((option) => option?.name)
+      .map((option) => ({
+        ...option,
+        values: Array.isArray(option.values) ? option.values.filter((value) => value?.value) : [],
+      }))
+  }
+
   const groups = new Map()
 
   variants.forEach((variant) => {
     variant.optionValues?.forEach((option) => {
-      const name = option.optionName || 'Option'
-      const values = groups.get(name) || []
-
-      if (option.value && !values.includes(option.value)) {
-        values.push(option.value)
+      const optionKey = option.optionId || option.optionName || 'Option'
+      const group = groups.get(optionKey) || {
+        displayStyle: 'button',
+        id: option.optionId || option.optionName,
+        name: option.optionName || 'Option',
+        optionType: 'other',
+        sizeGuideImageUrl: '',
+        values: [],
       }
 
-      groups.set(name, values)
+      if (option.value && !group.values.some((value) => getValueKey(value) === (option.valueId || option.value))) {
+        group.values.push({
+          id: option.valueId || option.value,
+          label: option.value,
+          value: option.value,
+        })
+      }
+
+      groups.set(optionKey, group)
     })
   })
 
-  return Array.from(groups, ([name, values]) => ({ name, values }))
+  return Array.from(groups.values())
 }
 
 const buildSelectedOptionsFromVariant = (variant, groups = []) => {
   return groups.reduce((selectedOptions, group) => {
-    const value = getOptionValue(variant, group.name) || group.values[0] || ''
+    const optionKey = getOptionKey(group)
+    const value = getVariantOptionValueKey(variant, group) || getValueKey(group.values[0]) || ''
 
     if (value) {
-      selectedOptions[group.name] = value
+      selectedOptions[optionKey] = value
     }
 
     return selectedOptions
@@ -112,7 +157,11 @@ const buildSelectedOptionsFromVariant = (variant, groups = []) => {
 
 const findMatchingVariant = (variants = [], groups = [], selectedOptions = {}) => {
   return variants.find((variant) => (
-    groups.every((group) => getOptionValue(variant, group.name) === selectedOptions[group.name])
+    groups.every((group) => {
+      const selectedValue = selectedOptions[getOptionKey(group)]
+
+      return !selectedValue || getVariantOptionValueKey(variant, group) === selectedValue
+    })
   ))
 }
 
@@ -205,7 +254,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
     () => variants.filter((variant) => variant?.isActive !== false),
     [variants],
   )
-  const optionGroups = useMemo(() => buildOptionGroups(activeVariants), [activeVariants])
+  const optionGroups = useMemo(() => buildOptionGroups(product, activeVariants), [activeVariants, product])
   const initialSelectedOptions = useMemo(
     () => buildSelectedOptionsFromVariant(activeVariants[0], optionGroups),
     [activeVariants, optionGroups],
@@ -247,19 +296,21 @@ function ProductDetailsInfo({ product, variants = [] }) {
   const canPurchase = !product.hasVariants || Boolean(selectedVariant)
   const isWishlisted = wishlistItems.some((item) => item.id === product.id)
 
-  const isValueAvailable = (optionName, value) => (
-    activeVariants.some((variant) => getOptionValue(variant, optionName) === value)
+  const isValueAvailable = (option, value) => (
+    activeVariants.some((variant) => getVariantOptionValueKey(variant, option) === getValueKey(value))
   )
 
-  const handleSelectOption = (optionName, value) => {
+  const handleSelectOption = (option, value) => {
     setSelectionState((currentState) => {
+      const optionKey = getOptionKey(option)
+      const valueKey = getValueKey(value)
       const currentOptions =
         currentState.productId === product.id && currentState.options
           ? currentState.options
           : selectedOptions
       const nextOptions = {
         ...currentOptions,
-        [optionName]: value,
+        [optionKey]: valueKey,
       }
       const exactVariant = findMatchingVariant(activeVariants, optionGroups, nextOptions)
 
@@ -271,7 +322,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
       }
 
       const nearestVariant = activeVariants.find(
-        (variant) => getOptionValue(variant, optionName) === value,
+        (variant) => getVariantOptionValueKey(variant, option) === valueKey,
       )
 
       return {
