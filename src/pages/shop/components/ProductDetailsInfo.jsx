@@ -3,12 +3,11 @@ import AddShoppingCartRoundedIcon from '@mui/icons-material/AddShoppingCartRound
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
-import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded'
 import { Box, Chip, Divider, IconButton, Stack, Tooltip, Typography } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import AppButton from '../../../components/AppButton.jsx'
 import { getApiErrorMessage } from '../../../services/apiClient.js'
 import { addCartItem, mapServerCartItems } from '../../../services/cartApi.js'
@@ -18,6 +17,8 @@ import { addItem, replaceCartItems } from '../../../store/cartSlice.js'
 import { selectWishlistItems, toggleWishlistItem } from '../../../store/wishlistSlice.js'
 import formatPrice from '../../../utils/formatPrice.js'
 import ProductDetailsOptions from './ProductDetailsOptions.jsx'
+
+const VARIANT_QUERY_PARAM = 'variant'
 
 const toNumber = (value) => {
   const numberValue = Number(value)
@@ -77,6 +78,19 @@ const getVariantLabel = (variant) => {
 
 const getOptionKey = (option = {}) => option.id || option.name
 const getValueKey = (value = {}) => value.id || value.value
+const getVariantParamValue = (variant = {}) => variant?.id || variant?._id || variant?.sku || ''
+
+const findVariantByParam = (variants = [], variantParam = '') => {
+  if (!variantParam) {
+    return null
+  }
+
+  return variants.find((variant) => (
+    [variant?.id, variant?._id, variant?.sku]
+      .filter(Boolean)
+      .some((value) => String(value) === String(variantParam))
+  )) || null
+}
 
 const getVariantOptionValue = (variant, option) => {
   const optionKey = getOptionKey(option)
@@ -236,6 +250,7 @@ function DetailRow({ label, value }) {
 function ProductDetailsInfo({ product, variants = [] }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const isAuthenticated = useSelector(selectIsAuthenticated)
   const wishlistItems = useSelector(selectWishlistItems)
   const activeVariants = useMemo(
@@ -243,18 +258,17 @@ function ProductDetailsInfo({ product, variants = [] }) {
     [variants],
   )
   const optionGroups = useMemo(() => buildOptionGroups(product, activeVariants), [activeVariants, product])
-  const initialSelectedOptions = useMemo(
-    () => buildSelectedOptionsFromVariant(activeVariants[0], optionGroups),
-    [activeVariants, optionGroups],
+  const hasVariants = Boolean(product.hasVariants && optionGroups.length)
+  const queryVariantId = searchParams.get(VARIANT_QUERY_PARAM) || ''
+  const queryVariant = useMemo(
+    () => findVariantByParam(activeVariants, queryVariantId),
+    [activeVariants, queryVariantId],
   )
-  const [selectionState, setSelectionState] = useState({
-    options: null,
-    productId: '',
-  })
-  const selectedOptions =
-    selectionState.productId === product.id && selectionState.options
-      ? selectionState.options
-      : initialSelectedOptions
+  const initialSelectedOptions = useMemo(
+    () => buildSelectedOptionsFromVariant(queryVariant || activeVariants[0], optionGroups),
+    [activeVariants, optionGroups, queryVariant],
+  )
+  const selectedOptions = initialSelectedOptions
   const [quantity, setQuantity] = useState(1)
   const [cartLoading, setCartLoading] = useState(false)
   const [buyNowLoading, setBuyNowLoading] = useState(false)
@@ -279,46 +293,63 @@ function ProductDetailsInfo({ product, variants = [] }) {
     ? product.attributes.filter((attribute) => attribute?.name && attribute?.value)
     : []
   const tags = Array.isArray(product.tags) ? product.tags.filter(Boolean) : []
-  const hasVariants = Boolean(product.hasVariants && optionGroups.length)
   const canPurchase = !product.hasVariants || Boolean(selectedVariant)
   const isWishlisted = wishlistItems.some((item) => item.id === product.id)
+
+  useEffect(() => {
+    if (!hasVariants || !activeVariants.length) {
+      return
+    }
+
+    const nextVariant = queryVariant || activeVariants[0]
+    const nextVariantParam = getVariantParamValue(nextVariant)
+
+    if (!nextVariantParam || queryVariantId === nextVariantParam) {
+      return
+    }
+
+    setSearchParams((currentParams) => {
+      const nextParams = new URLSearchParams(currentParams)
+
+      nextParams.set(VARIANT_QUERY_PARAM, nextVariantParam)
+
+      return nextParams
+    }, { replace: true })
+  }, [activeVariants, hasVariants, queryVariant, queryVariantId, setSearchParams])
 
   const isValueAvailable = (option, value) => (
     activeVariants.some((variant) => getVariantOptionValueKey(variant, option) === getValueKey(value))
   )
 
+  const setVariantSearchParam = (variant) => {
+    const variantParam = getVariantParamValue(variant)
+
+    setSearchParams((currentParams) => {
+      const nextParams = new URLSearchParams(currentParams)
+
+      if (variantParam) {
+        nextParams.set(VARIANT_QUERY_PARAM, variantParam)
+      } else {
+        nextParams.delete(VARIANT_QUERY_PARAM)
+      }
+
+      return nextParams
+    }, { replace: true })
+  }
+
   const handleSelectOption = (option, value) => {
-    setSelectionState((currentState) => {
-      const optionKey = getOptionKey(option)
-      const valueKey = getValueKey(value)
-      const currentOptions =
-        currentState.productId === product.id && currentState.options
-          ? currentState.options
-          : selectedOptions
-      const nextOptions = {
-        ...currentOptions,
-        [optionKey]: valueKey,
-      }
-      const exactVariant = findMatchingVariant(activeVariants, optionGroups, nextOptions)
+    const optionKey = getOptionKey(option)
+    const valueKey = getValueKey(value)
+    const nextOptions = {
+      ...selectedOptions,
+      [optionKey]: valueKey,
+    }
+    const exactVariant = findMatchingVariant(activeVariants, optionGroups, nextOptions)
+    const nearestVariant = exactVariant || activeVariants.find(
+      (variant) => getVariantOptionValueKey(variant, option) === valueKey,
+    )
 
-      if (exactVariant) {
-        return {
-          options: buildSelectedOptionsFromVariant(exactVariant, optionGroups),
-          productId: product.id,
-        }
-      }
-
-      const nearestVariant = activeVariants.find(
-        (variant) => getVariantOptionValueKey(variant, option) === valueKey,
-      )
-
-      return {
-        options: nearestVariant
-          ? buildSelectedOptionsFromVariant(nearestVariant, optionGroups)
-          : nextOptions,
-        productId: product.id,
-      }
-    })
+    setVariantSearchParam(nearestVariant)
   }
 
   const buildCartProduct = () => ({

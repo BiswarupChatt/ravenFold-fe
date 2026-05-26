@@ -114,7 +114,7 @@ function AppSlider({
   spacing = 1.5,
   trackProps,
   trackSx,
-  transition = 'transform 280ms cubic-bezier(0.22, 1, 0.36, 1)',
+  transition = 'transform 520ms cubic-bezier(0.22, 1, 0.36, 1)',
   viewportSx,
 }) {
   const trackRef = useRef(null)

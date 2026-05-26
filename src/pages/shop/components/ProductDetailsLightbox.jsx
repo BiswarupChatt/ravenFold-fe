@@ -1,8 +1,8 @@
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import { Box, Dialog, IconButton, Tooltip } from '@mui/material'
+import { Box } from '@mui/material'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import AppLightbox from '../../../components/AppLightbox.jsx'
 import AppSlider from '../../../components/AppSlider.jsx'
 
 const wrapIndex = (index, length) => ((index % length) + length) % length
@@ -154,151 +154,112 @@ function ProductDetailsLightbox({
   }
 
   return (
-    <Dialog
-      fullScreen
-      maxWidth={false}
+    <AppLightbox
+      closeButtonLabel="Close image overlay"
+      closeButtonSx={AppSlider.overlayButtonSx}
       onClose={onClose}
       open={open}
-      slotProps={{
-        backdrop: {
-          sx: {
-            backdropFilter: 'blur(8px)',
-            backgroundColor: 'rgba(17, 24, 39, 0.72)',
-          },
-        },
-        paper: {
-          sx: {
-            bgcolor: 'transparent',
-            boxShadow: 'none',
-            height: '100dvh',
-            m: 0,
-            maxHeight: 'none',
-            maxWidth: 'none',
-            overflow: 'hidden',
-            width: '100vw',
-          },
-        },
-      }}
     >
       <Box
+        onPointerCancel={handlePointerEnd}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerEnd}
         sx={{
-          height: '100dvh',
+          alignItems: 'center',
+          cursor: isDragging ? 'grabbing' : 'grab',
+          display: 'flex',
+          height: '100%',
+          justifyContent: 'center',
           overflow: 'hidden',
-          p: { xs: 2, sm: 3 },
           position: 'relative',
-          width: '100vw',
+          touchAction: 'none',
+          width: '100%',
+          '& *': {
+            scrollbarWidth: 'none',
+          },
+          '& *::-webkit-scrollbar': {
+            display: 'none',
+          },
         }}
       >
-        <Box sx={{ position: 'absolute', right: { xs: 12, sm: 24 }, top: { xs: 12, sm: 24 }, zIndex: 4 }}>
-          <Tooltip title="Close">
-            <IconButton aria-label="Close image overlay" onClick={onClose} sx={AppSlider.overlayButtonSx}>
-              <CloseRoundedIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-
-        <Box
-          onPointerCancel={handlePointerEnd}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerEnd}
-          sx={{
-            alignItems: 'center',
-            cursor: isDragging ? 'grabbing' : 'grab',
-            display: 'flex',
-            height: '100%',
-            justifyContent: 'center',
-            overflow: 'hidden',
-            position: 'relative',
-            touchAction: 'none',
-            width: '100%',
-            '& *': {
-              scrollbarWidth: 'none',
-            },
-            '& *::-webkit-scrollbar': {
-              display: 'none',
-            },
+        <AppSlider
+          activeDotIndex={activeIndex}
+          activeDotSx={AppSlider.overlayActiveDotSx}
+          activeIndex={activeIndex}
+          arrowButtonProps={{ onPointerDown: handleNavigationPointerDown }}
+          dotButtonProps={{ onPointerDown: handleNavigationPointerDown }}
+          dotItems={images}
+          dotsSx={AppSlider.overlayDotsSx}
+          dotSx={AppSlider.overlayDotSx}
+          dragOffset={hasMultipleImages ? dragOffset : 0}
+          gap={0}
+          getDotKey={(image) => image}
+          getKey={(slide) => `${slide.index}-${slide.image}`}
+          hideDots={!hasMultipleImages}
+          isDragging={isDragging}
+          items={slides}
+          mode="translate"
+          nextIcon={<ChevronRightRoundedIcon />}
+          nextLabel="Next image"
+          onDotClick={(index) => goToIndex(index)}
+          onNext={(event) => {
+            event.stopPropagation()
+            goToIndex(activeIndex + 1)
           }}
-        >
-          <AppSlider
-            activeDotIndex={activeIndex}
-            activeDotSx={AppSlider.overlayActiveDotSx}
-            activeIndex={activeIndex}
-            arrowButtonProps={{ onPointerDown: handleNavigationPointerDown }}
-            dotButtonProps={{ onPointerDown: handleNavigationPointerDown }}
-            dotItems={images}
-            dotsSx={AppSlider.overlayDotsSx}
-            dotSx={AppSlider.overlayDotSx}
-            dragOffset={hasMultipleImages ? dragOffset : 0}
-            gap={0}
-            getDotKey={(image) => image}
-            getKey={(slide) => `${slide.index}-${slide.image}`}
-            hideDots={!hasMultipleImages}
-            isDragging={isDragging}
-            items={slides}
-            mode="translate"
-            nextIcon={<ChevronRightRoundedIcon />}
-            nextLabel="Next image"
-            onDotClick={(index) => goToIndex(index)}
-            onNext={(event) => {
-              event.stopPropagation()
-              goToIndex(activeIndex + 1)
-            }}
-            onPrevious={(event) => {
-              event.stopPropagation()
-              goToIndex(activeIndex - 1)
-            }}
-            previousIcon={<ChevronLeftRoundedIcon />}
-            previousLabel="Previous image"
-            renderItem={(slide) => {
-              const isActive = slide.index === activeIndex
+          onPrevious={(event) => {
+            event.stopPropagation()
+            goToIndex(activeIndex - 1)
+          }}
+          previousIcon={<ChevronLeftRoundedIcon />}
+          previousLabel="Previous image"
+          renderItem={(slide) => {
+            const isActive = slide.index === activeIndex
 
-              return (
+            return (
+              <Box
+                sx={{
+                  alignItems: 'center',
+                  display: 'flex',
+                  height: '100%',
+                  justifyContent: 'center',
+                  overflow: 'hidden',
+                  width: '100%',
+                }}
+              >
                 <Box
+                  alt={`${productName || 'Product image'} ${slide.index + 1}`}
+                  component="img"
+                  decoding="async"
+                  draggable={false}
+                  fetchPriority={isActive ? 'high' : 'auto'}
+                  loading={isActive ? 'eager' : 'lazy'}
+                  src={slide.image}
                   sx={{
-                    alignItems: 'center',
-                    display: 'flex',
-                    height: '100%',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    width: '100%',
+                    cursor: isDragging ? 'grabbing' : isMaxZoom ? 'zoom-out' : 'zoom-in',
+                    display: 'block',
+                    maxHeight: { xs: '82dvh', sm: '86dvh' },
+                    maxWidth: { xs: '88vw', sm: '82vw' },
+                    objectFit: 'contain',
+                    pointerEvents: isActive ? 'auto' : 'none',
+                    transform: isActive
+                      ? `translate3d(${panOffset.x}px, ${panOffset.y}px, 0) scale(${zoomScale})`
+                      : 'translate3d(0, 0, 0) scale(1)',
+                    transition: isDragging ? 'none' : 'transform 340ms cubic-bezier(0.22, 1, 0.36, 1)',
+                    userSelect: 'none',
                   }}
-                >
-                  <Box
-                    alt={`${productName || 'Product image'} ${slide.index + 1}`}
-                    component="img"
-                    decoding="async"
-                    draggable={false}
-                    fetchPriority={isActive ? 'high' : 'auto'}
-                    loading={isActive ? 'eager' : 'lazy'}
-                    src={slide.image}
-                    sx={{
-                      cursor: isDragging ? 'grabbing' : isMaxZoom ? 'zoom-out' : 'zoom-in',
-                      display: 'block',
-                      maxHeight: { xs: '82dvh', sm: '86dvh' },
-                      maxWidth: { xs: '88vw', sm: '82vw' },
-                      objectFit: 'contain',
-                      pointerEvents: isActive ? 'auto' : 'none',
-                      transform: isActive
-                        ? `translate3d(${panOffset.x}px, ${panOffset.y}px, 0) scale(${zoomScale})`
-                        : 'translate3d(0, 0, 0) scale(1)',
-                      transition: isDragging ? 'none' : 'transform 340ms cubic-bezier(0.22, 1, 0.36, 1)',
-                      userSelect: 'none',
-                    }}
-                  />
-                </Box>
-              )
-            }}
-            rootSx={{ height: '100%', width: '100%' }}
-            showArrows={hasMultipleImages}
-            slideSx={{ height: '100%', width: '100%' }}
-            spacing={0}
-            trackSx={{ height: '100%', width: '100%' }}
-          />
-
-        </Box>
+                />
+              </Box>
+            )
+          }}
+          rootSx={{ height: '100%', width: '100%' }}
+          showArrows={hasMultipleImages}
+          slideSx={{ height: '100%', width: '100%' }}
+          spacing={0}
+          trackSx={{ height: '100%', width: '100%' }}
+        />
       </Box>
-    </Dialog>
+    </AppLightbox>
   )
 }
 

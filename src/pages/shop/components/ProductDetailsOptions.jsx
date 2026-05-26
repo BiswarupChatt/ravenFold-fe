@@ -1,5 +1,16 @@
 import StraightenRoundedIcon from '@mui/icons-material/StraightenRounded'
-import { Box, Button, ButtonBase, MenuItem, Stack, TextField, Tooltip, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  ButtonBase,
+  MenuItem,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material'
+import { useState } from 'react'
+import AppLightbox from '../../../components/AppLightbox.jsx'
 
 const getOptionKey = (option = {}) => option.id || option.name
 const getValueKey = (value = {}) => value.id || value.value
@@ -11,181 +22,215 @@ function ProductDetailsOptions({
   onSelectOption,
   selectedOptions = {},
 }) {
+  const [activeSizeGuide, setActiveSizeGuide] = useState(null)
+
   if (!groups.length) {
     return null
   }
 
   return (
-    <Stack spacing={2.35}>
-      {groups.map((group) => {
-        const optionKey = getOptionKey(group)
-        const activeValueKey = selectedOptions[optionKey] || getValueKey(group.values[0])
-        const activeValue = group.values.find((value) => getValueKey(value) === activeValueKey)
-        const displayStyle = group.displayStyle || (group.optionType === 'color' ? 'swatch' : 'button')
-        const shouldRenderSwatches = group.optionType === 'color' || displayStyle === 'swatch'
-        const shouldRenderDropdown = displayStyle === 'dropdown'
-        const sizeGuideUrl = group.optionType === 'size' ? group.sizeGuideImageUrl : ''
+    <>
+      <Stack spacing={2.35}>
+        {groups.map((group) => {
+          const optionKey = getOptionKey(group)
+          const activeValueKey = selectedOptions[optionKey] || getValueKey(group.values[0])
+          const activeValue = group.values.find((value) => getValueKey(value) === activeValueKey)
+          const displayStyle = group.displayStyle || (group.optionType === 'color' ? 'swatch' : 'button')
+          const shouldRenderSwatches = group.optionType === 'color' || displayStyle === 'swatch'
+          const shouldRenderDropdown = displayStyle === 'dropdown'
+          const sizeGuideUrl = group.optionType === 'size' ? group.sizeGuideImageUrl : ''
 
-        return (
-          <Stack key={optionKey} spacing={1.15}>
-            <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
-              <Typography
-                sx={{
-                  color: 'text.secondary',
-                  fontSize: '0.92rem',
-                  fontWeight: 700,
-                  lineHeight: 1.35,
-                }}
-              >
-                {group.name}
-                {activeValue ? (
-                  <Box component="span" sx={{ color: 'text.primary', fontWeight: 800 }}>
-                    {' '}
-                    / {getValueLabel(activeValue)}
-                  </Box>
-                ) : null}
-              </Typography>
-
-              {sizeGuideUrl ? (
-                <Button
-                  color="secondary"
-                  component="a"
-                  href={sizeGuideUrl}
-                  rel="noreferrer"
-                  size="small"
-                  startIcon={<StraightenRoundedIcon fontSize="small" />}
+          return (
+            <Stack key={optionKey} spacing={1.15}>
+              <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
+                <Typography
                   sx={{
-                    fontSize: '0.82rem',
-                    minHeight: 30,
-                    px: 0,
+                    color: 'text.secondary',
+                    fontSize: '0.92rem',
+                    fontWeight: 700,
+                    lineHeight: 1.35,
                   }}
-                  target="_blank"
-                  variant="text"
                 >
-                  Size Guide
-                </Button>
-              ) : null}
-            </Stack>
+                  {group.name}
+                  {activeValue ? (
+                    <Box component="span" sx={{ color: 'text.primary', fontWeight: 800 }}>
+                      {' '}
+                      / {getValueLabel(activeValue)}
+                    </Box>
+                  ) : null}
+                </Typography>
 
-            {shouldRenderDropdown ? (
-              <TextField
-                select
-                size="small"
-                value={activeValueKey || ''}
-                onChange={(event) => {
-                  const nextValue = group.values.find((value) => getValueKey(value) === event.target.value)
+                {sizeGuideUrl ? (
+                  <Button
+                    color="secondary"
+                    onClick={() => setActiveSizeGuide({
+                      title: `${group.name} Guide`,
+                      url: sizeGuideUrl,
+                    })}
+                    size="small"
+                    startIcon={<StraightenRoundedIcon fontSize="small" />}
+                    sx={{
+                      fontSize: '0.82rem',
+                      minHeight: 30,
+                      px: 0,
+                    }}
+                    type="button"
+                    variant="text"
+                  >
+                    Size Guide
+                  </Button>
+                ) : null}
+              </Stack>
 
-                  if (nextValue) {
-                    onSelectOption?.(group, nextValue)
-                  }
-                }}
-                sx={{ maxWidth: 280 }}
-              >
-                {group.values.map((value) => {
-                  const valueKey = getValueKey(value)
-                  const isAvailable = isValueAvailable(group, value)
+              {shouldRenderDropdown ? (
+                <TextField
+                  select
+                  size="small"
+                  value={activeValueKey || ''}
+                  onChange={(event) => {
+                    const nextValue = group.values.find((value) => getValueKey(value) === event.target.value)
 
-                  return (
-                    <MenuItem disabled={!isAvailable} key={valueKey} value={valueKey}>
-                      {getValueLabel(value)}
-                    </MenuItem>
-                  )
-                })}
-              </TextField>
-            ) : (
-              <Stack direction="row" flexWrap="wrap" gap={1}>
-                {group.values.map((value) => {
-                  const valueKey = getValueKey(value)
-                  const isActive = valueKey === activeValueKey
-                  const isAvailable = isValueAvailable(group, value)
+                    if (nextValue) {
+                      onSelectOption?.(group, nextValue)
+                    }
+                  }}
+                  sx={{ maxWidth: 280 }}
+                >
+                  {group.values.map((value) => {
+                    const valueKey = getValueKey(value)
+                    const isAvailable = isValueAvailable(group, value)
 
-                  if (shouldRenderSwatches) {
                     return (
-                      <Tooltip key={valueKey} title={getValueLabel(value)}>
-                        <Box
-                          aria-label={`${group.name}: ${getValueLabel(value)}`}
-                          component="button"
-                          disabled={!isAvailable}
-                          onClick={() => onSelectOption?.(group, value)}
-                          sx={{
-                            alignItems: 'center',
-                            appearance: 'none',
-                            bgcolor: 'transparent',
-                            border: '1px solid',
-                            borderColor: isActive ? 'text.primary' : 'transparent',
-                            borderRadius: '50%',
-                            cursor: isAvailable ? 'pointer' : 'not-allowed',
-                            display: 'inline-flex',
-                            height: 34,
-                            justifyContent: 'center',
-                            opacity: isAvailable ? 1 : 0.36,
-                            p: 0,
-                            transition: 'border-color 160ms ease, opacity 160ms ease',
-                            width: 34,
-                            '&:focus-visible': {
-                              outline: '2px solid',
-                              outlineColor: 'primary.main',
-                              outlineOffset: 2,
-                            },
-                          }}
-                          type="button"
-                        >
+                      <MenuItem disabled={!isAvailable} key={valueKey} value={valueKey}>
+                        {getValueLabel(value)}
+                      </MenuItem>
+                    )
+                  })}
+                </TextField>
+              ) : (
+                <Stack direction="row" flexWrap="wrap" gap={1}>
+                  {group.values.map((value) => {
+                    const valueKey = getValueKey(value)
+                    const isActive = valueKey === activeValueKey
+                    const isAvailable = isValueAvailable(group, value)
+
+                    if (shouldRenderSwatches) {
+                      return (
+                        <Tooltip key={valueKey} title={getValueLabel(value)}>
                           <Box
+                            aria-label={`${group.name}: ${getValueLabel(value)}`}
+                            component="button"
+                            disabled={!isAvailable}
+                            onClick={() => onSelectOption?.(group, value)}
                             sx={{
                               alignItems: 'center',
-                              bgcolor: value.colorHex || 'transparent',
-                              border: '1px solid rgba(24, 24, 27, 0.18)',
+                              appearance: 'none',
+                              bgcolor: 'transparent',
+                              border: '1px solid',
+                              borderColor: isActive ? 'text.primary' : 'transparent',
                               borderRadius: '50%',
-                              color: 'text.secondary',
-                              display: 'flex',
-                              fontSize: '0.62rem',
-                              fontWeight: 900,
-                              height: 24,
+                              cursor: isAvailable ? 'pointer' : 'not-allowed',
+                              display: 'inline-flex',
+                              height: 34,
                               justifyContent: 'center',
-                              width: 24,
+                              opacity: isAvailable ? 1 : 0.36,
+                              p: 0,
+                              transition: 'border-color 160ms ease, opacity 160ms ease',
+                              width: 34,
+                              '&:focus-visible': {
+                                outline: '2px solid',
+                                outlineColor: 'primary.main',
+                                outlineOffset: 2,
+                              },
                             }}
+                            type="button"
                           >
-                            {value.colorHex ? null : getValueLabel(value).slice(0, 1)}
+                            <Box
+                              sx={{
+                                alignItems: 'center',
+                                bgcolor: value.colorHex || 'transparent',
+                                border: '1px solid rgba(24, 24, 27, 0.18)',
+                                borderRadius: '50%',
+                                color: 'text.secondary',
+                                display: 'flex',
+                                fontSize: '0.62rem',
+                                fontWeight: 900,
+                                height: 24,
+                                justifyContent: 'center',
+                                width: 24,
+                              }}
+                            >
+                              {value.colorHex ? null : getValueLabel(value).slice(0, 1)}
+                            </Box>
                           </Box>
-                        </Box>
-                      </Tooltip>
-                    )
-                  }
+                        </Tooltip>
+                      )
+                    }
 
-                  return (
-                    <ButtonBase
-                      disabled={!isAvailable}
-                      key={valueKey}
-                      onClick={() => onSelectOption?.(group, value)}
-                      sx={{
-                        bgcolor: isActive ? 'text.primary' : 'transparent',
-                        border: '1px solid',
-                        borderColor: isActive ? 'text.primary' : 'divider',
-                        color: isActive ? 'background.default' : 'text.primary',
-                        cursor: isAvailable ? 'pointer' : 'not-allowed',
-                        fontSize: '0.9rem',
-                        fontWeight: 800,
-                        minHeight: 42,
-                        minWidth: 58,
-                        opacity: isAvailable ? 1 : 0.38,
-                        px: 1.45,
-                        textDecoration: isAvailable ? 'none' : 'line-through',
-                        transition: 'background-color 160ms ease, border-color 160ms ease, color 160ms ease',
-                        '&:hover': {
-                          borderColor: 'text.primary',
-                        },
-                      }}
-                    >
-                      {getValueLabel(value)}
-                    </ButtonBase>
-                  )
-                })}
-              </Stack>
-            )}
-          </Stack>
-        )
-      })}
-    </Stack>
+                    return (
+                      <ButtonBase
+                        disabled={!isAvailable}
+                        key={valueKey}
+                        onClick={() => onSelectOption?.(group, value)}
+                        sx={{
+                          bgcolor: isActive ? 'text.primary' : 'transparent',
+                          border: '1px solid',
+                          borderColor: isActive ? 'text.primary' : 'divider',
+                          color: isActive ? 'background.default' : 'text.primary',
+                          cursor: isAvailable ? 'pointer' : 'not-allowed',
+                          fontSize: '0.9rem',
+                          fontWeight: 800,
+                          minHeight: 42,
+                          minWidth: 58,
+                          opacity: isAvailable ? 1 : 0.38,
+                          px: 1.45,
+                          textDecoration: isAvailable ? 'none' : 'line-through',
+                          transition: 'background-color 160ms ease, border-color 160ms ease, color 160ms ease',
+                          '&:hover': {
+                            borderColor: 'text.primary',
+                          },
+                        }}
+                      >
+                        {getValueLabel(value)}
+                      </ButtonBase>
+                    )
+                  })}
+                </Stack>
+              )}
+            </Stack>
+          )
+        })}
+      </Stack>
+
+      <AppLightbox
+        closeButtonLabel="Close size guide"
+        contentSx={{
+          alignItems: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+        onClose={() => setActiveSizeGuide(null)}
+        open={Boolean(activeSizeGuide)}
+      >
+        {activeSizeGuide?.url ? (
+          <Box
+            alt={activeSizeGuide.title || 'Size guide'}
+            component="img"
+            decoding="async"
+            src={activeSizeGuide.url}
+            sx={{
+              bgcolor: 'background.paper',
+              boxShadow: '0 28px 90px rgba(0, 0, 0, 0.36)',
+              display: 'block',
+              maxHeight: { xs: '86dvh', sm: '88dvh' },
+              maxWidth: { xs: '92vw', sm: '78vw', lg: '64vw' },
+              objectFit: 'contain',
+              userSelect: 'none',
+            }}
+          />
+        ) : null}
+      </AppLightbox>
+    </>
   )
 }
 
