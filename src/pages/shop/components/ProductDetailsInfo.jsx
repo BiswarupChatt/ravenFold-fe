@@ -128,6 +128,28 @@ const formatShippingSummary = (shipping = {}) => {
   return shipping.shippingClass || 'Standard shipping'
 }
 
+const mergeDisplayShipping = (productShipping = {}, variantShipping = null) => {
+  const shipping = variantShipping || {}
+
+  return {
+    requiresShipping: shipping.requiresShipping ?? productShipping.requiresShipping ?? true,
+    weight: {
+      value: shipping.weight?.value ?? productShipping.weight?.value ?? null,
+      unit: shipping.weight?.unit || productShipping.weight?.unit || 'kg',
+    },
+    dimensions: {
+      length: shipping.dimensions?.length ?? productShipping.dimensions?.length ?? null,
+      width: shipping.dimensions?.width ?? productShipping.dimensions?.width ?? null,
+      height: shipping.dimensions?.height ?? productShipping.dimensions?.height ?? null,
+      unit: shipping.dimensions?.unit || productShipping.dimensions?.unit || 'cm',
+    },
+    shippingClass: shipping.shippingClass || productShipping.shippingClass || '',
+    isFreeShippingEligible: Boolean(
+      shipping.isFreeShippingEligible || productShipping.isFreeShippingEligible,
+    ),
+  }
+}
+
 const formatWeight = (shipping = {}) => {
   const value = shipping.weight?.value
 
@@ -209,7 +231,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
   const { compareAtPrice, discountPercent, price } = getPriceData(displayPriceSource, product)
   const sku = displayVariant?.sku || product.sku || ''
   const description = product.shortDescription || product.description || ''
-  const shipping = displayVariant?.shipping || product.shipping || {}
+  const shipping = mergeDisplayShipping(product.shipping, displayVariant?.shipping)
   const details = [
     { label: 'SKU', value: sku },
     { label: 'Category', value: category },
