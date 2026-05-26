@@ -7,22 +7,6 @@ import AppSlider from '../../../components/AppSlider.jsx'
 
 const wrapIndex = (index, length) => ((index % length) + length) % length
 
-function getVisibleSlides(images, activeIndex) {
-  if (images.length <= 1) {
-    return images.map((image, index) => ({ image, index, offset: 0 }))
-  }
-
-  return [-1, 0, 1].map((offset) => {
-    const index = wrapIndex(activeIndex + offset, images.length)
-
-    return {
-      image: images[index],
-      index,
-      offset,
-    }
-  })
-}
-
 function ProductDetailsLightbox({
   activeIndex,
   images,
@@ -45,10 +29,9 @@ function ProductDetailsLightbox({
     resetZoom: resetSliderZoom,
     zoomScale,
   } = AppSlider.useZoom()
-  const visibleSlides = useMemo(
-    () => getVisibleSlides(images, activeIndex),
-    [activeIndex, images],
-  )
+  const slides = useMemo(() => (
+    images.map((image, index) => ({ image, index }))
+  ), [images])
 
   const resetZoom = useCallback(() => {
     resetSliderZoom()
@@ -240,7 +223,7 @@ function ProductDetailsLightbox({
           <AppSlider
             activeDotIndex={activeIndex}
             activeDotSx={AppSlider.overlayActiveDotSx}
-            activeIndex={hasMultipleImages ? 1 : 0}
+            activeIndex={activeIndex}
             arrowButtonProps={{ onPointerDown: handleNavigationPointerDown }}
             dotButtonProps={{ onPointerDown: handleNavigationPointerDown }}
             dotItems={images}
@@ -249,10 +232,10 @@ function ProductDetailsLightbox({
             dragOffset={hasMultipleImages ? dragOffset : 0}
             gap={0}
             getDotKey={(image) => image}
-            getKey={(slide) => `${slide.index}-${slide.offset}-${slide.image}`}
+            getKey={(slide) => `${slide.index}-${slide.image}`}
             hideDots={!hasMultipleImages}
             isDragging={isDragging}
-            items={visibleSlides}
+            items={slides}
             mode="translate"
             nextIcon={<ChevronRightRoundedIcon />}
             nextLabel="Next image"
@@ -306,7 +289,7 @@ function ProductDetailsLightbox({
                 </Box>
               )
             }}
-            rootSx={{ height: '100%', position: 'static', width: '100%' }}
+            rootSx={{ height: '100%', width: '100%' }}
             showArrows={hasMultipleImages}
             slideSx={{ height: '100%', width: '100%' }}
             spacing={0}

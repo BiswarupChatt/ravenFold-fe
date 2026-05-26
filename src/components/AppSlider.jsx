@@ -22,6 +22,7 @@ const appSliderOverlayDotsSx = {
   left: '50%',
   position: 'absolute',
   transform: 'translateX(-50%)',
+  width: 'max-content',
   zIndex: 4,
 }
 
@@ -114,12 +115,18 @@ function AppSlider({
   trackProps,
   trackSx,
   transition = 'transform 280ms cubic-bezier(0.22, 1, 0.36, 1)',
+  viewportSx,
 }) {
   const trackRef = useRef(null)
   const [internalActiveIndex, setInternalActiveIndex] = useState(0)
   const currentIndex = activeIndex ?? internalActiveIndex
   const currentDotIndex = activeDotIndex ?? currentIndex
   const dots = dotItems ?? items
+  const {
+    onScroll: trackPropsOnScroll,
+    sx: trackPropsSx,
+    ...restTrackProps
+  } = trackProps || {}
 
   if (!items.length) {
     return null
@@ -169,7 +176,7 @@ function AppSlider({
   }
 
   const handleTrackScroll = (event) => {
-    trackProps?.onScroll?.(event)
+    trackPropsOnScroll?.(event)
     handleScroll()
   }
 
@@ -216,17 +223,26 @@ function AppSlider({
   }
 
   return (
-    <Stack spacing={spacing} sx={rootSx}>
+    <Stack
+      spacing={spacing}
+      sx={[
+        {
+          minWidth: 0,
+          position: 'relative',
+          width: '100%',
+        },
+        ...toSxArray(rootSx),
+      ]}
+    >
       {renderArrow('previous')}
 
       <Box
-        {...trackProps}
         onScroll={handleTrackScroll}
         ref={trackRef}
         sx={[
           {
-            display: 'flex',
-            gap,
+            minWidth: 0,
+            width: '100%',
           },
           mode === 'scroll'
             ? {
@@ -240,31 +256,53 @@ function AppSlider({
                 },
               }
             : {
-                transform: `translate3d(calc(${-currentIndex * 100}% + ${dragOffset}px), 0, 0)`,
-                transition: isDragging ? 'none' : transition,
+                height: '100%',
+                overflow: 'hidden',
               },
-          ...toSxArray(trackSx),
-          ...toSxArray(trackProps?.sx),
+          ...toSxArray(viewportSx),
         ]}
       >
-        {items.map((item, index) => (
-          <Box
-            key={getKey?.(item, index) || index}
-            sx={[
-              {
-                flex: '0 0 100%',
-              },
-              mode === 'scroll'
-                ? {
-                    scrollSnapAlign: 'start',
-                  }
-                : null,
-              ...toSxArray(slideSx),
-            ]}
-          >
-            {renderItem(item, index)}
-          </Box>
-        ))}
+        <Box
+          {...restTrackProps}
+          sx={[
+            {
+              display: 'flex',
+              gap,
+              minWidth: 0,
+              width: '100%',
+            },
+            mode === 'scroll'
+              ? null
+              : {
+                  height: '100%',
+                  transform: `translate3d(${-currentIndex * 100}%, 0, 0) translate3d(${dragOffset}px, 0, 0)`,
+                  transition: isDragging ? 'none' : transition,
+                  willChange: 'transform',
+                },
+            ...toSxArray(trackSx),
+            ...toSxArray(trackPropsSx),
+          ]}
+        >
+          {items.map((item, index) => (
+            <Box
+              key={getKey?.(item, index) || index}
+              sx={[
+                {
+                  flex: '0 0 100%',
+                  minWidth: 0,
+                },
+                mode === 'scroll'
+                  ? {
+                      scrollSnapAlign: 'start',
+                    }
+                  : null,
+                ...toSxArray(slideSx),
+              ]}
+            >
+              {renderItem(item, index)}
+            </Box>
+          ))}
+        </Box>
       </Box>
 
       {renderArrow('next')}
@@ -274,7 +312,15 @@ function AppSlider({
           direction="row"
           justifyContent="center"
           spacing={0.75}
-          sx={dotsSx}
+          sx={[
+            {
+              alignSelf: 'center',
+              maxWidth: '100%',
+              mx: 'auto',
+              width: 'fit-content',
+            },
+            ...toSxArray(dotsSx),
+          ]}
         >
           {dots.map((item, index) => (
             <Box
