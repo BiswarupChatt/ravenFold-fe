@@ -3,25 +3,7 @@ import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import { Box, Dialog, IconButton, Tooltip } from '@mui/material'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-
-const buttonSx = {
-  bgcolor: 'rgba(255, 255, 255, 0.12)',
-  color: '#ffffff',
-  '&:hover': {
-    bgcolor: 'rgba(255, 255, 255, 0.2)',
-  },
-}
-
-const arrowSx = {
-  ...buttonSx,
-  position: 'absolute',
-  top: '50%',
-  transform: 'translateY(-50%)',
-  zIndex: 4,
-}
-
-const zoomScales = [1, 1.5, 2.25, 3.5]
-const maxZoomStep = zoomScales.length - 1
+import AppSlider from '../../../components/AppSlider.jsx'
 
 const wrapIndex = (index, length) => ((index % length) + length) % length
 
@@ -49,7 +31,6 @@ function ProductDetailsLightbox({
   open,
   productName,
 }) {
-  const [zoomStep, setZoomStep] = useState(0)
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 })
@@ -57,16 +38,22 @@ function ProductDetailsLightbox({
   const panStartRef = useRef({ x: 0, y: 0 })
   const activeImage = images[activeIndex]
   const hasMultipleImages = images.length > 1
-  const isZoomed = zoomStep > 0
+  const {
+    advanceZoom: advanceSliderZoom,
+    isMaxZoom,
+    isZoomed,
+    resetZoom: resetSliderZoom,
+    zoomScale,
+  } = AppSlider.useZoom()
   const visibleSlides = useMemo(
     () => getVisibleSlides(images, activeIndex),
     [activeIndex, images],
   )
 
   const resetZoom = useCallback(() => {
-    setZoomStep(0)
+    resetSliderZoom()
     setPanOffset({ x: 0, y: 0 })
-  }, [])
+  }, [resetSliderZoom])
 
   const goToIndex = useCallback((index) => {
     if (!images.length) {
@@ -106,11 +93,9 @@ function ProductDetailsLightbox({
   }
 
   const advanceZoom = () => {
-    const nextZoomStep = zoomStep >= maxZoomStep ? 0 : zoomStep + 1
+    const nextZoomStep = advanceSliderZoom()
 
-    setZoomStep(nextZoomStep)
-
-    if (zoomStep === 0 || nextZoomStep === 0) {
+    if (!isZoomed || nextZoomStep === 0) {
       setPanOffset({ x: 0, y: 0 })
     }
   }
@@ -185,11 +170,6 @@ function ProductDetailsLightbox({
     event.stopPropagation()
   }
 
-  const slideTransform = hasMultipleImages
-    ? `translate3d(calc(-100% + ${dragOffset}px), 0, 0)`
-    : 'translate3d(0, 0, 0)'
-  const zoomScale = zoomScales[zoomStep]
-
   return (
     <Dialog
       fullScreen
@@ -228,7 +208,7 @@ function ProductDetailsLightbox({
       >
         <Box sx={{ position: 'absolute', right: { xs: 12, sm: 24 }, top: { xs: 12, sm: 24 }, zIndex: 4 }}>
           <Tooltip title="Close">
-            <IconButton aria-label="Close image overlay" onClick={onClose} sx={buttonSx}>
+            <IconButton aria-label="Close image overlay" onClick={onClose} sx={AppSlider.overlayButtonSx}>
               <CloseRoundedIcon />
             </IconButton>
           </Tooltip>
@@ -257,39 +237,44 @@ function ProductDetailsLightbox({
             },
           }}
         >
-          {hasMultipleImages ? (
-            <IconButton
-              aria-label="Previous image"
-              onClick={(event) => {
-                event.stopPropagation()
-                goToIndex(activeIndex - 1)
-              }}
-              onPointerDown={handleNavigationPointerDown}
-              sx={{ ...arrowSx, left: { xs: 12, sm: 24 } }}
-            >
-              <ChevronLeftRoundedIcon />
-            </IconButton>
-          ) : null}
-
-          <Box
-            sx={{
-              display: 'flex',
-              height: '100%',
-              transform: slideTransform,
-              transition: isDragging ? 'none' : 'transform 280ms cubic-bezier(0.22, 1, 0.36, 1)',
-              width: '100%',
+          <AppSlider
+            activeDotIndex={activeIndex}
+            activeDotSx={AppSlider.overlayActiveDotSx}
+            activeIndex={hasMultipleImages ? 1 : 0}
+            arrowButtonProps={{ onPointerDown: handleNavigationPointerDown }}
+            dotButtonProps={{ onPointerDown: handleNavigationPointerDown }}
+            dotItems={images}
+            dotsSx={AppSlider.overlayDotsSx}
+            dotSx={AppSlider.overlayDotSx}
+            dragOffset={hasMultipleImages ? dragOffset : 0}
+            gap={0}
+            getDotKey={(image) => image}
+            getKey={(slide) => `${slide.index}-${slide.offset}-${slide.image}`}
+            hideDots={!hasMultipleImages}
+            isDragging={isDragging}
+            items={visibleSlides}
+            mode="translate"
+            nextIcon={<ChevronRightRoundedIcon />}
+            nextLabel="Next image"
+            onDotClick={(index) => goToIndex(index)}
+            onNext={(event) => {
+              event.stopPropagation()
+              goToIndex(activeIndex + 1)
             }}
-          >
-            {visibleSlides.map((slide) => {
+            onPrevious={(event) => {
+              event.stopPropagation()
+              goToIndex(activeIndex - 1)
+            }}
+            previousIcon={<ChevronLeftRoundedIcon />}
+            previousLabel="Previous image"
+            renderItem={(slide) => {
               const isActive = slide.index === activeIndex
 
               return (
                 <Box
-                  key={`${slide.index}-${slide.offset}-${slide.image}`}
                   sx={{
                     alignItems: 'center',
                     display: 'flex',
-                    flex: '0 0 100%',
                     height: '100%',
                     justifyContent: 'center',
                     overflow: 'hidden',
@@ -305,7 +290,7 @@ function ProductDetailsLightbox({
                     loading={isActive ? 'eager' : 'lazy'}
                     src={slide.image}
                     sx={{
-                      cursor: isDragging ? 'grabbing' : zoomStep >= maxZoomStep ? 'zoom-out' : 'zoom-in',
+                      cursor: isDragging ? 'grabbing' : isMaxZoom ? 'zoom-out' : 'zoom-in',
                       display: 'block',
                       maxHeight: { xs: '82dvh', sm: '86dvh' },
                       maxWidth: { xs: '88vw', sm: '82vw' },
@@ -320,61 +305,14 @@ function ProductDetailsLightbox({
                   />
                 </Box>
               )
-            })}
-          </Box>
+            }}
+            rootSx={{ height: '100%', position: 'static', width: '100%' }}
+            showArrows={hasMultipleImages}
+            slideSx={{ height: '100%', width: '100%' }}
+            spacing={0}
+            trackSx={{ height: '100%', width: '100%' }}
+          />
 
-          {hasMultipleImages ? (
-            <IconButton
-              aria-label="Next image"
-              onClick={(event) => {
-                event.stopPropagation()
-                goToIndex(activeIndex + 1)
-              }}
-              onPointerDown={handleNavigationPointerDown}
-              sx={{ ...arrowSx, right: { xs: 12, sm: 24 } }}
-            >
-              <ChevronRightRoundedIcon />
-            </IconButton>
-          ) : null}
-
-          {hasMultipleImages ? (
-            <Box
-              sx={{
-                bottom: { xs: 18, sm: 26 },
-                display: 'flex',
-                gap: 0.8,
-                justifyContent: 'center',
-                left: '50%',
-                position: 'absolute',
-                transform: 'translateX(-50%)',
-                zIndex: 4,
-              }}
-            >
-              {images.map((image, index) => (
-                <Box
-                  aria-label={`Show image ${index + 1}`}
-                  component="button"
-                  key={image}
-                  onClick={(event) => {
-                    event.stopPropagation()
-                    goToIndex(index)
-                  }}
-                  onPointerDown={handleNavigationPointerDown}
-                  sx={{
-                    bgcolor: index === activeIndex ? '#ffffff' : 'rgba(255, 255, 255, 0.42)',
-                    border: 0,
-                    borderRadius: 999,
-                    cursor: 'pointer',
-                    height: 7,
-                    p: 0,
-                    transition: 'background-color 180ms ease, width 180ms ease',
-                    width: index === activeIndex ? 22 : 7,
-                  }}
-                  type="button"
-                />
-              ))}
-            </Box>
-          ) : null}
         </Box>
       </Box>
     </Dialog>
