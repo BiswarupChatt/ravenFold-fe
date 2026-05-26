@@ -1,7 +1,6 @@
 import StraightenRoundedIcon from '@mui/icons-material/StraightenRounded'
 import {
   Box,
-  Button,
   ButtonBase,
   MenuItem,
   Stack,
@@ -10,7 +9,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import AppLightbox from '../../../components/AppLightbox.jsx'
+import AppOverlayDialog from '../../../components/AppOverlayDialog.jsx'
 
 const getOptionKey = (option = {}) => option.id || option.name
 const getValueKey = (value = {}) => value.id || value.value
@@ -46,9 +45,12 @@ function ProductDetailsOptions({
                 <Typography
                   sx={{
                     color: 'text.secondary',
+                    display: 'inline-flex',
+                    alignItems: 'center',
                     fontSize: '0.92rem',
                     fontWeight: 700,
-                    lineHeight: 1.35,
+                    lineHeight: 1.1,
+                    minHeight: 24,
                   }}
                 >
                   {group.name}
@@ -61,24 +63,35 @@ function ProductDetailsOptions({
                 </Typography>
 
                 {sizeGuideUrl ? (
-                  <Button
-                    color="secondary"
+                  <ButtonBase
+                    aria-label={`Open ${group.name.toLowerCase()} guide`}
                     onClick={() => setActiveSizeGuide({
                       title: `${group.name} Guide`,
                       url: sizeGuideUrl,
                     })}
-                    size="small"
-                    startIcon={<StraightenRoundedIcon fontSize="small" />}
                     sx={{
+                      alignItems: 'center',
+                      color: 'secondary.main',
+                      display: 'inline-flex',
+                      flexShrink: 0,
                       fontSize: '0.82rem',
-                      minHeight: 30,
-                      px: 0,
+                      fontWeight: 800,
+                      gap: 0.75,
+                      lineHeight: 1.1,
+                      minHeight: 24,
+                      p: 0,
+                      verticalAlign: 'middle',
+                      '& svg': {
+                        display: 'block',
+                        flexShrink: 0,
+                        fontSize: 20,
+                      },
                     }}
                     type="button"
-                    variant="text"
                   >
+                    <StraightenRoundedIcon />
                     Size Guide
-                  </Button>
+                  </ButtonBase>
                 ) : null}
               </Stack>
 
@@ -202,7 +215,7 @@ function ProductDetailsOptions({
         })}
       </Stack>
 
-      <AppLightbox
+      <AppOverlayDialog
         closeButtonLabel="Close size guide"
         contentSx={{
           alignItems: 'center',
@@ -229,7 +242,7 @@ function ProductDetailsOptions({
             }}
           />
         ) : null}
-      </AppLightbox>
+      </AppOverlayDialog>
     </>
   )
 }

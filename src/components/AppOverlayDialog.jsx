@@ -20,7 +20,7 @@ const defaultCloseButtonSx = {
   },
 }
 
-function AppLightbox({
+function AppOverlayDialog({
   children,
   closeButtonLabel = 'Close overlay',
   closeButtonSx,
@@ -104,4 +104,4 @@ function AppLightbox({
   )
 }
 
-export default AppLightbox
+export default AppOverlayDialog

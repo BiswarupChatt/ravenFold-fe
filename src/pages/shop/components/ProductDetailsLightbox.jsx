@@ -2,7 +2,7 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 import { Box } from '@mui/material'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import AppLightbox from '../../../components/AppLightbox.jsx'
+import AppOverlayDialog from '../../../components/AppOverlayDialog.jsx'
 import AppSlider from '../../../components/AppSlider.jsx'
 
 const wrapIndex = (index, length) => ((index % length) + length) % length
@@ -154,7 +154,7 @@ function ProductDetailsLightbox({
   }
 
   return (
-    <AppLightbox
+    <AppOverlayDialog
       closeButtonLabel="Close image overlay"
       closeButtonSx={AppSlider.overlayButtonSx}
       onClose={onClose}
@@ -259,7 +259,7 @@ function ProductDetailsLightbox({
           trackSx={{ height: '100%', width: '100%' }}
         />
       </Box>
-    </AppLightbox>
+    </AppOverlayDialog>
   )
 }
 
