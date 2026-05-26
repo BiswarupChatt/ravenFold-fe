@@ -10,10 +10,21 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import AppButton from '../../../components/AppButton.jsx'
 import { getApiErrorMessage } from '../../../services/apiClient.js'
-import { addCartItem, mapServerCartItems } from '../../../services/cartApi.js'
+import {
+  addCartItem,
+  mapServerCartItems,
+  removeCartItem as removeServerCartItem,
+  updateCartItem,
+} from '../../../services/cartApi.js'
 import { errorToast, successToast } from '../../../services/toast.js'
 import { selectIsAuthenticated } from '../../../store/authSlice.js'
-import { addItem, replaceCartItems } from '../../../store/cartSlice.js'
+import {
+  addItem,
+  decreaseItemQuantity,
+  removeItem,
+  replaceCartItems,
+  selectCartItems,
+} from '../../../store/cartSlice.js'
 import { selectWishlistItems, toggleWishlistItem } from '../../../store/wishlistSlice.js'
 import formatPrice from '../../../utils/formatPrice.js'
 import ProductDetailsOptions from './ProductDetailsOptions.jsx'
@@ -250,6 +261,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const isAuthenticated = useSelector(selectIsAuthenticated)
+  const cartItems = useSelector(selectCartItems)
   const wishlistItems = useSelector(selectWishlistItems)
   const activeVariants = useMemo(
     () => variants.filter((variant) => variant?.isActive !== false),
@@ -292,6 +304,16 @@ function ProductDetailsInfo({ product, variants = [] }) {
     : []
   const tags = Array.isArray(product.tags) ? product.tags.filter(Boolean) : []
   const canPurchase = !product.hasVariants || Boolean(selectedVariant)
+  const cartItemKey = `${product.id}:${displayVariant?.id || ''}`
+  const currentCartItem = useMemo(() => (
+    cartItems.find((item) => {
+      const itemKey = `${item.productId || item.id}:${item.variantId || ''}`
+
+      return itemKey === cartItemKey || item.id === cartItemKey
+    }) || null
+  ), [cartItemKey, cartItems])
+  const cartQuantity = Number(currentCartItem?.quantity || 0)
+  const isAddedToCart = cartQuantity > 0
   const isWishlisted = wishlistItems.some((item) => item.id === product.id)
 
   useEffect(() => {
@@ -350,7 +372,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
     setVariantSearchParam(nearestVariant)
   }
 
-  const buildCartProduct = () => ({
+  const buildCartProduct = (itemQuantity = quantity) => ({
     ...product,
     category,
     compareAtPrice,
@@ -359,7 +381,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
     image: getPrimaryImage(displayVariant, product),
     price,
     productId: product.id,
-    quantity,
+    quantity: itemQuantity,
     sku,
     variantId: displayVariant?.id || '',
     variantLabel: getVariantLabel(displayVariant),
@@ -381,12 +403,12 @@ function ProductDetailsInfo({ product, variants = [] }) {
     }
   }
 
-  const persistCartProduct = async () => {
+  const persistCartProduct = async (itemQuantity = quantity) => {
     if (!canPurchase) {
       throw new Error('Please select an available variant.')
     }
 
-    const cartProduct = buildCartProduct()
+    const cartProduct = buildCartProduct(itemQuantity)
 
     if (!isAuthenticated) {
       dispatch(addItem(cartProduct))
@@ -395,7 +417,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
 
     const cart = await addCartItem({
       productId: cartProduct.productId,
-      quantity,
+      quantity: itemQuantity,
       variantId: cartProduct.variantId,
     })
 
@@ -407,9 +429,48 @@ function ProductDetailsInfo({ product, variants = [] }) {
     setCartLoading(true)
 
     try {
-      const cartProduct = await persistCartProduct()
+      const cartProduct = await persistCartProduct(1)
 
       successToast(`${cartProduct.name} added to cart.`)
+      setQuantity(1)
+    } catch (error) {
+      errorToast(getApiErrorMessage(error))
+    } finally {
+      setCartLoading(false)
+    }
+  }
+
+  const handleCartQuantityChange = async (nextQuantity) => {
+    if (!currentCartItem) {
+      return
+    }
+
+    setCartLoading(true)
+
+    try {
+      if (!isAuthenticated) {
+        if (nextQuantity <= 0) {
+          dispatch(removeItem(cartItemKey))
+        } else if (nextQuantity > cartQuantity) {
+          dispatch(addItem(buildCartProduct(1)))
+        } else {
+          dispatch(decreaseItemQuantity(cartItemKey))
+        }
+
+        setQuantity(Math.max(nextQuantity, 1))
+        return
+      }
+
+      if (!currentCartItem.cartItemId) {
+        throw new Error('Unable to update this cart item.')
+      }
+
+      const cart = nextQuantity <= 0
+        ? await removeServerCartItem(currentCartItem.cartItemId)
+        : await updateCartItem(currentCartItem.cartItemId, { quantity: nextQuantity })
+
+      dispatch(replaceCartItems(mapServerCartItems(cart.items)))
+      setQuantity(Math.max(nextQuantity, 1))
     } catch (error) {
       errorToast(getApiErrorMessage(error))
     } finally {
@@ -421,9 +482,12 @@ function ProductDetailsInfo({ product, variants = [] }) {
     setBuyNowLoading(true)
 
     try {
-      const cartProduct = await persistCartProduct()
+      const cartProduct = currentCartItem || await persistCartProduct(1)
 
-      successToast(`${cartProduct.name} added to cart.`)
+      if (!currentCartItem) {
+        successToast(`${cartProduct.name} added to cart.`)
+      }
+
       navigate('/cart')
     } catch (error) {
       errorToast(getApiErrorMessage(error))
@@ -463,19 +527,6 @@ function ProductDetailsInfo({ product, variants = [] }) {
             {category}
           </Typography>
 
-          {product.isFeatured ? (
-            <Chip
-              label="Featured"
-              size="small"
-              sx={{
-                bgcolor: 'rgba(217, 70, 31, 0.1)',
-                color: 'secondary.dark',
-                fontSize: '0.72rem',
-                fontWeight: 800,
-                height: 24,
-              }}
-            />
-          ) : null}
         </Stack>
 
         <Typography
@@ -579,109 +630,148 @@ function ProductDetailsInfo({ product, variants = [] }) {
 
       <Divider />
 
-      <Stack spacing={1.2}>
-        <Typography sx={{ fontSize: '0.92rem', fontWeight: 800 }}>
-          Quantity
-        </Typography>
-
-        <Stack alignItems="center" direction="row" spacing={1}>
-          <IconButton
-            aria-label="Decrease quantity"
-            disabled={quantity <= 1}
-            onClick={() => setQuantity((currentQuantity) => Math.max(1, currentQuantity - 1))}
-            sx={{
-              border: '1px solid',
-              borderColor: 'divider',
-              height: 38,
-              width: 38,
-            }}
-          >
-            <RemoveRoundedIcon fontSize="small" />
-          </IconButton>
-
-          <Box
-            sx={{
-              alignItems: 'center',
-              border: '1px solid',
-              borderColor: 'divider',
-              display: 'flex',
-              fontWeight: 900,
-              height: 38,
-              justifyContent: 'center',
-              minWidth: 52,
-              px: 1.5,
-            }}
-          >
-            {quantity}
-          </Box>
-
-          <IconButton
-            aria-label="Increase quantity"
-            onClick={() => setQuantity((currentQuantity) => currentQuantity + 1)}
-            sx={{
-              border: '1px solid',
-              borderColor: 'divider',
-              height: 38,
-              width: 38,
-            }}
-          >
-            <AddRoundedIcon fontSize="small" />
-          </IconButton>
-        </Stack>
-      </Stack>
-
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.15}>
-        <AppButton
-          disabled={!canPurchase || buyNowLoading || cartLoading}
-          fullWidth
-          loading={cartLoading}
-          onClick={handleAddToCart}
-          startIcon={<AddShoppingCartRoundedIcon />}
+      <Stack
+        spacing={1}
+      >
+        <Box
           sx={{
-            borderColor: 'text.primary',
-            color: 'text.primary',
-            minHeight: 50,
-          }}
-          variant="outlined"
-        >
-          Add to Cart
-        </AppButton>
-
-        <AppButton
-          disabled={!canPurchase || cartLoading || buyNowLoading}
-          fullWidth
-          loading={buyNowLoading}
-          onClick={handleBuyNow}
-          startIcon={<BoltRoundedIcon />}
-          sx={{
-            bgcolor: 'text.primary',
-            minHeight: 50,
-            '&:hover': {
-              bgcolor: 'primary.dark',
+            display: 'grid',
+            gap: 1,
+            gridTemplateColumns: {
+              xs: 'minmax(0, 1fr) 52px',
+              sm: 'minmax(0, 1fr) minmax(0, 1fr) 52px',
             },
           }}
-          variant="contained"
         >
-          Buy Now
-        </AppButton>
+          {isAddedToCart ? (
+            <Stack
+              alignItems="center"
+              direction="row"
+              sx={{
+                bgcolor: 'transparent',
+                border: '1px solid',
+                borderColor: 'text.primary',
+                borderRadius: 2,
+                color: 'text.primary',
+                height: 52,
+                minWidth: 0,
+                overflow: 'hidden',
+              }}
+            >
+              <IconButton
+                aria-label="Decrease cart quantity"
+                disabled={cartLoading || buyNowLoading}
+                onClick={() => handleCartQuantityChange(cartQuantity - 1)}
+                sx={{
+                  borderRadius: 0,
+                  color: 'inherit',
+                  height: '100%',
+                  width: 56,
+                  '&:hover': {
+                    bgcolor: 'rgba(24, 24, 27, 0.06)',
+                  },
+                  '&.Mui-disabled': {
+                    color: 'rgba(24, 24, 27, 0.32)',
+                  },
+                }}
+              >
+                <RemoveRoundedIcon />
+              </IconButton>
+
+              <Box
+                sx={{
+                  alignItems: 'center',
+                  alignSelf: 'stretch',
+                  bgcolor: 'transparent',
+                  borderColor: 'text.primary',
+                  borderLeft: '1px solid',
+                  borderRight: '1px solid',
+                  display: 'flex',
+                  flex: 1,
+                  fontSize: '0.95rem',
+                  fontWeight: 700,
+                  justifyContent: 'center',
+                  lineHeight: 1.2,
+                  minWidth: 0,
+                }}
+              >
+                {cartQuantity}
+              </Box>
+
+              <IconButton
+                aria-label="Increase cart quantity"
+                disabled={cartLoading || buyNowLoading}
+                onClick={() => handleCartQuantityChange(cartQuantity + 1)}
+                sx={{
+                  borderRadius: 0,
+                  color: 'inherit',
+                  height: '100%',
+                  width: 56,
+                  '&:hover': {
+                    bgcolor: 'rgba(24, 24, 27, 0.06)',
+                  },
+                  '&.Mui-disabled': {
+                    color: 'rgba(24, 24, 27, 0.32)',
+                  },
+                }}
+              >
+                <AddRoundedIcon />
+              </IconButton>
+            </Stack>
+          ) : (
+            <AppButton
+              disabled={!canPurchase || buyNowLoading || cartLoading}
+              fullWidth
+              loading={cartLoading}
+              onClick={handleAddToCart}
+              startIcon={<AddShoppingCartRoundedIcon />}
+              sx={{
+                bgcolor: 'text.primary',
+                minHeight: 52,
+                '&:hover': {
+                  bgcolor: 'primary.dark',
+                },
+              }}
+              variant="contained"
+            >
+              Add to Cart
+            </AppButton>
+          )}
+
+          <AppButton
+            disabled={!canPurchase || cartLoading || buyNowLoading}
+            fullWidth
+            loading={buyNowLoading}
+            onClick={handleBuyNow}
+            startIcon={<BoltRoundedIcon />}
+            sx={{
+              borderColor: 'text.primary',
+              color: 'text.primary',
+              gridColumn: { xs: '1 / -1', sm: 'auto' },
+              minHeight: 52,
+            }}
+            variant="outlined"
+          >
+            Buy Now
+          </AppButton>
 
         <Tooltip title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}>
           <IconButton
             aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
             onClick={handleToggleWishlist}
             sx={{
-              alignSelf: { xs: 'stretch', sm: 'auto' },
-              border: '1px solid',
-              borderColor: isWishlisted ? 'secondary.main' : 'divider',
-              borderRadius: 0,
+	              border: '1px solid',
+	              borderColor: isWishlisted ? 'secondary.main' : 'divider',
+	              borderRadius: 2,
               color: isWishlisted ? 'secondary.main' : 'text.primary',
-              minHeight: 50,
-              minWidth: { xs: '100%', sm: 52 },
+              height: 52,
+              width: 52,
             }}
           >
             {isWishlisted ? <FavoriteRoundedIcon /> : <FavoriteBorderRoundedIcon />}
           </IconButton>
         </Tooltip>
+        </Box>
       </Stack>
 
       {!canPurchase ? (
@@ -694,8 +784,8 @@ function ProductDetailsInfo({ product, variants = [] }) {
         spacing={1.15}
         sx={{
           borderBottom: '1px solid',
-          borderColor: 'divider',
           borderTop: '1px solid',
+          borderColor: 'divider',
           py: 2.15,
         }}
       >
