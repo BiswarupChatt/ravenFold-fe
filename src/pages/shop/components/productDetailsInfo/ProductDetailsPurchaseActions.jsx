@@ -18,9 +18,11 @@ function ProductDetailsPurchaseActions({
 }) {
   const { isDesktop, isMobile, isTablet } = useResponsiveView()
   const isCompactView = isMobile || isTablet
-  const mobileSpacerHeight = canPurchase ? 144 : 172
-  const actionHeight = isDesktop ? 52 : 48
-  const quantityButtonWidth = isDesktop ? 56 : isTablet ? 48 : 40
+  const mobileSpacerHeight = canPurchase ? 116 : 142
+  const actionHeight = isDesktop ? 52 : isTablet ? 40 : 38
+  const actionFontSize = isDesktop ? '0.95rem' : isTablet ? '0.86rem' : '0.8rem'
+  const actionIconSize = isDesktop ? 22 : 18
+  const quantityButtonWidth = isDesktop ? 56 : isTablet ? 42 : 36
 
   return (
     <>
@@ -36,7 +38,7 @@ function ProductDetailsPurchaseActions({
             : `calc(env(safe-area-inset-bottom) + ${isTablet ? 72 : 68}px)`,
           boxShadow: isCompactView ? '0 18px 56px rgba(15, 23, 42, 0.22)' : 'none',
           left: isDesktop ? 'auto' : isTablet ? 16 : 12,
-          p: isDesktop ? 0 : isTablet ? 1.5 : 1.25,
+          p: isDesktop ? 0 : isTablet ? 1.125 : 1,
           position: isCompactView ? 'fixed' : 'static',
           right: isDesktop ? 'auto' : isTablet ? 16 : 12,
           zIndex: isCompactView ? (theme) => theme.zIndex.appBar + 2 : 'auto',
@@ -45,7 +47,7 @@ function ProductDetailsPurchaseActions({
       <Box
         sx={{
           display: 'grid',
-          gap: 1,
+          gap: isCompactView ? 0.75 : 1,
           gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
         }}
       >
@@ -77,7 +79,10 @@ function ProductDetailsPurchaseActions({
                   bgcolor: 'rgba(24, 24, 27, 0.06)',
                 },
                 '&.Mui-disabled': {
-                  color: 'rgba(24, 24, 27, 0.32)',
+                color: 'rgba(24, 24, 27, 0.32)',
+                },
+                '& svg': {
+                  fontSize: actionIconSize,
                 },
               }}
             >
@@ -94,7 +99,7 @@ function ProductDetailsPurchaseActions({
                 borderRight: '1px solid',
                 display: 'flex',
                 flex: 1,
-                fontSize: '0.95rem',
+                fontSize: actionFontSize,
                 fontWeight: 700,
                 justifyContent: 'center',
                 lineHeight: 1.2,
@@ -119,6 +124,9 @@ function ProductDetailsPurchaseActions({
                 '&.Mui-disabled': {
                   color: 'rgba(24, 24, 27, 0.32)',
                 },
+                '& svg': {
+                  fontSize: actionIconSize,
+                },
               }}
             >
               <AddRoundedIcon />
@@ -132,7 +140,16 @@ function ProductDetailsPurchaseActions({
             onClick={onAddToCart}
             startIcon={<AddShoppingCartRoundedIcon />}
             sx={{
+              fontSize: actionFontSize,
               minHeight: actionHeight,
+              px: isCompactView ? 1 : 2,
+              whiteSpace: 'nowrap',
+              '& .MuiButton-startIcon': {
+                mr: isCompactView ? 0.5 : 1,
+              },
+              '& svg': {
+                fontSize: actionIconSize,
+              },
             }}
             variant="outlined"
           >
@@ -147,7 +164,16 @@ function ProductDetailsPurchaseActions({
           onClick={onBuyNow}
           startIcon={<BoltRoundedIcon />}
           sx={{
+            fontSize: actionFontSize,
             minHeight: actionHeight,
+            px: isCompactView ? 1 : 2,
+            whiteSpace: 'nowrap',
+            '& .MuiButton-startIcon': {
+              mr: isCompactView ? 0.5 : 1,
+            },
+            '& svg': {
+              fontSize: actionIconSize,
+            },
           }}
           variant="contained"
         >
