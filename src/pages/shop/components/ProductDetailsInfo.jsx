@@ -165,18 +165,6 @@ const findMatchingVariant = (variants = [], groups = [], selectedOptions = {}) =
   ))
 }
 
-const formatShippingSummary = (shipping = {}) => {
-  if (shipping.requiresShipping === false) {
-    return 'No shipping required'
-  }
-
-  if (shipping.isFreeShippingEligible) {
-    return 'Free shipping eligible'
-  }
-
-  return shipping.shippingClass || 'Standard shipping'
-}
-
 const mergeDisplayShipping = (productShipping = {}, variantShipping = null) => {
   const shipping = variantShipping || {}
 
@@ -284,7 +272,6 @@ function ProductDetailsInfo({ product, variants = [] }) {
   const details = [
     { label: 'SKU', value: sku },
     { label: 'Category', value: category },
-    { label: 'Shipping', value: formatShippingSummary(shipping) },
     { label: 'Weight', value: formatWeight(shipping) },
     { label: 'Dimensions', value: formatDimensions(shipping) },
   ]
@@ -473,12 +460,6 @@ function ProductDetailsInfo({ product, variants = [] }) {
         >
           {product.name}
         </Typography>
-
-        {sku ? (
-          <Typography color="text.secondary" sx={{ fontSize: '0.94rem' }}>
-            SKU {sku}
-          </Typography>
-        ) : null}
       </Stack>
 
       <Stack spacing={0.7}>
@@ -514,14 +495,6 @@ function ProductDetailsInfo({ product, variants = [] }) {
           ) : null}
         </Stack>
 
-        {shipping.requiresShipping !== false ? (
-          <Stack alignItems="center" direction="row" spacing={0.75}>
-            <LocalShippingRoundedIcon sx={{ color: 'text.secondary', fontSize: 19 }} />
-            <Typography color="text.secondary" sx={{ fontSize: '0.9rem' }}>
-              {formatShippingSummary(shipping)}
-            </Typography>
-          </Stack>
-        ) : null}
       </Stack>
 
       {description ? (
