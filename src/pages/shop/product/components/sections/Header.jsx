@@ -1,9 +1,9 @@
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import { IconButton, Stack, Tooltip, Typography } from '@mui/material'
-import useResponsiveView from '../../../../hooks/useResponsiveView.js'
+import useResponsiveView from '../../../../../hooks/useResponsiveView.js'
 
-function ProductDetailsHeader({
+function Header({
   category,
   isWishlisted,
   name,
@@ -67,4 +67,4 @@ function ProductDetailsHeader({
   )
 }
 
-export default ProductDetailsHeader
+export default Header

@@ -1,8 +1,8 @@
 import { Breadcrumbs, Link, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
-import useResponsiveView from '../../../hooks/useResponsiveView.js'
+import useResponsiveView from '../../../../hooks/useResponsiveView.js'
 
-function ProductDetailsBreadcrumb({ product }) {
+function Breadcrumb({ product }) {
   const { isDesktop } = useResponsiveView()
 
   return (
@@ -44,4 +44,4 @@ function ProductDetailsBreadcrumb({ product }) {
   )
 }
 
-export default ProductDetailsBreadcrumb
+export default Breadcrumb

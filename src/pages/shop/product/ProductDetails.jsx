@@ -8,14 +8,14 @@ import {
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import AppButton from '../../components/AppButton.jsx'
-import useScreenSize from '../../hooks/useScreenSize.js'
-import { getApiErrorMessage } from '../../services/apiClient.js'
-import { getProduct, getProductVariants } from '../../services/productApi.js'
-import { errorToast } from '../../services/toast.js'
-import ProductDetailsBreadcrumb from './components/ProductDetailsBreadcrumb.jsx'
-import ProductDetailsGallery from './components/ProductDetailsGallery.jsx'
-import ProductDetailsInfo from './components/ProductDetailsInfo.jsx'
+import AppButton from '../../../components/AppButton.jsx'
+import useScreenSize from '../../../hooks/useScreenSize.js'
+import { getApiErrorMessage } from '../../../services/apiClient.js'
+import { getProduct, getProductVariants } from '../../../services/productApi.js'
+import { errorToast } from '../../../services/toast.js'
+import Breadcrumb from './components/Breadcrumb.jsx'
+import Gallery from './components/Gallery.jsx'
+import Info from './components/Info.jsx'
 
 function ProductDetails() {
   const navigate = useNavigate()
@@ -105,7 +105,7 @@ function ProductDetails() {
                 >
                   Back
                 </AppButton>
-                <ProductDetailsBreadcrumb product={product} />
+                <Breadcrumb product={product} />
               </Stack>
 
               <Box
@@ -121,8 +121,8 @@ function ProductDetails() {
                   },
                 }}
               >
-                <ProductDetailsGallery product={product} variants={variants} />
-                <ProductDetailsInfo product={product} variants={variants} />
+                <Gallery product={product} variants={variants} />
+                <Info product={product} variants={variants} />
               </Box>
             </Stack>
           ) : null}

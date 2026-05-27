@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material'
-import AppAccordion from '../../../../components/AppAccordion.jsx'
+import AppAccordion from '../../../../../components/AppAccordion.jsx'
 
-function ProductDescription({ description = '' }) {
+function Description({ description = '' }) {
   const visibleDescription = String(description || '').trim()
 
   if (!visibleDescription) {
@@ -30,4 +30,4 @@ function ProductDescription({ description = '' }) {
   )
 }
 
-export default ProductDescription
+export default Description

@@ -16,8 +16,8 @@ import Wishlist from '../pages/profile/subPages/wishlist/Wishlist.jsx'
 import ReturnsRefunds from '../pages/ReturnsRefunds.jsx'
 import ShippingReturns from '../pages/ShippingReturns.jsx'
 import TermsConditions from '../pages/TermsConditions.jsx'
-import ProductDetails from '../pages/shop/ProductDetails.jsx'
-import Shop from '../pages/shop/Shop.jsx'
+import ProductDetails from '../pages/shop/product/ProductDetails.jsx'
+import Shop from '../pages/shop/catalog/Shop.jsx'
 
 const ProtectedProfile = withAuthRequired(Profile)
 

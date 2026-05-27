@@ -1,8 +1,8 @@
 import { Stack } from '@mui/material'
-import AppAccordion from '../../../../components/AppAccordion.jsx'
+import AppAccordion from '../../../../../components/AppAccordion.jsx'
 import DetailRow from './DetailRow.jsx'
 
-function ProductDetails({ attributes = [] }) {
+function Details({ attributes = [] }) {
   if (!attributes.length) {
     return null
   }
@@ -22,4 +22,4 @@ function ProductDetails({ attributes = [] }) {
   )
 }
 
-export default ProductDetails
+export default Details

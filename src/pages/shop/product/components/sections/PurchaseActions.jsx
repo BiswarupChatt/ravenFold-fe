@@ -3,10 +3,10 @@ import AddShoppingCartRoundedIcon from '@mui/icons-material/AddShoppingCartRound
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded'
 import { Box, IconButton, Stack, Typography } from '@mui/material'
-import AppButton from '../../../../components/AppButton.jsx'
-import useResponsiveView from '../../../../hooks/useResponsiveView.js'
+import AppButton from '../../../../../components/AppButton.jsx'
+import useResponsiveView from '../../../../../hooks/useResponsiveView.js'
 
-function ProductDetailsPurchaseActions({
+function PurchaseActions({
   buyNowLoading,
   canPurchase,
   cartLoading,
@@ -226,4 +226,4 @@ function ProductDetailsPurchaseActions({
   )
 }
 
-export default ProductDetailsPurchaseActions
+export default PurchaseActions

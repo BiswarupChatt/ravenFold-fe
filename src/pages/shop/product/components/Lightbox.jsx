@@ -2,13 +2,13 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 import { Box } from '@mui/material'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import AppOverlayDialog from '../../../components/AppOverlayDialog.jsx'
-import AppSlider from '../../../components/AppSlider.jsx'
-import useResponsiveView from '../../../hooks/useResponsiveView.js'
+import AppOverlayDialog from '../../../../components/AppOverlayDialog.jsx'
+import AppSlider from '../../../../components/AppSlider.jsx'
+import useResponsiveView from '../../../../hooks/useResponsiveView.js'
 
 const wrapIndex = (index, length) => ((index % length) + length) % length
 
-function ProductDetailsLightbox({
+function Lightbox({
   activeIndex,
   images,
   onClose,
@@ -264,4 +264,4 @@ function ProductDetailsLightbox({
   )
 }
 
-export default ProductDetailsLightbox
+export default Lightbox

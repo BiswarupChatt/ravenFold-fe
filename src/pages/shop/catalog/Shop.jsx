@@ -10,22 +10,22 @@ import {
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import PageIntro from '../../components/PageIntro.jsx'
-import ProductCard from '../../components/ProductCard.jsx'
-import useScreenSize from '../../hooks/useScreenSize.js'
-import { getApiErrorMessage } from '../../services/apiClient.js'
+import PageIntro from '../../../components/PageIntro.jsx'
+import ProductCard from '../../../components/ProductCard.jsx'
+import useScreenSize from '../../../hooks/useScreenSize.js'
+import { getApiErrorMessage } from '../../../services/apiClient.js'
 import {
   addCartItem,
   mapServerCartItems,
-} from '../../services/cartApi.js'
-import { getProducts, getProductVariants } from '../../services/productApi.js'
-import { errorToast, successToast } from '../../services/toast.js'
-import { selectIsAuthenticated } from '../../store/authSlice.js'
-import { addItem, replaceCartItems } from '../../store/cartSlice.js'
+} from '../../../services/cartApi.js'
+import { getProducts, getProductVariants } from '../../../services/productApi.js'
+import { errorToast, successToast } from '../../../services/toast.js'
+import { selectIsAuthenticated } from '../../../store/authSlice.js'
+import { addItem, replaceCartItems } from '../../../store/cartSlice.js'
 import {
   selectWishlistItems,
   toggleWishlistItem,
-} from '../../store/wishlistSlice.js'
+} from '../../../store/wishlistSlice.js'
 
 const productLimit = 12
 

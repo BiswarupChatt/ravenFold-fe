@@ -2,30 +2,30 @@ import { Divider, Stack } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { getApiErrorMessage } from '../../../services/apiClient.js'
+import { getApiErrorMessage } from '../../../../services/apiClient.js'
 import {
   addCartItem,
   mapServerCartItems,
   removeCartItem as removeServerCartItem,
   updateCartItem,
-} from '../../../services/cartApi.js'
-import { errorToast, successToast } from '../../../services/toast.js'
-import { selectIsAuthenticated } from '../../../store/authSlice.js'
+} from '../../../../services/cartApi.js'
+import { errorToast, successToast } from '../../../../services/toast.js'
+import { selectIsAuthenticated } from '../../../../store/authSlice.js'
 import {
   addItem,
   decreaseItemQuantity,
   removeItem,
   replaceCartItems,
   selectCartItems,
-} from '../../../store/cartSlice.js'
-import { selectWishlistItems, toggleWishlistItem } from '../../../store/wishlistSlice.js'
-import useResponsiveView from '../../../hooks/useResponsiveView.js'
-import ProductDetailsOptions from './ProductDetailsOptions.jsx'
-import ProductDetails from './productDetailsInfo/ProductDetails.jsx'
-import ProductDetailsHeader from './productDetailsInfo/ProductDetailsHeader.jsx'
-import ProductDescription from './productDetailsInfo/ProductDescription.jsx'
-import ProductDetailsPrice from './productDetailsInfo/ProductDetailsPrice.jsx'
-import ProductDetailsPurchaseActions from './productDetailsInfo/ProductDetailsPurchaseActions.jsx'
+} from '../../../../store/cartSlice.js'
+import { selectWishlistItems, toggleWishlistItem } from '../../../../store/wishlistSlice.js'
+import useResponsiveView from '../../../../hooks/useResponsiveView.js'
+import Options from './Options.jsx'
+import Description from './sections/Description.jsx'
+import Details from './sections/Details.jsx'
+import Header from './sections/Header.jsx'
+import Price from './sections/Price.jsx'
+import PurchaseActions from './sections/PurchaseActions.jsx'
 import {
   VARIANT_QUERY_PARAM,
   buildOptionGroups,
@@ -39,9 +39,9 @@ import {
   getVariantLabel,
   getVariantOptionValueKey,
   getVariantParamValue,
-} from './productDetailsInfo/productDetailsInfoUtils.js'
+} from './utils.js'
 
-function ProductDetailsInfo({ product, variants = [] }) {
+function Info({ product, variants = [] }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -293,13 +293,13 @@ function ProductDetailsInfo({ product, variants = [] }) {
         width: '100%',
       }}
     >
-      <ProductDetailsHeader
+      <Header
         category={category}
         isWishlisted={isWishlisted}
         name={product.name}
         onToggleWishlist={handleToggleWishlist}
       />
-      <ProductDetailsPrice
+      <Price
         compareAtPrice={compareAtPrice}
         discountAmount={discountAmount}
         price={price}
@@ -308,7 +308,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
       {hasVariants ? (
         <>
           <Divider />
-          <ProductDetailsOptions
+          <Options
             groups={optionGroups}
             isValueAvailable={isValueAvailable}
             onSelectOption={handleSelectOption}
@@ -319,7 +319,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
 
       <Divider />
 
-      <ProductDetailsPurchaseActions
+      <PurchaseActions
         buyNowLoading={buyNowLoading}
         canPurchase={canPurchase}
         cartLoading={cartLoading}
@@ -347,11 +347,11 @@ function ProductDetailsInfo({ product, variants = [] }) {
           },
         }}
       >
-        <ProductDescription description={displayDescription} />
-        <ProductDetails attributes={attributes} />
+        <Description description={displayDescription} />
+        <Details attributes={attributes} />
       </Stack>
     </Stack>
   )
 }
 
-export default ProductDetailsInfo
+export default Info

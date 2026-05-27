@@ -9,14 +9,14 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
-import AppOverlayDialog from '../../../components/AppOverlayDialog.jsx'
-import useResponsiveView from '../../../hooks/useResponsiveView.js'
+import AppOverlayDialog from '../../../../components/AppOverlayDialog.jsx'
+import useResponsiveView from '../../../../hooks/useResponsiveView.js'
 
 const getOptionKey = (option = {}) => option.id || option.name
 const getValueKey = (value = {}) => value.id || value.value
 const getValueLabel = (value = {}) => value.label || value.value
 
-function ProductDetailsOptions({
+function Options({
   groups = [],
   isValueAvailable = () => true,
   onSelectOption,
@@ -292,4 +292,4 @@ function ProductDetailsOptions({
   )
 }
 
-export default ProductDetailsOptions
+export default Options

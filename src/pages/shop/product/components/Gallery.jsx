@@ -1,9 +1,9 @@
 import { Box, Typography } from '@mui/material'
 import { lazy, Suspense, useMemo, useState } from 'react'
-import AppSlider from '../../../components/AppSlider.jsx'
-import useScreenSize from '../../../hooks/useScreenSize.js'
+import AppSlider from '../../../../components/AppSlider.jsx'
+import useScreenSize from '../../../../hooks/useScreenSize.js'
 
-const ProductDetailsLightbox = lazy(() => import('./ProductDetailsLightbox.jsx'))
+const Lightbox = lazy(() => import('./Lightbox.jsx'))
 
 const getImageUrl = (image) => {
   if (typeof image === 'string') {
@@ -38,7 +38,7 @@ const chunkItems = (items, size) => {
   return chunks
 }
 
-function ProductImageTile({
+function ImageTile({
   image,
   isDesktop = false,
   onOpen,
@@ -132,7 +132,7 @@ function ProductImageTile({
   )
 }
 
-function ProductDetailsGallery({ product, variants }) {
+function Gallery({ product, variants }) {
   const { isDesktop, isMobile, isTab } = useScreenSize()
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
@@ -170,7 +170,7 @@ function ProductDetailsGallery({ product, variants }) {
 
   const lightbox = isLightboxOpen ? (
     <Suspense fallback={null}>
-      <ProductDetailsLightbox
+      <Lightbox
         activeIndex={lightboxActiveIndex}
         images={images}
         onClose={() => setIsLightboxOpen(false)}
@@ -200,7 +200,7 @@ function ProductDetailsGallery({ product, variants }) {
               }}
             >
               {page.map((item) => (
-	                <ProductImageTile
+	                <ImageTile
 	                  image={item.image}
 	                  isDesktop={isDesktop}
 	                  key={item.key}
@@ -241,7 +241,7 @@ function ProductDetailsGallery({ product, variants }) {
         }}
       >
         {desktopImages.map((item, index) => (
-	          <ProductImageTile
+	          <ImageTile
 	            image={item.image}
 	            isDesktop={isDesktop}
 	            key={item.key}
@@ -258,4 +258,4 @@ function ProductDetailsGallery({ product, variants }) {
   )
 }
 
-export default ProductDetailsGallery
+export default Gallery
