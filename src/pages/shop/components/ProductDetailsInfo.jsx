@@ -21,20 +21,17 @@ import {
 import { selectWishlistItems, toggleWishlistItem } from '../../../store/wishlistSlice.js'
 import useResponsiveView from '../../../hooks/useResponsiveView.js'
 import ProductDetailsOptions from './ProductDetailsOptions.jsx'
-import ProductDetailsAttributes from './productDetailsInfo/ProductDetailsAttributes.jsx'
+import ProductDetails from './productDetailsInfo/ProductDetails.jsx'
 import ProductDetailsHeader from './productDetailsInfo/ProductDetailsHeader.jsx'
-import ProductDetailsMeta from './productDetailsInfo/ProductDetailsMeta.jsx'
+import ProductDescription from './productDetailsInfo/ProductDescription.jsx'
 import ProductDetailsPrice from './productDetailsInfo/ProductDetailsPrice.jsx'
 import ProductDetailsPurchaseActions from './productDetailsInfo/ProductDetailsPurchaseActions.jsx'
-import ProductDetailsTags from './productDetailsInfo/ProductDetailsTags.jsx'
 import {
   VARIANT_QUERY_PARAM,
   buildOptionGroups,
   buildSelectedOptionsFromVariant,
   findMatchingVariant,
   findVariantByParam,
-  formatDimensions,
-  formatWeight,
   getOptionKey,
   getPriceData,
   getPrimaryImage,
@@ -42,7 +39,6 @@ import {
   getVariantLabel,
   getVariantOptionValueKey,
   getVariantParamValue,
-  mergeDisplayShipping,
 } from './productDetailsInfo/productDetailsInfoUtils.js'
 
 function ProductDetailsInfo({ product, variants = [] }) {
@@ -82,17 +78,10 @@ function ProductDetailsInfo({ product, variants = [] }) {
   const { compareAtPrice, discountAmount, price } = getPriceData(displayPriceSource, product)
   const sku = displayVariant?.sku || product.sku || ''
   const description = product.shortDescription || product.description || ''
-  const shipping = mergeDisplayShipping(product.shipping, displayVariant?.shipping)
-  const details = [
-    { label: 'SKU', value: sku },
-    { label: 'Category', value: category },
-    { label: 'Weight', value: formatWeight(shipping) },
-    { label: 'Dimensions', value: formatDimensions(shipping) },
-  ]
+  const displayDescription = product.description || product.shortDescription || ''
   const attributes = Array.isArray(product.attributes)
     ? product.attributes.filter((attribute) => attribute?.name && attribute?.value)
     : []
-  const tags = Array.isArray(product.tags) ? product.tags.filter(Boolean) : []
   const canPurchase = !product.hasVariants || Boolean(selectedVariant)
   const compactBottomPadding = isCompactView ? `${canPurchase ? 116 : 142}px` : 0
   const cartItemKey = `${product.id}:${displayVariant?.id || ''}`
@@ -341,9 +330,8 @@ function ProductDetailsInfo({ product, variants = [] }) {
         onCartQuantityChange={handleCartQuantityChange}
       />
 
-      <ProductDetailsMeta details={details} />
-      <ProductDetailsAttributes attributes={attributes} />
-      <ProductDetailsTags tags={tags} />
+      <ProductDetailsDescriptionAccordion description={displayDescription} />
+      <ProductDetails attributes={attributes} />
     </Stack>
   )
 }

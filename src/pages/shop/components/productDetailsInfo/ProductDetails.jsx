@@ -1,16 +1,14 @@
-import { Stack, Typography } from '@mui/material'
+import { Stack } from '@mui/material'
+import AppAccordion from '../../../../components/AppAccordion.jsx'
 import DetailRow from './DetailRow.jsx'
 
-function ProductDetailsAttributes({ attributes = [] }) {
+function ProductDetails({ attributes = [] }) {
   if (!attributes.length) {
     return null
   }
 
   return (
-    <Stack spacing={1.25} sx={{ minWidth: 0, width: '100%' }}>
-      <Typography sx={{ fontSize: '0.94rem', fontWeight: 900, minWidth: 0 }}>
-        Product Details
-      </Typography>
+    <AppAccordion defaultExpanded title="Product Details">
       <Stack spacing={0.85} sx={{ minWidth: 0 }}>
         {attributes.map((attribute) => (
           <DetailRow
@@ -20,7 +18,7 @@ function ProductDetailsAttributes({ attributes = [] }) {
           />
         ))}
       </Stack>
-    </Stack>
+    </AppAccordion>
   )
 }
 
