@@ -11,13 +11,12 @@ function toSxArray(value) {
 }
 
 const defaultCloseButtonSx = {
-  bgcolor: 'rgba(255, 255, 255, 0.9)',
-  boxShadow: '0 14px 40px rgba(15, 23, 42, 0.22)',
-  color: 'text.primary',
+  bgcolor: 'rgba(255, 255, 255, 0.12)',
+  color: '#ffffff',
   height: 44,
   width: 44,
   '&:hover': {
-    bgcolor: '#fff',
+    bgcolor: 'rgba(255, 255, 255, 0.2)',
   },
 }
 

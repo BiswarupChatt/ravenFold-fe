@@ -158,7 +158,6 @@ function ProductDetailsLightbox({
   return (
     <AppOverlayDialog
       closeButtonLabel="Close image overlay"
-      closeButtonSx={AppSlider.overlayButtonSx}
       onClose={onClose}
       open={open}
     >

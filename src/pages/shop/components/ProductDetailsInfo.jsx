@@ -343,6 +343,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
           },
           '& > .MuiAccordion-root + .MuiAccordion-root': {
             borderTop: 0,
+            mt: 0,
           },
         }}
       >
