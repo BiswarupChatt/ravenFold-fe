@@ -49,10 +49,18 @@ function AppAccordion({
           borderTop: '1px solid',
           borderColor: 'divider',
           borderRadius: 0,
+          m: 0,
           minWidth: 0,
           width: '100%',
           '&:before': {
             display: 'none',
+          },
+          '&&.Mui-expanded': {
+            m: 0,
+          },
+          '& + .MuiAccordion-root': {
+            borderTop: 0,
+            mt: 0,
           },
         },
         ...toSxArray(sx),

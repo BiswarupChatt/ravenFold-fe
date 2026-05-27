@@ -30,4 +30,4 @@ function ProductDescription({ description = '' }) {
   )
 }
 
-export default ProductDetailsDescriptionAccordion
+export default ProductDescription

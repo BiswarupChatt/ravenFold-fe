@@ -330,8 +330,25 @@ function ProductDetailsInfo({ product, variants = [] }) {
         onCartQuantityChange={handleCartQuantityChange}
       />
 
-      <ProductDetailsDescriptionAccordion description={displayDescription} />
-      <ProductDetails attributes={attributes} />
+      <Stack
+        spacing={0}
+        sx={{
+          minWidth: 0,
+          width: '100%',
+          '& > .MuiAccordion-root': {
+            m: 0,
+          },
+          '& > .MuiAccordion-root.Mui-expanded': {
+            m: 0,
+          },
+          '& > .MuiAccordion-root + .MuiAccordion-root': {
+            borderTop: 0,
+          },
+        }}
+      >
+        <ProductDescription description={displayDescription} />
+        <ProductDetails attributes={attributes} />
+      </Stack>
     </Stack>
   )
 }

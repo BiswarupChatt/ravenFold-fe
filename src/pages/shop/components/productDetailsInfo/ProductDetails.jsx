@@ -22,4 +22,4 @@ function ProductDetails({ attributes = [] }) {
   )
 }
 
-export default ProductDetailsAttributes
+export default ProductDetails
