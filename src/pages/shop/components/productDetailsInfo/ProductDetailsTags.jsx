@@ -6,7 +6,15 @@ function ProductDetailsTags({ tags = [] }) {
   }
 
   return (
-    <Stack direction="row" flexWrap="wrap" gap={0.75}>
+    <Stack
+      direction="row"
+      flexWrap="wrap"
+      gap={0.75}
+      sx={{
+        maxWidth: '100%',
+        minWidth: 0,
+      }}
+    >
       {tags.map((tag) => (
         <Chip
           key={tag}
@@ -18,7 +26,20 @@ function ProductDetailsTags({ tags = [] }) {
             borderColor: 'divider',
             borderRadius: 0,
             color: 'text.secondary',
+            flex: '0 1 auto',
             fontWeight: 700,
+            height: 'auto',
+            maxWidth: '100%',
+            minHeight: 26,
+            minWidth: 0,
+            '& .MuiChip-label': {
+              display: 'block',
+              overflow: 'visible',
+              overflowWrap: 'anywhere',
+              textOverflow: 'clip',
+              whiteSpace: 'normal',
+              wordBreak: 'break-word',
+            },
           }}
           variant="outlined"
         />

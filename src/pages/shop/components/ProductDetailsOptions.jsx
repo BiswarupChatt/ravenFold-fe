@@ -43,21 +43,44 @@ function ProductDetailsOptions({
 
           return (
             <Stack key={optionKey} spacing={1.15}>
-              <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
+              <Stack
+                alignItems="center"
+                direction="row"
+                justifyContent="space-between"
+                sx={{
+                  columnGap: 2,
+                  flexWrap: 'wrap',
+                  minWidth: 0,
+                  rowGap: 0.75,
+                }}
+              >
                 <Typography
                   sx={{
-                    color: 'text.secondary',
-                    display: 'inline-flex',
                     alignItems: 'center',
+                    color: 'text.secondary',
+                    display: 'flex',
+                    flex: '1 1 180px',
+                    flexWrap: 'wrap',
                     fontSize: '0.92rem',
                     fontWeight: 700,
                     lineHeight: 1.1,
                     minHeight: 24,
+                    minWidth: 0,
+                    overflowWrap: 'anywhere',
                   }}
                 >
                   {group.name}
                   {activeValue ? (
-                    <Box component="span" sx={{ color: 'text.primary', fontWeight: 800 }}>
+                    <Box
+                      component="span"
+                      sx={{
+                        color: 'text.primary',
+                        fontWeight: 800,
+                        minWidth: 0,
+                        overflowWrap: 'anywhere',
+                        wordBreak: 'break-word',
+                      }}
+                    >
                       {' '}
                       / {getValueLabel(activeValue)}
                     </Box>
@@ -109,7 +132,10 @@ function ProductDetailsOptions({
                       onSelectOption?.(group, nextValue)
                     }
                   }}
-                  sx={{ maxWidth: 280 }}
+                  sx={{
+                    maxWidth: 280,
+                    width: '100%',
+                  }}
                 >
                   {group.values.map((value) => {
                     const valueKey = getValueKey(value)
@@ -123,7 +149,15 @@ function ProductDetailsOptions({
                   })}
                 </TextField>
               ) : (
-                <Stack direction="row" flexWrap="wrap" gap={1}>
+                <Stack
+                  direction="row"
+                  flexWrap="wrap"
+                  gap={1}
+                  sx={{
+                    maxWidth: '100%',
+                    minWidth: 0,
+                  }}
+                >
                   {group.values.map((value) => {
                     const valueKey = getValueKey(value)
                     const isActive = valueKey === activeValueKey
@@ -191,16 +225,25 @@ function ProductDetailsOptions({
                           bgcolor: isActive ? 'text.primary' : 'transparent',
                           border: '1px solid',
                           borderColor: isActive ? 'text.primary' : 'divider',
+                          boxSizing: 'border-box',
                           color: isActive ? 'background.default' : 'text.primary',
                           cursor: isAvailable ? 'pointer' : 'not-allowed',
+                          flex: isMobile ? '1 1 calc(25% - 8px)' : '0 1 auto',
                           fontSize: '0.9rem',
                           fontWeight: 800,
+                          justifyContent: 'center',
+                          lineHeight: 1.15,
+                          maxWidth: '100%',
                           minHeight: 42,
-                          minWidth: 58,
+                          minWidth: isMobile ? 48 : 58,
                           opacity: isAvailable ? 1 : 0.38,
-                          px: 1.45,
+                          overflowWrap: 'anywhere',
+                          px: isMobile ? 1 : 1.45,
+                          textAlign: 'center',
                           textDecoration: isAvailable ? 'none' : 'line-through',
                           transition: 'background-color 160ms ease, border-color 160ms ease, color 160ms ease',
+                          whiteSpace: 'normal',
+                          wordBreak: 'break-word',
                           '&:hover': {
                             borderColor: 'text.primary',
                           },

@@ -37,10 +37,14 @@ function ProductDetailsPurchaseActions({
             ? 'auto'
             : `calc(env(safe-area-inset-bottom) + ${isTablet ? 72 : 68}px)`,
           boxShadow: isCompactView ? '0 18px 56px rgba(15, 23, 42, 0.22)' : 'none',
+          boxSizing: 'border-box',
           left: isDesktop ? 'auto' : isTablet ? 16 : 12,
+          maxWidth: isDesktop ? 'none' : isTablet ? 'calc(100vw - 32px)' : 'calc(100vw - 24px)',
+          minWidth: 0,
           p: isDesktop ? 0 : isTablet ? 1.125 : 1,
           position: isCompactView ? 'fixed' : 'static',
           right: isDesktop ? 'auto' : isTablet ? 16 : 12,
+          width: isDesktop ? '100%' : 'auto',
           zIndex: isCompactView ? (theme) => theme.zIndex.appBar + 2 : 'auto',
         }}
       >
@@ -49,6 +53,8 @@ function ProductDetailsPurchaseActions({
           display: 'grid',
           gap: isCompactView ? 0.75 : 1,
           gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+          minWidth: 0,
+          width: '100%',
         }}
       >
         {isAddedToCart ? (
@@ -73,6 +79,7 @@ function ProductDetailsPurchaseActions({
               sx={{
                 borderRadius: 0,
                 color: 'inherit',
+                flexShrink: 0,
                 height: '100%',
                 width: quantityButtonWidth,
                 '&:hover': {
@@ -116,6 +123,7 @@ function ProductDetailsPurchaseActions({
               sx={{
                 borderRadius: 0,
                 color: 'inherit',
+                flexShrink: 0,
                 height: '100%',
                 width: quantityButtonWidth,
                 '&:hover': {
@@ -141,14 +149,25 @@ function ProductDetailsPurchaseActions({
             startIcon={<AddShoppingCartRoundedIcon />}
             sx={{
               fontSize: actionFontSize,
+              minWidth: 0,
               minHeight: actionHeight,
+              overflow: 'hidden',
               px: isCompactView ? 1 : 2,
+              textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
               '& .MuiButton-startIcon': {
+                flexShrink: 0,
                 mr: isCompactView ? 0.5 : 1,
               },
               '& svg': {
                 fontSize: actionIconSize,
+              },
+              '@media (max-width: 340px)': {
+                fontSize: '0.74rem',
+                px: 0.5,
+                '& .MuiButton-startIcon': {
+                  display: 'none',
+                },
               },
             }}
             variant="outlined"
@@ -165,14 +184,25 @@ function ProductDetailsPurchaseActions({
           startIcon={<BoltRoundedIcon />}
           sx={{
             fontSize: actionFontSize,
+            minWidth: 0,
             minHeight: actionHeight,
+            overflow: 'hidden',
             px: isCompactView ? 1 : 2,
+            textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             '& .MuiButton-startIcon': {
+              flexShrink: 0,
               mr: isCompactView ? 0.5 : 1,
             },
             '& svg': {
               fontSize: actionIconSize,
+            },
+            '@media (max-width: 340px)': {
+              fontSize: '0.74rem',
+              px: 0.5,
+              '& .MuiButton-startIcon': {
+                display: 'none',
+              },
             },
           }}
           variant="contained"
@@ -182,7 +212,15 @@ function ProductDetailsPurchaseActions({
       </Box>
 
       {!canPurchase ? (
-        <Typography color="error" sx={{ fontSize: '0.9rem', fontWeight: 700 }}>
+        <Typography
+          color="error"
+          sx={{
+            fontSize: '0.9rem',
+            fontWeight: 700,
+            minWidth: 0,
+            overflowWrap: 'anywhere',
+          }}
+        >
           This option combination is unavailable.
         </Typography>
       ) : null}

@@ -7,11 +7,11 @@ function ProductDetailsAttributes({ attributes = [] }) {
   }
 
   return (
-    <Stack spacing={1.25}>
-      <Typography sx={{ fontSize: '0.94rem', fontWeight: 900 }}>
+    <Stack spacing={1.25} sx={{ minWidth: 0, width: '100%' }}>
+      <Typography sx={{ fontSize: '0.94rem', fontWeight: 900, minWidth: 0 }}>
         Product Details
       </Typography>
-      <Stack spacing={0.85}>
+      <Stack spacing={0.85} sx={{ minWidth: 0 }}>
         {attributes.map((attribute) => (
           <DetailRow
             key={`${attribute.name}-${attribute.value}`}

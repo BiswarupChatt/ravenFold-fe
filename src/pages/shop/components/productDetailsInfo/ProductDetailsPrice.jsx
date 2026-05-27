@@ -6,8 +6,8 @@ function ProductDetailsPrice({ compareAtPrice, discountAmount, price }) {
   const { isDesktop } = useResponsiveView()
 
   return (
-    <Stack spacing={0.85}>
-      <Stack alignItems="baseline" direction="row" flexWrap="wrap" gap={1.2}>
+    <Stack spacing={0.85} sx={{ minWidth: 0, width: '100%' }}>
+      <Stack alignItems="baseline" direction="row" flexWrap="wrap" gap={1.2} sx={{ minWidth: 0 }}>
         <Typography
           sx={{
             color: '#1f2433',
@@ -15,6 +15,8 @@ function ProductDetailsPrice({ compareAtPrice, discountAmount, price }) {
             fontWeight: 900,
             letterSpacing: 0,
             lineHeight: 1,
+            minWidth: 0,
+            overflowWrap: 'anywhere',
           }}
         >
           {formatPrice(price)}
@@ -28,6 +30,8 @@ function ProductDetailsPrice({ compareAtPrice, discountAmount, price }) {
               fontWeight: 900,
               letterSpacing: 0.4,
               lineHeight: 1,
+              minWidth: 0,
+              overflowWrap: 'anywhere',
             }}
           >
             {formatPrice(discountAmount)} OFF
@@ -35,15 +39,16 @@ function ProductDetailsPrice({ compareAtPrice, discountAmount, price }) {
         ) : null}
       </Stack>
 
-      <Stack alignItems="center" direction="row" flexWrap="wrap" gap={1}>
+      <Stack alignItems="center" direction="row" flexWrap="wrap" gap={1} sx={{ minWidth: 0 }}>
         {compareAtPrice ? (
-          <Stack alignItems="baseline" direction="row" spacing={0.55}>
+          <Stack alignItems="baseline" direction="row" flexWrap="wrap" gap={0.55} sx={{ minWidth: 0 }}>
             <Typography
               sx={{
                 color: 'text.secondary',
                 fontSize: isDesktop ? '1.04rem' : '0.98rem',
                 fontWeight: 600,
                 lineHeight: 1.25,
+                minWidth: 0,
               }}
             >
               MRP:
@@ -55,6 +60,8 @@ function ProductDetailsPrice({ compareAtPrice, discountAmount, price }) {
                 fontSize: isDesktop ? '1.04rem' : '0.98rem',
                 fontWeight: 700,
                 lineHeight: 1.25,
+                minWidth: 0,
+                overflowWrap: 'anywhere',
                 opacity: 0.78,
                 textDecoration: 'line-through',
               }}
@@ -71,6 +78,8 @@ function ProductDetailsPrice({ compareAtPrice, discountAmount, price }) {
             fontWeight: 500,
             lineHeight: 1.25,
             marginLeft: compareAtPrice ? 1 : 0,
+            minWidth: 0,
+            overflowWrap: 'anywhere',
           }}
         >
           Inclusive of all Taxes

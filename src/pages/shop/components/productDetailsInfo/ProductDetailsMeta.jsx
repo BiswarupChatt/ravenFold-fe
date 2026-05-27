@@ -15,7 +15,9 @@ function ProductDetailsMeta({ details = [] }) {
         borderBottom: '1px solid',
         borderColor: 'divider',
         borderTop: '1px solid',
+        minWidth: 0,
         py: 2.15,
+        width: '100%',
       }}
     >
       {visibleDetails.map((detail) => (

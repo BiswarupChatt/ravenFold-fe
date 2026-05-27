@@ -26,7 +26,9 @@ function ProductDetails() {
   const [loading, setLoading] = useState(true)
   const [pageError, setPageError] = useState('')
   const pagePaddingY = isDesktop ? 8 : isTab ? 6 : 5
-  const detailsGridColumns = isDesktop ? '1.08fr 0.92fr' : '1fr'
+  const detailsGridColumns = isDesktop
+    ? 'minmax(0, 1.08fr) minmax(0, 0.92fr)'
+    : 'minmax(0, 1fr)'
   const detailsGridGap = isDesktop ? 6 : isMobile ? 3 : 4
 
   useEffect(() => {
@@ -72,7 +74,7 @@ function ProductDetails() {
   }, [productIdOrSlug])
 
   return (
-    <Box sx={{ py: pagePaddingY }}>
+    <Box sx={{ overflowX: 'hidden', py: pagePaddingY }}>
       <Container>
         <Stack spacing={3}>
           {pageError ? (
@@ -112,6 +114,11 @@ function ProductDetails() {
                   display: 'grid',
                   gap: detailsGridGap,
                   gridTemplateColumns: detailsGridColumns,
+                  maxWidth: '100%',
+                  minWidth: 0,
+                  '& > *': {
+                    minWidth: 0,
+                  },
                 }}
               >
                 <ProductDetailsGallery product={product} variants={variants} />

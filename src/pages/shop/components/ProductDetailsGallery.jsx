@@ -64,6 +64,8 @@ function ProductImageTile({
         overflow: 'hidden',
         p: 0,
         position: 'relative',
+        maxWidth: isDesktop ? '100%' : 'min(100%, 420px)',
+        mx: isDesktop ? 0 : 'auto',
         width: '100%',
         '&:focus-visible': {
           outline: '2px solid',
@@ -183,6 +185,7 @@ function ProductDetailsGallery({ product, variants }) {
     return (
       <>
         <AppSlider
+          gap={0}
           getKey={(page, index) => page.map((item) => item.key).join('|') || `page-${index}`}
           items={sliderPages}
           renderItem={(page) => (
@@ -191,6 +194,9 @@ function ProductDetailsGallery({ product, variants }) {
                 display: 'grid',
                 gap: 2,
                 gridTemplateColumns: isTab ? 'repeat(2, minmax(0, 1fr))' : '1fr',
+                maxWidth: '100%',
+                minWidth: 0,
+                width: '100%',
               }}
             >
               {page.map((item) => (
@@ -205,6 +211,16 @@ function ProductDetailsGallery({ product, variants }) {
               ))}
             </Box>
           )}
+          rootSx={{
+            maxWidth: '100%',
+            overflowX: 'hidden',
+          }}
+          slideSx={{
+            maxWidth: '100%',
+          }}
+          viewportSx={{
+            maxWidth: '100%',
+          }}
         />
 
         {lightbox}
@@ -219,6 +235,9 @@ function ProductDetailsGallery({ product, variants }) {
           display: 'grid',
           gap: 2,
           gridTemplateColumns: isDesktop ? 'repeat(2, minmax(0, 1fr))' : '1fr',
+          maxWidth: '100%',
+          minWidth: 0,
+          width: '100%',
         }}
       >
         {desktopImages.map((item, index) => (

@@ -295,8 +295,10 @@ function ProductDetailsInfo({ product, variants = [] }) {
     <Stack
       spacing={2.7}
       sx={{
+        minWidth: 0,
         position: isDesktop ? 'sticky' : 'static',
         top: isDesktop ? 96 : 'auto',
+        width: '100%',
       }}
     >
       <ProductDetailsHeader
