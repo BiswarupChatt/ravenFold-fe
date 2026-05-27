@@ -29,7 +29,7 @@ function ProductDetailsPurchaseActions({
       <Stack
         spacing={isDesktop ? 1 : 0.75}
         sx={{
-          bgcolor: isCompactView ? 'background.paper' : 'transparent',
+          bgcolor: isCompactView ? 'background.default' : 'transparent',
           border: isCompactView ? '1px solid' : 0,
           borderColor: isCompactView ? 'divider' : 'transparent',
           borderRadius: isCompactView ? 2 : 0,
