@@ -50,7 +50,8 @@ function ProductDetailsInfo({ product, variants = [] }) {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const isAuthenticated = useSelector(selectIsAuthenticated)
-  const { isDesktop } = useResponsiveView()
+  const { isDesktop, isMobile, isTablet } = useResponsiveView()
+  const isCompactView = isMobile || isTablet
   const cartItems = useSelector(selectCartItems)
   const wishlistItems = useSelector(selectWishlistItems)
   const [cartLoading, setCartLoading] = useState(false)
@@ -93,6 +94,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
     : []
   const tags = Array.isArray(product.tags) ? product.tags.filter(Boolean) : []
   const canPurchase = !product.hasVariants || Boolean(selectedVariant)
+  const compactBottomPadding = isCompactView ? `${canPurchase ? 116 : 142}px` : 0
   const cartItemKey = `${product.id}:${displayVariant?.id || ''}`
   const currentCartItem = useMemo(() => (
     cartItems.find((item) => {
@@ -296,6 +298,7 @@ function ProductDetailsInfo({ product, variants = [] }) {
       spacing={2.7}
       sx={{
         minWidth: 0,
+        pb: compactBottomPadding,
         position: isDesktop ? 'sticky' : 'static',
         top: isDesktop ? 96 : 'auto',
         width: '100%',

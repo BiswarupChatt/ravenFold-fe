@@ -18,36 +18,34 @@ function ProductDetailsPurchaseActions({
 }) {
   const { isDesktop, isMobile, isTablet } = useResponsiveView()
   const isCompactView = isMobile || isTablet
-  const mobileSpacerHeight = canPurchase ? 116 : 142
   const actionHeight = isDesktop ? 52 : isTablet ? 40 : 38
   const actionFontSize = isDesktop ? '0.95rem' : isTablet ? '0.86rem' : '0.8rem'
   const actionIconSize = isDesktop ? 22 : 18
   const quantityButtonWidth = isDesktop ? 56 : isTablet ? 42 : 36
 
   return (
-    <>
-      <Stack
-        spacing={isDesktop ? 1 : 0.75}
-        sx={{
-          bgcolor: isCompactView ? 'background.default' : 'transparent',
-          border: isCompactView ? '1px solid' : 0,
-          borderColor: isCompactView ? 'divider' : 'transparent',
-          borderRadius: isCompactView ? 2 : 0,
-          bottom: isDesktop
-            ? 'auto'
-            : `calc(env(safe-area-inset-bottom) + ${isTablet ? 72 : 68}px)`,
-          boxShadow: isCompactView ? '0 18px 56px rgba(15, 23, 42, 0.22)' : 'none',
-          boxSizing: 'border-box',
-          left: isDesktop ? 'auto' : isTablet ? 16 : 12,
-          maxWidth: isDesktop ? 'none' : isTablet ? 'calc(100vw - 32px)' : 'calc(100vw - 24px)',
-          minWidth: 0,
-          p: isDesktop ? 0 : isTablet ? 1.125 : 1,
-          position: isCompactView ? 'fixed' : 'static',
-          right: isDesktop ? 'auto' : isTablet ? 16 : 12,
-          width: isDesktop ? '100%' : 'auto',
-          zIndex: isCompactView ? (theme) => theme.zIndex.appBar + 2 : 'auto',
-        }}
-      >
+    <Stack
+      spacing={isDesktop ? 1 : 0.75}
+      sx={{
+        bgcolor: isCompactView ? 'background.default' : 'transparent',
+        border: isCompactView ? '1px solid' : 0,
+        borderColor: isCompactView ? 'divider' : 'transparent',
+        borderRadius: isCompactView ? 2 : 0,
+        bottom: isDesktop
+          ? 'auto'
+          : `calc(env(safe-area-inset-bottom) + ${isTablet ? 72 : 68}px)`,
+        boxShadow: isCompactView ? '0 18px 56px rgba(15, 23, 42, 0.22)' : 'none',
+        boxSizing: 'border-box',
+        left: isDesktop ? 'auto' : isTablet ? 16 : 12,
+        maxWidth: isDesktop ? 'none' : isTablet ? 'calc(100vw - 32px)' : 'calc(100vw - 24px)',
+        minWidth: 0,
+        p: isDesktop ? 0 : isTablet ? 1.125 : 1,
+        position: isCompactView ? 'fixed' : 'static',
+        right: isDesktop ? 'auto' : isTablet ? 16 : 12,
+        width: isDesktop ? '100%' : 'auto',
+        zIndex: isCompactView ? (theme) => theme.zIndex.appBar + 2 : 'auto',
+      }}
+    >
       <Box
         sx={{
           display: 'grid',
@@ -224,16 +222,7 @@ function ProductDetailsPurchaseActions({
           This option combination is unavailable.
         </Typography>
       ) : null}
-      </Stack>
-
-      <Box
-        aria-hidden="true"
-        sx={{
-          display: isCompactView ? 'block' : 'none',
-          height: mobileSpacerHeight,
-        }}
-      />
-    </>
+    </Stack>
   )
 }
 
