@@ -9,7 +9,7 @@ function Cart() {
   const { isDesktop } = useScreenSize()
 
   return (
-    <Box sx={{ py: isDesktop ? 8 : 5 }}>
+    <Box sx={{ py:  5 }}>
       <Container>
         <Stack spacing={4}>
           <Stack

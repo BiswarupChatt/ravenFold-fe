@@ -8,7 +8,7 @@ function Home() {
   const { isDesktop, isMobile } = useScreenSize()
 
   return (
-    <Box sx={{ py: isDesktop ? 12 : 8 }}>
+    <Box sx={{ py: 5 }}>
       <Container>
         <Stack spacing={4} sx={{ maxWidth: 720 }}>
           <PageIntro
