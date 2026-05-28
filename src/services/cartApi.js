@@ -26,6 +26,11 @@ export const mapServerCartItems = (items = []) => {
     const salePrice = priceSnapshot.salePrice === null || priceSnapshot.salePrice === undefined
       ? null
       : toNumber(priceSnapshot.salePrice)
+    const compareAtPrice = basePrice > price ? basePrice : 0
+    const discountAmount = compareAtPrice ? compareAtPrice - price : 0
+    const discountPercent = compareAtPrice
+      ? Math.round((discountAmount / compareAtPrice) * 100)
+      : 0
     const productId = item.productId || ''
     const variantId = item.variantId || ''
     const id = variantId ? `${productId}:${variantId}` : productId
@@ -36,10 +41,13 @@ export const mapServerCartItems = (items = []) => {
       cartItemId: item.id,
       createdAt: item.createdAt || '',
       currency: priceSnapshot.currency || 'INR',
+      discountAmount,
+      discountPercent,
       id,
       image: snapshot.image || '',
       lineTotal: toNumber(item.lineTotal, price * quantity),
       name: snapshot.name || 'Product',
+      compareAtPrice,
       price,
       priceAtTime: price,
       priceSnapshot: {

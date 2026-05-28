@@ -7,6 +7,59 @@ import formatPrice from '../utils/formatPrice.js'
 
 const getLineTotal = (item = {}) => Number(item.price || 0) * Number(item.quantity || 0)
 
+const getPricing = (item = {}) => {
+  const price = Number(item.price || item.priceSnapshot?.price || 0)
+  const basePrice = Number(item.basePrice || item.compareAtPrice || item.priceSnapshot?.basePrice || 0)
+  const compareAtPrice = basePrice > price ? basePrice : 0
+  const discountAmount = compareAtPrice ? compareAtPrice - price : 0
+
+  return {
+    compareAtPrice,
+    discountAmount,
+    price,
+  }
+}
+
+function CartItemPrice({ item }) {
+  const { compareAtPrice, discountAmount, price } = getPricing(item)
+
+  return (
+    <Stack alignItems="baseline" direction="row" flexWrap="wrap" gap={0.75}>
+      <Typography sx={{ color: 'primary.main', fontSize: '0.95rem', fontWeight: 650 }}>
+        {formatPrice(price)}
+      </Typography>
+
+      {compareAtPrice ? (
+        <Typography
+          color="text.secondary"
+          sx={{
+            mx: 1 ,
+            fontSize: '0.82rem',
+            fontWeight: 500,
+            opacity: 0.78,
+            textDecoration: 'line-through',
+          }}
+        >
+          {formatPrice(compareAtPrice)}
+        </Typography>
+      ) : null}
+
+      {discountAmount ? (
+        <Typography
+          sx={{
+            color: 'secondary.main',
+            fontSize: '0.78rem',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+          }}
+        >
+          {formatPrice(discountAmount)} off
+        </Typography>
+      ) : null}
+    </Stack>
+  )
+}
+
 function QuantityControl({
   disabled,
   isDrawer,
@@ -172,9 +225,7 @@ function CartItemCard({
                 </Typography>
               ) : null}
 
-              <Typography sx={{ color: 'primary.main', fontSize: '0.95rem', fontWeight: 650 }}>
-                {formatPrice(item.price)}
-              </Typography>
+              <CartItemPrice item={item} />
             </Stack>
           </Stack>
 
@@ -307,9 +358,7 @@ function CartItemCard({
               </Typography>
             ) : null}
 
-            <Typography sx={{ color: 'primary.main', fontSize: '0.95rem', fontWeight: 650 }}>
-              {formatPrice(item.price)}
-            </Typography>
+            <CartItemPrice item={item} />
           </Stack>
         </Stack>
 
