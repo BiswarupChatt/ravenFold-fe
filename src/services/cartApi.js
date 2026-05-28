@@ -10,29 +10,53 @@ const unwrapCartResponse = (response) => {
   return cartData
 }
 
-const formatVariantLabel = (variantLabel) => {
-  return variantLabel ? ` (${variantLabel})` : ''
+const toNumber = (value, fallback = 0) => {
+  const numberValue = Number(value)
+
+  return Number.isFinite(numberValue) ? numberValue : fallback
 }
 
 export const mapServerCartItems = (items = []) => {
   return items.map((item) => {
     const snapshot = item.productSnapshot || {}
-    const price = Number(item.priceAtTime ?? item.priceSnapshot?.price ?? 0)
+    const priceSnapshot = item.priceSnapshot || {}
+    const quantity = toNumber(item.quantity, 1)
+    const price = toNumber(item.priceAtTime ?? priceSnapshot.price)
+    const basePrice = toNumber(priceSnapshot.basePrice ?? price)
+    const salePrice = priceSnapshot.salePrice === null || priceSnapshot.salePrice === undefined
+      ? null
+      : toNumber(priceSnapshot.salePrice)
     const productId = item.productId || ''
     const variantId = item.variantId || ''
+    const id = variantId ? `${productId}:${variantId}` : productId
 
     return {
+      basePrice,
+      cartId: item.cartId || '',
       cartItemId: item.id,
-      category: snapshot.variantLabel || '',
-      id: variantId ? `${productId}:${variantId}` : productId,
+      createdAt: item.createdAt || '',
+      currency: priceSnapshot.currency || 'INR',
+      id,
       image: snapshot.image || '',
-      name: `${snapshot.name || 'Product'}${formatVariantLabel(snapshot.variantLabel)}`,
+      lineTotal: toNumber(item.lineTotal, price * quantity),
+      name: snapshot.name || 'Product',
       price,
+      priceAtTime: price,
+      priceSnapshot: {
+        basePrice,
+        currency: priceSnapshot.currency || 'INR',
+        price,
+        salePrice,
+      },
       productId,
-      quantity: Number(item.quantity || 1),
-      sku: snapshot.variantSku || snapshot.sku || '',
+      quantity,
+      salePrice,
+      sku: snapshot.sku || '',
+      slug: snapshot.slug || '',
+      updatedAt: item.updatedAt || '',
       variantId,
       variantLabel: snapshot.variantLabel || '',
+      variantSku: snapshot.variantSku || '',
     }
   })
 }

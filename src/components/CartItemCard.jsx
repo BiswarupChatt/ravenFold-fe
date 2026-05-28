@@ -99,11 +99,8 @@ function CartItemCard({
   onIncrease,
   onRemove,
 }) {
-  const itemCategory = item.category && item.category !== item.variantLabel ? item.category : ''
-  const showVariantLabel = item.variantLabel && !String(item.name).includes(item.variantLabel)
-  const detailItems = [
-    showVariantLabel ? item.variantLabel : '',
-  ].filter(Boolean)
+  const variantLabel = item.variantLabel || ''
+  const detailItems = [variantLabel].filter(Boolean)
   const imageSize = isDrawer ? 76 : isDesktop ? 100 : 88
 
   if (!isDrawer) {
@@ -157,12 +154,6 @@ function CartItemCard({
             </Box>
 
             <Stack justifyContent="center" spacing={0.75} sx={{ minWidth: 0 }}>
-              {itemCategory ? (
-                <Typography color="text.secondary" sx={{ fontSize: '0.76rem', fontWeight: 500 }}>
-                  {itemCategory}
-                </Typography>
-              ) : null}
-
               <Typography
                 sx={{
                   color: 'text.primary',
@@ -291,12 +282,6 @@ function CartItemCard({
           </Box>
 
           <Stack spacing={0.75} sx={{ minWidth: 0 }}>
-            {itemCategory ? (
-              <Typography color="text.secondary" sx={{ fontSize: '0.76rem', fontWeight: 500 }}>
-                {itemCategory}
-              </Typography>
-            ) : null}
-
             <Typography
               sx={{
                 color: 'text.primary',
