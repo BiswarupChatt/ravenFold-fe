@@ -19,6 +19,7 @@ import {
   selectCartItems,
 } from '../../../../store/cartSlice.js'
 import { selectWishlistItems, toggleWishlistItem } from '../../../../store/wishlistSlice.js'
+import { getCartItemKey } from '../../../../utils/utils.js'
 import useResponsiveView from '../../../../hooks/useResponsiveView.js'
 import Options from './Options.jsx'
 import Description from './sections/Description.jsx'
@@ -84,10 +85,10 @@ function Info({ product, variants = [] }) {
     : []
   const canPurchase = !product.hasVariants || Boolean(selectedVariant)
   const compactBottomPadding = isCompactView ? `${canPurchase ? 116 : 142}px` : 0
-  const cartItemKey = `${product.id}:${displayVariant?.id || ''}`
+  const cartItemKey = getCartItemKey({ productId: product.id, variantId: displayVariant?.id || '' })
   const currentCartItem = useMemo(() => (
     cartItems.find((item) => {
-      const itemKey = `${item.productId || item.id}:${item.variantId || ''}`
+      const itemKey = getCartItemKey(item)
 
       return itemKey === cartItemKey || item.id === cartItemKey
     }) || null

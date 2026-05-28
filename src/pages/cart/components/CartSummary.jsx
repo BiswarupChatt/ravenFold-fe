@@ -2,12 +2,12 @@ import { Divider, Paper, Stack, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import AppButton from '../../../components/AppButton.jsx'
 import { errorToast } from '../../../services/toast.js'
-import formatPrice from '../../../utils/formatPrice.js'
+import { formatPrice } from '../../../utils/utils.js'
+
 
 function CartSummary({
   disabled,
   isDrawer,
-  isMobile,
   onNavigate,
   quantity,
   subtotal,

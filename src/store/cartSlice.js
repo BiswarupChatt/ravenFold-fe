@@ -1,13 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { getStoredAuthSession } from '../services/authStorage.js'
 import { getStoredGuestCartItems } from '../services/cartStorage.js'
-
-const getCartItemKey = (item = {}) => {
-  const productId = item.productId || item.id
-  const variantId = item.variantId || ''
-
-  return `${productId}:${variantId}`
-}
+import { getCartItemKey } from '../utils/utils.js'
 
 const initialState = {
   items: getStoredAuthSession().token ? [] : getStoredGuestCartItems(),

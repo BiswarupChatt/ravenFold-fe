@@ -1,32 +1,14 @@
+import { getBrowserStorage, safeJsonParse } from '../utils/utils.js'
+
 const AUTH_TOKEN_KEY = 'ravenfold.auth.token'
 const AUTH_USER_KEY = 'ravenfold.auth.user'
 
-const getStorage = () => {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  try {
-    return window.localStorage
-  } catch {
-    return null
-  }
-}
-
-const safeJsonParse = (value) => {
-  try {
-    return value ? JSON.parse(value) : null
-  } catch {
-    return null
-  }
-}
-
 export const getStoredAuthToken = () => {
-  return getStorage()?.getItem(AUTH_TOKEN_KEY) || ''
+  return getBrowserStorage()?.getItem(AUTH_TOKEN_KEY) || ''
 }
 
 export const getStoredAuthSession = () => {
-  const storage = getStorage()
+  const storage = getBrowserStorage()
 
   if (!storage) {
     return {
@@ -52,7 +34,7 @@ export const getStoredAuthSession = () => {
 }
 
 export const saveAuthSession = ({ token, user }) => {
-  const storage = getStorage()
+  const storage = getBrowserStorage()
 
   if (!storage || !token || !user) {
     return
@@ -63,7 +45,7 @@ export const saveAuthSession = ({ token, user }) => {
 }
 
 export const clearStoredAuthSession = () => {
-  const storage = getStorage()
+  const storage = getBrowserStorage()
 
   if (!storage) {
     return
@@ -72,4 +54,3 @@ export const clearStoredAuthSession = () => {
   storage.removeItem(AUTH_TOKEN_KEY)
   storage.removeItem(AUTH_USER_KEY)
 }
-

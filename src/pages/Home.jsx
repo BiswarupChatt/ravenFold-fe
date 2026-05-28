@@ -5,7 +5,7 @@ import useScreenSize from '../hooks/useScreenSize.js'
 import { successToast } from '../services/toast.js'
 
 function Home() {
-  const { isDesktop, isMobile } = useScreenSize()
+  const { isMobile } = useScreenSize()
 
   return (
     <Box sx={{ py: 5 }}>

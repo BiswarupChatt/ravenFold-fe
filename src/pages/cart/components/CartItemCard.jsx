@@ -3,49 +3,10 @@ import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded'
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import { Box, IconButton, Paper, Stack, Typography } from '@mui/material'
-import formatPrice from '../../../utils/formatPrice.js'
-
-const getLineTotal = (item = {}) => {
-  if (item.lineTotal !== undefined && item.lineTotal !== null) {
-    return Number(item.lineTotal || 0)
-  }
-
-  return Number(item.price || 0) * Number(item.quantity || 0)
-}
-
-const getPricing = (item = {}) => {
-  const price = Number(item.price || item.priceSnapshot?.price || 0)
-  const basePrice = Number(item.basePrice || item.compareAtPrice || item.priceSnapshot?.basePrice || 0)
-  const compareAtPrice = basePrice > price ? basePrice : 0
-  const discountAmount = compareAtPrice ? compareAtPrice - price : 0
-  const discountPercent = Number(item.discountPercent || 0)
-  const computedDiscountPercent = compareAtPrice
-    ? Math.round((discountAmount / compareAtPrice) * 100)
-    : 0
-
-  return {
-    compareAtPrice,
-    discountAmount,
-    discountPercent: discountPercent || computedDiscountPercent,
-    price,
-  }
-}
-
-const getVariantDetails = (variantLabel = '') => (
-  variantLabel
-    .split(',')
-    .map((part) => {
-      const [rawLabel, ...rawValue] = part.split(':')
-      const label = rawValue.length ? rawLabel.trim() : ''
-      const value = rawValue.length ? rawValue.join(':').trim() : rawLabel.trim()
-
-      return { label, value }
-    })
-    .filter((detail) => detail.value)
-)
+import { formatPrice, getCartLineTotal, getCartPricing, parseVariantDetails } from '../../../utils/utils.js'
 
 function CartItemPrice({ isDrawer, item, stacked = false }) {
-  const { compareAtPrice, discountAmount, discountPercent, price } = getPricing(item)
+  const { compareAtPrice, discountAmount, discountPercent, price } = getCartPricing(item)
   const discountLabel = discountPercent
     ? `${discountPercent}% off`
     : discountAmount
@@ -294,7 +255,7 @@ function CartItemCard({
   onIncrease,
   onRemove,
 }) {
-  const detailItems = getVariantDetails(item.variantLabel || '')
+  const detailItems = parseVariantDetails(item.variantLabel || '')
   const imageSize = isDrawer ? 72 : isDesktop ? 92 : 84
 
   if (!isDrawer) {
@@ -364,7 +325,7 @@ function CartItemCard({
                   whiteSpace: 'nowrap',
                 }}
               >
-                {formatPrice(getLineTotal(item))}
+                {formatPrice(getCartLineTotal(item))}
               </Typography>
             </Stack>
 
@@ -447,7 +408,7 @@ function CartItemCard({
                 whiteSpace: 'nowrap',
               }}
             >
-              {formatPrice(getLineTotal(item))}
+              {formatPrice(getCartLineTotal(item))}
             </Typography>
           </Stack>
 

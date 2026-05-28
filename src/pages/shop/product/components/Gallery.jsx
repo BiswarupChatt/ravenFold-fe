@@ -2,16 +2,9 @@ import { Box, Typography } from '@mui/material'
 import { lazy, Suspense, useMemo, useState } from 'react'
 import AppSlider from '../../../../components/AppSlider.jsx'
 import useScreenSize from '../../../../hooks/useScreenSize.js'
+import { getImageUrl } from './utils.js'
 
 const Lightbox = lazy(() => import('./Lightbox.jsx'))
-
-const getImageUrl = (image) => {
-  if (typeof image === 'string') {
-    return image
-  }
-
-  return image?.url || image?.src || image?.secureUrl || ''
-}
 
 const getGalleryImages = (product, variants = []) => {
   const productImages = Array.isArray(product?.images) ? product.images : []

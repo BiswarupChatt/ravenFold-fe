@@ -1,6 +1,6 @@
 import { Stack, Typography } from '@mui/material'
 import useResponsiveView from '../../../../../hooks/useResponsiveView.js'
-import formatPrice from '../../../../../utils/formatPrice.js'
+import { formatPrice } from '../../../../../utils/utils.js'
 
 function Price({ compareAtPrice, discountAmount, price }) {
   const { isDesktop } = useResponsiveView()

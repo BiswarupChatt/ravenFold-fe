@@ -17,7 +17,7 @@ import {
   selectWishlistItems,
 } from '../../../../store/wishlistSlice'
 import { successToast } from '../../../../services/toast'
-import formatPrice from '../../../../utils/formatPrice'
+import { formatPrice } from '../../../../utils/utils'
 
 function Wishlist() {
   const dispatch = useDispatch()

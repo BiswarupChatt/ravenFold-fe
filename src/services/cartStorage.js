@@ -1,33 +1,13 @@
+import { getBrowserStorage, safeJsonParseArray } from '../utils/utils.js'
+
 const GUEST_CART_KEY = 'ravenfold.guestCart.items'
 
-const getStorage = () => {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  try {
-    return window.localStorage
-  } catch {
-    return null
-  }
-}
-
-const safeJsonParse = (value) => {
-  try {
-    const parsedValue = value ? JSON.parse(value) : []
-
-    return Array.isArray(parsedValue) ? parsedValue : []
-  } catch {
-    return []
-  }
-}
-
 export const getStoredGuestCartItems = () => {
-  return safeJsonParse(getStorage()?.getItem(GUEST_CART_KEY))
+  return safeJsonParseArray(getBrowserStorage()?.getItem(GUEST_CART_KEY))
 }
 
 export const saveStoredGuestCartItems = (items) => {
-  const storage = getStorage()
+  const storage = getBrowserStorage()
 
   if (!storage) {
     return
@@ -37,5 +17,5 @@ export const saveStoredGuestCartItems = (items) => {
 }
 
 export const clearStoredGuestCartItems = () => {
-  getStorage()?.removeItem(GUEST_CART_KEY)
+  getBrowserStorage()?.removeItem(GUEST_CART_KEY)
 }

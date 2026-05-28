@@ -15,7 +15,7 @@ import { Link as RouterLink } from 'react-router-dom'
 import AppDrawer from '../components/AppDrawer.jsx'
 import products from '../data/products.js'
 import { addItem } from '../store/cartSlice'
-import formatPrice from '../utils/formatPrice.js'
+import { formatPrice } from '../utils/utils.js'
 
 function SearchDrawerContent({ autoFocus = false, layout = 'page', onNavigate }) {
   const dispatch = useDispatch()

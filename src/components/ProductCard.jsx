@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material'
 import useResponsiveView from '../hooks/useResponsiveView.js'
-import formatPrice from '../utils/formatPrice.js'
+import { formatPrice } from '../utils/utils.js'
 
 function ProductVisual({ product }) {
   const productColor = product.color || '#1e2952'

@@ -19,11 +19,10 @@ import {
   selectCartQuantity,
   selectCartSubtotal,
 } from '../../../store/cartSlice'
+import { getCartItemActionId } from '../../../utils/utils.js'
 import CartEmptyState from './CartEmptyState.jsx'
 import CartItemCard from './CartItemCard.jsx'
 import CartSummary from './CartSummary.jsx'
-
-const getItemActionId = (item = {}) => item.id || `${item.productId || ''}:${item.variantId || ''}`
 
 function CartContent({ layout = 'page', onNavigate }) {
   const dispatch = useDispatch()
@@ -41,7 +40,7 @@ function CartContent({ layout = 'page', onNavigate }) {
   }
 
   const runItemAction = async (item, action) => {
-    const actionId = getItemActionId(item)
+    const actionId = getCartItemActionId(item)
 
     setUpdatingItemId(actionId)
 
@@ -57,7 +56,7 @@ function CartContent({ layout = 'page', onNavigate }) {
   const handleDecreaseQuantity = (item) => {
     runItemAction(item, async () => {
       if (!isAuthenticated) {
-        dispatch(decreaseItemQuantity(getItemActionId(item)))
+        dispatch(decreaseItemQuantity(getCartItemActionId(item)))
         return
       }
 
@@ -93,7 +92,7 @@ function CartContent({ layout = 'page', onNavigate }) {
   const handleRemoveItem = (item) => {
     runItemAction(item, async () => {
       if (!isAuthenticated) {
-        dispatch(removeItem(getItemActionId(item)))
+        dispatch(removeItem(getCartItemActionId(item)))
         return
       }
 
@@ -118,7 +117,7 @@ function CartContent({ layout = 'page', onNavigate }) {
   const itemList = (
     <Stack spacing={isDrawer ? 1.5 : 2}>
       {items.map((item) => {
-        const actionId = getItemActionId(item)
+        const actionId = getCartItemActionId(item)
 
         return (
           <CartItemCard
@@ -141,7 +140,6 @@ function CartContent({ layout = 'page', onNavigate }) {
     <CartSummary
       disabled={isBusy}
       isDrawer={isDrawer}
-      isMobile={isMobile}
       onNavigate={onNavigate}
       quantity={quantity}
       subtotal={subtotal}

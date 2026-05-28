@@ -1,4 +1,5 @@
 import apiClient from './apiClient.js'
+import { toFiniteNumber } from '../utils/utils.js'
 
 const unwrapCartResponse = (response) => {
   const cartData = response.data?.data
@@ -10,22 +11,16 @@ const unwrapCartResponse = (response) => {
   return cartData
 }
 
-const toNumber = (value, fallback = 0) => {
-  const numberValue = Number(value)
-
-  return Number.isFinite(numberValue) ? numberValue : fallback
-}
-
 export const mapServerCartItems = (items = []) => {
   return items.map((item) => {
     const snapshot = item.productSnapshot || {}
     const priceSnapshot = item.priceSnapshot || {}
-    const quantity = toNumber(item.quantity, 1)
-    const price = toNumber(item.priceAtTime ?? priceSnapshot.price)
-    const basePrice = toNumber(priceSnapshot.basePrice ?? price)
+    const quantity = toFiniteNumber(item.quantity, 1)
+    const price = toFiniteNumber(item.priceAtTime ?? priceSnapshot.price)
+    const basePrice = toFiniteNumber(priceSnapshot.basePrice ?? price)
     const salePrice = priceSnapshot.salePrice === null || priceSnapshot.salePrice === undefined
       ? null
-      : toNumber(priceSnapshot.salePrice)
+      : toFiniteNumber(priceSnapshot.salePrice)
     const compareAtPrice = basePrice > price ? basePrice : 0
     const discountAmount = compareAtPrice ? compareAtPrice - price : 0
     const discountPercent = compareAtPrice
@@ -45,7 +40,7 @@ export const mapServerCartItems = (items = []) => {
       discountPercent,
       id,
       image: snapshot.image || '',
-      lineTotal: toNumber(item.lineTotal, price * quantity),
+      lineTotal: toFiniteNumber(item.lineTotal, price * quantity),
       name: snapshot.name || 'Product',
       compareAtPrice,
       price,

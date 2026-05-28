@@ -26,6 +26,7 @@ import {
   selectWishlistItems,
   toggleWishlistItem,
 } from '../../../store/wishlistSlice.js'
+import { getImageUrl, getPriceData, getPrimaryImage, getVariantLabel } from '../../../utils/utils.js'
 
 const productLimit = 12
 
@@ -36,26 +37,6 @@ const emptyPagination = {
   page: 1,
   total: 0,
   totalPages: 0,
-}
-
-const toNumber = (value) => {
-  const numberValue = Number(value)
-
-  return Number.isFinite(numberValue) ? numberValue : 0
-}
-
-const getPrimaryImage = (product) => {
-  if (!Array.isArray(product.images) || !product.images.length) {
-    return ''
-  }
-
-  const [primaryImage] = product.images
-
-  if (typeof primaryImage === 'string') {
-    return primaryImage
-  }
-
-  return primaryImage?.url || ''
 }
 
 const getMaterial = (product) => {
@@ -70,23 +51,8 @@ const getMaterial = (product) => {
   return material?.value || ''
 }
 
-const getVariantLabel = (variant) => {
-  if (!Array.isArray(variant.optionValues) || !variant.optionValues.length) {
-    return ''
-  }
-
-  return variant.optionValues
-    .map((option) => `${option.optionName}: ${option.value}`)
-    .join(', ')
-}
-
 const mapBackendProductToCard = (product) => {
-  const basePrice = toNumber(product.basePrice)
-  const salePrice =
-    product.salePrice === null || product.salePrice === undefined
-      ? null
-      : toNumber(product.salePrice)
-  const hasSalePrice = salePrice !== null && salePrice < basePrice
+  const { compareAtPrice, price } = getPriceData(product)
   const categoryLabel =
     product.category?.name ||
     product.categoryName ||
@@ -96,16 +62,16 @@ const mapBackendProductToCard = (product) => {
   return {
     ...product,
     badge: product.isFeatured ? 'Featured' : '',
-    badgeColor: hasSalePrice ? '#b30000' : undefined,
+    badgeColor: compareAtPrice ? '#b30000' : undefined,
     category: categoryLabel,
     categoryData: product.category,
     collection: categoryLabel,
-    compareAtPrice: hasSalePrice ? basePrice : 0,
+    compareAtPrice,
     description: product.shortDescription || product.description || '',
     id: product.id || product._id || product.slug,
     image: getPrimaryImage(product),
     material: getMaterial(product),
-    price: hasSalePrice ? salePrice : basePrice,
+    price,
     productId: product.id || product._id,
     variantId: '',
   }
@@ -193,23 +159,15 @@ function Shop() {
       throw new Error('This product does not have an active variant to add.')
     }
 
-    const variantBasePrice = Number(variant.price || product.price || 0)
-    const variantSalePrice =
-      variant.salePrice === null || variant.salePrice === undefined
-        ? null
-        : Number(variant.salePrice)
-    const hasVariantSalePrice =
-      variantSalePrice !== null && variantSalePrice < variantBasePrice
-    const variantImage = Array.isArray(variant.images) && variant.images[0]
-      ? variant.images[0]
-      : product.image
+    const variantPrice = getPriceData(variant, product)
+    const variantImage = getImageUrl(variant.images?.[0]) || product.image
 
     return {
       ...product,
-      compareAtPrice: hasVariantSalePrice ? variantBasePrice : product.compareAtPrice,
+      compareAtPrice: variantPrice.compareAtPrice || product.compareAtPrice,
       id: `${product.productId || product.id}:${variant.id}`,
       image: variantImage,
-      price: hasVariantSalePrice ? variantSalePrice : variantBasePrice,
+      price: variantPrice.price,
       productId: product.productId || product.id,
       sku: variant.sku || product.sku,
       variantId: variant.id,
