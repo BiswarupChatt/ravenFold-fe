@@ -22,7 +22,7 @@ function PurchaseActions({
   const actionFontSize = isDesktop ? '0.95rem' : isTablet ? '0.86rem' : '0.8rem'
   const actionIconSize = isDesktop ? 22 : 18
   const quantityButtonWidth = isDesktop ? 56 : isTablet ? 42 : 36
-  const actionTransition = '220ms cubic-bezier(0.2, 0, 0, 1)'
+  const actionTransition = '340ms cubic-bezier(0.22, 1, 0.36, 1)'
   const buttonSx = {
     fontSize: actionFontSize,
     minWidth: 0,
@@ -78,17 +78,67 @@ function PurchaseActions({
             ? 'minmax(0, 1fr) minmax(0, 1fr)'
             : 'minmax(0, 1fr) minmax(0, 0fr)',
           minWidth: 0,
+          overflow: 'hidden',
           transition: `grid-template-columns ${actionTransition}, gap ${actionTransition}`,
           width: '100%',
+          '@media (prefers-reduced-motion: reduce)': {
+            transition: 'none',
+            '& *': {
+              transition: 'none !important',
+            },
+          },
         }}
       >
         <Box
           sx={{
+            minHeight: actionHeight,
             minWidth: 0,
-            transition: `opacity ${actionTransition}, transform ${actionTransition}`,
+            overflow: 'hidden',
+            position: 'relative',
           }}
         >
-          {isAddedToCart ? (
+          <Box
+            aria-hidden={isAddedToCart}
+            sx={{
+              inset: 0,
+              opacity: isAddedToCart ? 0 : 1,
+              pointerEvents: isAddedToCart ? 'none' : 'auto',
+              position: 'absolute',
+              transform: isAddedToCart ? 'translateX(-10px)' : 'translateX(0)',
+              transition: isAddedToCart
+                ? 'opacity 150ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1)'
+                : `opacity 220ms ease 80ms, transform ${actionTransition}`,
+              willChange: 'opacity, transform',
+            }}
+          >
+            <AppButton
+              disabled={isAddedToCart || !canPurchase || goToCartLoading || cartLoading}
+              fullWidth
+              loading={cartLoading}
+              onClick={onAddToCart}
+              startIcon={<AddShoppingCartRoundedIcon />}
+              sx={buttonSx}
+              tabIndex={isAddedToCart ? -1 : 0}
+              variant="outlined"
+            >
+              Add to Cart
+            </AppButton>
+          </Box>
+
+          <Box
+            aria-hidden={!isAddedToCart}
+            sx={{
+              inset: 0,
+              opacity: isAddedToCart ? 1 : 0,
+              pointerEvents: isAddedToCart ? 'auto' : 'none',
+              position: 'absolute',
+              transform: isAddedToCart ? 'translateX(0)' : 'translateX(10px)',
+              transition: isAddedToCart
+                ? `opacity 240ms ease 90ms, transform ${actionTransition} 70ms`
+                : 'opacity 120ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1)',
+              willChange: 'opacity, transform',
+            }}
+          >
             <Stack
               alignItems="center"
               direction="row"
@@ -99,14 +149,15 @@ function PurchaseActions({
                 borderRadius: 2,
                 color: 'text.primary',
                 height: actionHeight,
+                left: 0,
                 minWidth: 0,
                 overflow: 'hidden',
-                transform: 'translateZ(0)',
+                right: 0,
               }}
             >
               <IconButton
                 aria-label="Decrease cart quantity"
-                disabled={cartLoading || goToCartLoading}
+                disabled={!isAddedToCart || cartLoading || goToCartLoading}
                 onClick={() => onCartQuantityChange(cartQuantity - 1)}
                 sx={{
                   borderRadius: 0,
@@ -143,6 +194,7 @@ function PurchaseActions({
                   justifyContent: 'center',
                   lineHeight: 1.2,
                   minWidth: 0,
+                  transition: 'color 160ms ease',
                 }}
               >
                 {cartQuantity}
@@ -150,7 +202,7 @@ function PurchaseActions({
 
               <IconButton
                 aria-label="Increase cart quantity"
-                disabled={cartLoading || goToCartLoading}
+                disabled={!isAddedToCart || cartLoading || goToCartLoading}
                 onClick={() => onCartQuantityChange(cartQuantity + 1)}
                 sx={{
                   borderRadius: 0,
@@ -172,19 +224,7 @@ function PurchaseActions({
                 <AddRoundedIcon />
               </IconButton>
             </Stack>
-          ) : (
-            <AppButton
-              disabled={!canPurchase || goToCartLoading || cartLoading}
-              fullWidth
-              loading={cartLoading}
-              onClick={onAddToCart}
-              startIcon={<AddShoppingCartRoundedIcon />}
-              sx={buttonSx}
-              variant="outlined"
-            >
-              Add to Cart
-            </AppButton>
-          )}
+          </Box>
         </Box>
 
         <Box
@@ -194,8 +234,11 @@ function PurchaseActions({
             opacity: isAddedToCart ? 1 : 0,
             overflow: 'hidden',
             pointerEvents: isAddedToCart ? 'auto' : 'none',
-            transform: isAddedToCart ? 'translateX(0)' : 'translateX(10px)',
-            transition: `opacity ${actionTransition}, transform ${actionTransition}`,
+            transform: isAddedToCart ? 'translateX(0)' : 'translateX(14px)',
+            transition: isAddedToCart
+              ? `opacity 240ms ease 120ms, transform ${actionTransition} 90ms`
+              : 'opacity 120ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1)',
+            willChange: 'opacity, transform',
           }}
         >
           <AppButton
