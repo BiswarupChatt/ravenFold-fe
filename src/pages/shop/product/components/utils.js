@@ -157,27 +157,7 @@ export const findMatchingVariant = (variants = [], groups = [], selectedOptions 
   ))
 }
 
-export const mergeDisplayShipping = (productShipping = {}, variantShipping = null) => {
-  const shipping = variantShipping || {}
 
-  return {
-    requiresShipping: shipping.requiresShipping ?? productShipping.requiresShipping ?? true,
-    weight: {
-      value: shipping.weight?.value ?? productShipping.weight?.value ?? null,
-      unit: shipping.weight?.unit || productShipping.weight?.unit || 'kg',
-    },
-    dimensions: {
-      length: shipping.dimensions?.length ?? productShipping.dimensions?.length ?? null,
-      width: shipping.dimensions?.width ?? productShipping.dimensions?.width ?? null,
-      height: shipping.dimensions?.height ?? productShipping.dimensions?.height ?? null,
-      unit: shipping.dimensions?.unit || productShipping.dimensions?.unit || 'cm',
-    },
-    shippingClass: shipping.shippingClass || productShipping.shippingClass || '',
-    isFreeShippingEligible: Boolean(
-      shipping.isFreeShippingEligible || productShipping.isFreeShippingEligible,
-    ),
-  }
-}
 
 export const formatWeight = (shipping = {}) => {
   const value = shipping.weight?.value
