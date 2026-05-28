@@ -54,18 +54,18 @@ function CartItemPrice({ isDrawer, item, stacked = false }) {
 
   return (
     <Stack
-      alignItems={stacked ? 'flex-start' : 'baseline'}
+      alignItems={stacked ? 'flex-start' : 'center'}
       direction={stacked ? 'column' : 'row'}
       flexWrap="wrap"
       gap={stacked ? 0.3 : 0.75}
     >
-      <Stack alignItems="baseline" direction="row" flexWrap="wrap" gap={0.7}>
+      <Stack alignItems="center" direction="row" flexWrap="wrap" gap={0.7}>
         <Typography
           sx={{
             color: 'primary.main',
             fontSize: isDrawer ? '0.9rem' : '0.96rem',
             fontWeight: 650,
-            lineHeight: 1.2,
+            lineHeight: 1,
           }}
         >
           {formatPrice(price)}
@@ -77,7 +77,9 @@ function CartItemPrice({ isDrawer, item, stacked = false }) {
             sx={{
               fontSize: isDrawer ? '0.76rem' : '0.8rem',
               fontWeight: 450,
+              lineHeight: 1,
               opacity: 0.72,
+              mx: 1,
               textDecoration: 'line-through',
             }}
           >
@@ -92,7 +94,7 @@ function CartItemPrice({ isDrawer, item, stacked = false }) {
             color: 'secondary.main',
             fontSize: isDrawer ? '0.74rem' : '0.78rem',
             fontWeight: 550,
-            lineHeight: 1.2,
+            lineHeight: 1,
           }}
         >
           {discountLabel}
@@ -167,10 +169,15 @@ function QuantityControl({
   onDecrease,
   onIncrease,
 }) {
-  const buttonSize = isDrawer ? 32 : 34
+  const buttonSize = isDrawer ? 28 : 30
 
   return (
-    <Stack alignItems="center" direction="row" spacing={0.8}>
+    <Stack
+      alignItems="center"
+      direction="row"
+      spacing={0.7}
+      sx={{ height: buttonSize }}
+    >
       <IconButton
         aria-label={`Decrease ${item.name || 'item'} quantity`}
         disabled={disabled || loading}
@@ -187,17 +194,23 @@ function QuantityControl({
             bgcolor: '#f1ece4',
             borderColor: 'rgba(31, 41, 55, 0.2)',
           },
-          '& svg': { fontSize: isDrawer ? 17 : 18 },
+          '& svg': { fontSize: isDrawer ? 15 : 16 },
         }}
       >
         <RemoveRoundedIcon />
       </IconButton>
 
       <Typography
+        component="span"
         sx={{
+          alignItems: 'center',
           color: 'text.primary',
-          fontSize: isDrawer ? '0.92rem' : '0.95rem',
+          display: 'flex',
+          fontSize: isDrawer ? '0.86rem' : '0.9rem',
           fontWeight: 650,
+          height: buttonSize,
+          justifyContent: 'center',
+          lineHeight: 1,
           minWidth: 20,
           textAlign: 'center',
         }}
@@ -221,7 +234,7 @@ function QuantityControl({
             bgcolor: '#f1ece4',
             borderColor: 'rgba(31, 41, 55, 0.2)',
           },
-          '& svg': { fontSize: isDrawer ? 17 : 18 },
+          '& svg': { fontSize: isDrawer ? 15 : 16 },
         }}
       >
         <AddRoundedIcon />
@@ -257,8 +270,8 @@ function RemoveButton({ disabled, isDrawer, item, loading, onRemove }) {
         borderColor: 'divider',
         borderRadius: 2,
         color: 'text.secondary',
-        height: isDrawer ? 34 : 38,
-        width: isDrawer ? 34 : 38,
+        height: isDrawer ? 28 : 30,
+        width: isDrawer ? 28 : 30,
         '&:hover': {
           bgcolor: 'rgba(185, 70, 49, 0.06)',
           borderColor: 'secondary.main',
@@ -266,7 +279,7 @@ function RemoveButton({ disabled, isDrawer, item, loading, onRemove }) {
         },
       }}
     >
-      <DeleteOutlineRoundedIcon sx={{ fontSize: isDrawer ? 18 : 20 }} />
+      <DeleteOutlineRoundedIcon sx={{ fontSize: isDrawer ? 15 : 16 }} />
     </IconButton>
   )
 }
@@ -302,24 +315,16 @@ function CartItemCard({
         }}
         variant="outlined"
       >
-        <Box
-          sx={{
-            alignItems: 'stretch',
-            display: 'grid',
-            gap: isDesktop ? 2.5 : 1.6,
-            gridTemplateColumns: isDesktop ? 'minmax(0, 1fr) 142px 150px 38px' : '1fr',
-            p: isDesktop ? 2.25 : 1.6,
-          }}
-        >
+        <Stack spacing={isDesktop ? 1.8 : 1.5} sx={{ p: isDesktop ? 2.25 : 1.6 }}>
           <Stack
-            alignItems="center"
+            alignItems="flex-start"
             direction="row"
             spacing={1.6}
-            sx={{ minHeight: isDesktop ? imageSize : 'auto', minWidth: 0 }}
+            sx={{ minWidth: 0, width: '100%' }}
           >
             <ProductImage imageSize={imageSize} isDrawer={false} item={item} />
 
-            <Stack justifyContent="center" spacing={0.65} sx={{ minWidth: 0 }}>
+            <Stack spacing={0.65} sx={{ minWidth: 0, pt: 0.35 }}>
               <Typography
                 sx={{
                   color: 'text.primary',
@@ -334,82 +339,55 @@ function CartItemCard({
 
               <VariantDetails details={detailItems} isDrawer={false} />
 
-              {!isDesktop ? <CartItemPrice item={item} isDrawer={false} /> : null}
+              <CartItemPrice item={item} isDrawer={false} />
             </Stack>
           </Stack>
 
-          {isDesktop ? (
-            <>
-              <Stack
-                justifyContent="center"
-                spacing={0.55}
-                sx={{ minHeight: imageSize }}
+          <Stack
+            alignItems="center"
+            direction="row"
+            spacing={1.2}
+            sx={{
+              borderColor: 'divider',
+              borderTop: '1px solid',
+              pt: isDesktop ? 1.55 : 1.4,
+              width: '100%',
+            }}
+          >
+            <Stack spacing={0.16}>
+              <FieldLabel>Item total</FieldLabel>
+              <Typography
+                sx={{
+                  color: 'text.primary',
+                  fontSize: isDesktop ? '0.94rem' : '0.9rem',
+                  fontWeight: 650,
+                  whiteSpace: 'nowrap',
+                }}
               >
-                <FieldLabel>Price</FieldLabel>
-                <CartItemPrice item={item} isDrawer={false} stacked />
-              </Stack>
-
-              <Stack
-                justifyContent="center"
-                spacing={0.65}
-                sx={{ minHeight: imageSize }}
-              >
-                <FieldLabel>Quantity</FieldLabel>
-                <QuantityControl
-                  disabled={disabled}
-                  isDrawer={false}
-                  item={item}
-                  loading={loading}
-                  onDecrease={onDecrease}
-                  onIncrease={onIncrease}
-                />
-              </Stack>
-
-              <Stack
-                alignItems="flex-end"
-                justifyContent="center"
-                sx={{ minHeight: imageSize }}
-              >
-                <RemoveButton
-                  disabled={disabled}
-                  isDrawer={false}
-                  item={item}
-                  loading={loading}
-                  onRemove={onRemove}
-                />
-              </Stack>
-            </>
-          ) : (
-            <Stack
-              alignItems="center"
-              direction="row"
-              justifyContent="space-between"
-              spacing={1.2}
-              sx={{
-                borderColor: 'divider',
-                borderTop: '1px solid',
-                pt: 1.4,
-              }}
-            >
-              <QuantityControl
-                disabled={disabled}
-                isDrawer={false}
-                item={item}
-                loading={loading}
-                onDecrease={onDecrease}
-                onIncrease={onIncrease}
-              />
-
-              <RemoveButton
-                disabled={disabled}
-                isDrawer={false}
-                item={item}
-                loading={loading}
-                onRemove={onRemove}
-              />
+                {formatPrice(getLineTotal(item))}
+              </Typography>
             </Stack>
-          )}
-        </Box>
+
+            <Box sx={{ flex: 1 }} />
+
+            <QuantityControl
+              disabled={disabled}
+              isDrawer={false}
+              item={item}
+              loading={loading}
+              onDecrease={onDecrease}
+              onIncrease={onIncrease}
+            />
+
+            <RemoveButton
+              disabled={disabled}
+              isDrawer={false}
+              item={item}
+              loading={loading}
+              onRemove={onRemove}
+            />
+          </Stack>
+        </Stack>
       </Paper>
     )
   }
@@ -451,12 +429,12 @@ function CartItemCard({
         <Stack
           alignItems="center"
           direction="row"
-          justifyContent="space-between"
           spacing={1}
           sx={{
             borderColor: 'divider',
             borderTop: '1px solid',
             pt: 1.15,
+            width: '100%',
           }}
         >
           <Stack spacing={0.16}>
@@ -472,6 +450,8 @@ function CartItemCard({
               {formatPrice(getLineTotal(item))}
             </Typography>
           </Stack>
+
+          <Box sx={{ flex: 1 }} />
 
           <Stack alignItems="center" direction="row" spacing={0.85}>
             <QuantityControl
