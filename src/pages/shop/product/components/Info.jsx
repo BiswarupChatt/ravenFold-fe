@@ -51,7 +51,7 @@ function Info({ product, variants = [] }) {
   const cartItems = useSelector(selectCartItems)
   const wishlistItems = useSelector(selectWishlistItems)
   const [cartLoading, setCartLoading] = useState(false)
-  const [buyNowLoading, setBuyNowLoading] = useState(false)
+  const [goToCartLoading, setGoToCartLoading] = useState(false)
 
   const activeVariants = useMemo(
     () => variants.filter((variant) => variant?.isActive !== false),
@@ -255,8 +255,8 @@ function Info({ product, variants = [] }) {
     }
   }
 
-  const handleBuyNow = async () => {
-    setBuyNowLoading(true)
+  const handleGoToCart = async () => {
+    setGoToCartLoading(true)
 
     try {
       const cartProduct = currentCartItem || await persistCartProduct(1)
@@ -269,7 +269,7 @@ function Info({ product, variants = [] }) {
     } catch (error) {
       errorToast(getApiErrorMessage(error))
     } finally {
-      setBuyNowLoading(false)
+      setGoToCartLoading(false)
     }
   }
 
@@ -320,14 +320,14 @@ function Info({ product, variants = [] }) {
       <Divider />
 
       <PurchaseActions
-        buyNowLoading={buyNowLoading}
         canPurchase={canPurchase}
         cartLoading={cartLoading}
         cartQuantity={cartQuantity}
+        goToCartLoading={goToCartLoading}
         isAddedToCart={isAddedToCart}
         onAddToCart={handleAddToCart}
-        onBuyNow={handleBuyNow}
         onCartQuantityChange={handleCartQuantityChange}
+        onGoToCart={handleGoToCart}
       />
 
       <Stack
