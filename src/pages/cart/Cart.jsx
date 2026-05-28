@@ -1,7 +1,7 @@
 import { Box, Container, Stack, Typography } from '@mui/material'
-import PageIntro from '../components/PageIntro.jsx'
-import { CartDrawerContent } from '../drawer/CartDrawer.jsx'
-import useScreenSize from '../hooks/useScreenSize.js'
+import PageIntro from '../../components/PageIntro.jsx'
+import { CartDrawerContent } from '../../drawer/CartDrawer.jsx'
+import useScreenSize from '../../hooks/useScreenSize.js'
 
 
 

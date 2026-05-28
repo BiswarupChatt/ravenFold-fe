@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link as RouterLink } from 'react-router-dom'
 import AppButton from '../components/AppButton.jsx'
 import AppDrawer from '../components/AppDrawer.jsx'
-import CartItemCard from '../components/CartItemCard.jsx'
+import CartItemCard from '../pages/cart/components/CartItemCard.jsx'
 import useScreenSize from '../hooks/useScreenSize.js'
 import { getApiErrorMessage } from '../services/apiClient.js'
 import {
