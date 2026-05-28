@@ -24,6 +24,7 @@ function PurchaseActions({
   const quantityButtonWidth = isDesktop ? 56 : isTablet ? 42 : 36
   const actionTransition = '340ms cubic-bezier(0.22, 1, 0.36, 1)'
   const buttonSx = {
+    boxSizing: 'border-box',
     fontSize: actionFontSize,
     minWidth: 0,
     minHeight: actionHeight,
@@ -78,7 +79,7 @@ function PurchaseActions({
             ? 'minmax(0, 1fr) minmax(0, 1fr)'
             : 'minmax(0, 1fr) minmax(0, 0fr)',
           minWidth: 0,
-          overflow: 'hidden',
+          overflow: isAddedToCart ? 'hidden' : 'visible',
           transition: `grid-template-columns ${actionTransition}, gap ${actionTransition}`,
           width: '100%',
           '@media (prefers-reduced-motion: reduce)': {
@@ -93,7 +94,7 @@ function PurchaseActions({
           sx={{
             minHeight: actionHeight,
             minWidth: 0,
-            overflow: 'hidden',
+            overflow: isAddedToCart ? 'hidden' : 'visible',
             position: 'relative',
           }}
         >
