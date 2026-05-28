@@ -1,15 +1,13 @@
-import { Box, Container, Stack, Typography } from '@mui/material'
+import { Box, Container, Stack } from '@mui/material'
 import PageIntro from '../../components/PageIntro.jsx'
-import { CartDrawerContent } from '../../drawer/CartDrawer.jsx'
 import useScreenSize from '../../hooks/useScreenSize.js'
-
-
+import CartContent from './components/CartContent.jsx'
 
 function Cart() {
   const { isDesktop } = useScreenSize()
 
   return (
-    <Box sx={{ py:  5 }}>
+    <Box sx={{ py: 5 }}>
       <Container>
         <Stack spacing={4}>
           <Stack
@@ -23,10 +21,9 @@ function Cart() {
               sx={{ maxWidth: 640 }}
               title="My Cart"
             />
-
           </Stack>
 
-          <CartDrawerContent />
+          <CartContent />
         </Stack>
       </Container>
     </Box>
