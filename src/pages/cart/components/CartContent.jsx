@@ -169,7 +169,6 @@ function CartContent({ layout = 'page', onNavigate }) {
 
         <Box
           sx={{
-            bgcolor: 'rgba(255, 255, 255, 0.94)',
             borderTop: '1px solid',
             borderColor: 'divider',
             flexShrink: 0,
@@ -177,16 +176,6 @@ function CartContent({ layout = 'page', onNavigate }) {
             px: 0.5,
             position: 'relative',
             pt: 0.75,
-            '&::before': {
-              background: 'linear-gradient(180deg, rgba(247, 244, 239, 0), rgba(247, 244, 239, 0.82))',
-              content: '""',
-              height: 16,
-              left: 0,
-              pointerEvents: 'none',
-              position: 'absolute',
-              right: 0,
-              top: -17,
-            },
           }}
         >
           {summary}

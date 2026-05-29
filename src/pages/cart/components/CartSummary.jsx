@@ -96,7 +96,6 @@ function CartSummary({ disabled, isDrawer, items = [], onNavigate, subtotal }) {
         border: '1px solid',
         borderColor: 'divider',
         borderRadius: 2,
-        boxShadow: isDrawer ? 'none' : '0 20px 56px rgba(15, 23, 42, 0.1)',
         p: isDrawer ? 1 : { xs: 2.25, md: 2.75 },
       }}
       variant="outlined"
