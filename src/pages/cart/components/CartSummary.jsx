@@ -37,13 +37,21 @@ function SummaryRow({
   valueSx,
 }) {
   return (
-    <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
+    <Box
+      sx={{
+        alignItems: 'start',
+        columnGap: 2,
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 1fr) auto',
+      }}
+    >
       <Typography
         sx={{
           color: 'text.secondary',
           fontSize: '0.94rem',
           fontWeight: 450,
           lineHeight: 1.35,
+          minWidth: 0,
           ...labelSx,
         }}
       >
@@ -62,7 +70,7 @@ function SummaryRow({
       >
         {value}
       </Typography>
-    </Stack>
+    </Box>
   )
 }
 
@@ -158,6 +166,7 @@ function CartSummary({ disabled, isDrawer, items = [], onNavigate, subtotal }) {
             gridTemplateRows: expanded ? '1fr' : '0fr',
             overflow: 'hidden',
             pointerEvents: expanded ? 'auto' : 'none',
+            mt: expanded ? undefined : '0 !important',
             transition: 'grid-template-rows 340ms cubic-bezier(0.16, 1, 0.3, 1)',
             willChange: 'grid-template-rows',
           }}
@@ -223,7 +232,6 @@ function CartSummary({ disabled, isDrawer, items = [], onNavigate, subtotal }) {
             border: '1px solid',
             borderColor: 'rgba(31, 41, 55, 0.1)',
             borderRadius: 2,
-            mt: '0px !important',
             p: isDrawer ? 1.35 : 1.5,
           }}
         >
