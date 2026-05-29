@@ -19,6 +19,7 @@ import {
   selectCartSubtotal,
 } from '../../../store/cartSlice'
 import { getCartItemActionId } from '../../../utils/utils.js'
+import CartCoupon from './CartCoupon.jsx'
 import CartEmptyState from './CartEmptyState.jsx'
 import CartItemCard from './CartItemCard.jsx'
 import CartSummary from './CartSummary.jsx'
@@ -135,13 +136,16 @@ function CartContent({ layout = 'page', onNavigate }) {
   )
 
   const summary = (
-    <CartSummary
-      disabled={isBusy}
-      isDrawer={isDrawer}
-      items={items}
-      onNavigate={onNavigate}
-      subtotal={subtotal}
-    />
+    <Stack spacing={isDrawer ? 1 : 2}>
+      <CartCoupon isDrawer={isDrawer} />
+      <CartSummary
+        disabled={isBusy}
+        isDrawer={isDrawer}
+        items={items}
+        onNavigate={onNavigate}
+        subtotal={subtotal}
+      />
+    </Stack>
   )
 
   if (isDrawer) {
@@ -197,7 +201,7 @@ function CartContent({ layout = 'page', onNavigate }) {
         {itemList}
       </Stack>
 
-      <Stack sx={{ position: isMobile ? 'static' : 'sticky', top: isMobile ? 'auto' : 96 }}>
+      <Stack sx={{ position: isMobile ? 'static' : 'sticky', top: isMobile ? 'auto' : 20 }}>
         {summary}
       </Stack>
     </Box>
