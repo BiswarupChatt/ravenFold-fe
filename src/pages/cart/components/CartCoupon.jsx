@@ -13,55 +13,55 @@ function CartCoupon({ isDrawer }) {
   }
 
   return (
-    <Box
-      sx={{
-        alignItems: 'center',
-        bgcolor: 'background.paper',
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 2,
-        display: 'flex',
-        p: 0.5,
-      }}
-    >
+    <Box sx={{ display: 'flex', gap: 1 }}>
       <Box
         sx={{
           alignItems: 'center',
-          color: 'text.secondary',
+          bgcolor: 'background.paper',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 2,
           display: 'flex',
-          pl: 1,
-          pr: 0.5,
+          flex: 1,
+          px: 1.5,
         }}
       >
-        <LocalOfferOutlinedIcon fontSize="small" />
+        <Box
+          sx={{
+            alignItems: 'center',
+            color: 'text.secondary',
+            display: 'flex',
+            pr: 1,
+          }}
+        >
+          <LocalOfferOutlinedIcon fontSize="small" />
+        </Box>
+        <InputBase
+          fullWidth
+          onChange={(e) => setCouponCode(e.target.value)}
+          placeholder="Enter coupon code"
+          sx={{
+            fontSize: '0.94rem',
+            py: 0.5,
+          }}
+          value={couponCode}
+        />
       </Box>
-      <InputBase
-        fullWidth
-        onChange={(e) => setCouponCode(e.target.value)}
-        placeholder="Enter coupon code"
-        sx={{
-          fontSize: '0.94rem',
-          px: 1,
-        }}
-        value={couponCode}
-      />
       <Button
         color="primary"
         disabled={!couponCode.trim()}
         onClick={handleApply}
-        size="small"
         sx={{
-          borderRadius: 1.5,
+          borderRadius: 2,
           fontWeight: 600,
-          minWidth: 100,
-          minHeight: 38,
+          minWidth: 80,
           px: 2,
         }}
         variant="contained"
       >
         Apply
       </Button>
-    </Box >
+    </Box>
   )
 }
 
