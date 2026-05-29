@@ -1,80 +1,260 @@
-import { Divider, Paper, Stack, Typography } from '@mui/material'
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
+import { Box, Paper, Stack, Typography } from '@mui/material'
+import { useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import AppButton from '../../../components/AppButton.jsx'
 import { errorToast } from '../../../services/toast.js'
-import { formatPrice } from '../../../utils/utils.js'
+import { formatPrice, getCartPricing, toFiniteNumber } from '../../../utils/utils.js'
 
+const getSummaryTotals = (items = [], subtotal = 0) => {
+  const subtotalValue = toFiniteNumber(subtotal)
+  const totalMrp = items.reduce((total, item) => {
+    const { compareAtPrice, price } = getCartPricing(item)
+    const mrp = compareAtPrice || price
 
-function CartSummary({
-  disabled,
-  isDrawer,
-  onNavigate,
-  quantity,
-  subtotal,
+    return total + mrp * toFiniteNumber(item.quantity)
+  }, 0)
+  const mrpValue = Math.max(totalMrp, subtotalValue)
+  const bagDiscount = Math.max(mrpValue - subtotalValue, 0)
+  const couponDiscount = 0
+  const shippingCharge = 0
+  const totalPayable = Math.max(subtotalValue - couponDiscount + shippingCharge, 0)
+
+  return {
+    bagDiscount,
+    couponDiscount,
+    shippingCharge,
+    subtotal: subtotalValue,
+    totalMrp: mrpValue,
+    totalPayable,
+  }
+}
+
+function SummaryRow({
+  label,
+  labelSx,
+  value,
+  valueSx,
 }) {
-  if (!isDrawer) {
-    return (
-      <Paper
+  return (
+    <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
+      <Typography
         sx={{
-          bgcolor: 'background.paper',
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 2,
-          boxShadow: '0 20px 56px rgba(15, 23, 42, 0.1)',
-          p: { xs: 2.25, md: 2.75 },
+          color: 'text.secondary',
+          fontSize: '0.94rem',
+          fontWeight: 450,
+          lineHeight: 1.35,
+          ...labelSx,
         }}
-        variant="outlined"
       >
-        <Stack spacing={2.4}>
-          <Stack spacing={0.5}>
-            <Typography sx={{ color: 'text.primary', fontSize: '1.08rem', fontWeight: 650 }}>
-              Order Summary
-            </Typography>
-            <Typography color="text.secondary" sx={{ fontSize: '0.92rem', lineHeight: 1.45 }}>
-              Review totals before moving to checkout.
-            </Typography>
-          </Stack>
+        {label}
+      </Typography>
+      <Typography
+        sx={{
+          color: 'text.secondary',
+          fontSize: '0.94rem',
+          fontWeight: 500,
+          lineHeight: 1.35,
+          textAlign: 'right',
+          whiteSpace: 'nowrap',
+          ...valueSx,
+        }}
+      >
+        {value}
+      </Typography>
+    </Stack>
+  )
+}
 
-          <Stack spacing={1.2}>
-            <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
-              <Typography color="text.secondary" sx={{ fontWeight: 500 }}>
-                Items
-              </Typography>
-              <Typography sx={{ fontWeight: 650 }}>
-                {quantity}
-              </Typography>
+function CartSummary({ disabled, isDrawer, items = [], onNavigate, subtotal }) {
+  const [expanded, setExpanded] = useState(false)
+  const {
+    bagDiscount,
+    couponDiscount,
+    shippingCharge,
+    totalMrp,
+    totalPayable,
+  } = getSummaryTotals(items, subtotal)
+  const titleSize = isDrawer ? '1rem' : '1.12rem'
+  const rowTextSize = isDrawer ? '0.96rem' : '1rem'
+  const savings = bagDiscount + couponDiscount
+
+  return (
+    <Paper
+      sx={{
+        bgcolor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 2,
+        boxShadow: isDrawer ? 'none' : '0 20px 56px rgba(15, 23, 42, 0.1)',
+        p: isDrawer ? 2 : { xs: 2.25, md: 2.75 },
+      }}
+      variant="outlined"
+    >
+      <Stack spacing={2}>
+        <Box
+          aria-expanded={expanded}
+          component="button"
+          onClick={() => setExpanded((value) => !value)}
+          sx={{
+            alignItems: 'center',
+            bgcolor: 'transparent',
+            border: 0,
+            color: 'inherit',
+            cursor: 'pointer',
+            display: 'flex',
+            font: 'inherit',
+            justifyContent: 'space-between',
+            p: 0,
+            textAlign: 'left',
+            width: '100%',
+            '&:focus-visible': {
+              outline: '2px solid',
+              outlineColor: 'primary.main',
+              outlineOffset: 4,
+            },
+          }}
+          type="button"
+        >
+          <Typography
+            sx={{
+              color: 'text.primary',
+              fontSize: titleSize,
+              fontWeight: 700,
+              lineHeight: 1.2,
+            }}
+          >
+            Order Summary
+          </Typography>
+
+          <Box
+            sx={{
+              alignItems: 'center',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 2,
+              color: 'text.primary',
+              display: 'flex',
+              flexShrink: 0,
+              height: 32,
+              justifyContent: 'center',
+              width: 32,
+            }}
+          >
+            <KeyboardArrowDownRoundedIcon
+              sx={{
+                transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 260ms cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
+            />
+          </Box>
+        </Box>
+
+        <Box
+          aria-hidden={!expanded}
+          sx={{
+            contain: 'layout paint',
+            display: 'grid',
+            gridTemplateRows: expanded ? '1fr' : '0fr',
+            overflow: 'hidden',
+            pointerEvents: expanded ? 'auto' : 'none',
+            transition: 'grid-template-rows 340ms cubic-bezier(0.16, 1, 0.3, 1)',
+            willChange: 'grid-template-rows',
+          }}
+        >
+          <Box sx={{ minHeight: 0, overflow: 'hidden' }}>
+            <Stack
+              spacing={1.45}
+              sx={{
+                bgcolor: 'rgba(248, 245, 240, 0.62)',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                opacity: expanded ? 1 : 0,
+                p: isDrawer ? 1.45 : 1.65,
+                transform: expanded ? 'translateY(0)' : 'translateY(-6px)',
+                transition: expanded
+                  ? 'opacity 220ms ease 90ms, transform 340ms cubic-bezier(0.16, 1, 0.3, 1)'
+                  : 'opacity 120ms ease, transform 180ms ease',
+                willChange: 'opacity, transform',
+              }}
+            >
+              <SummaryRow
+                label="Total MRP"
+                value={formatPrice(totalMrp)}
+              />
+
+              <SummaryRow
+                label="Bag Discount (Incl. Of GST Benefit)"
+                value={bagDiscount ? `- ${formatPrice(bagDiscount)}` : formatPrice(0)}
+              />
+
+              <SummaryRow
+                label="Coupon Discount"
+                value={couponDiscount ? `- ${formatPrice(couponDiscount)}` : formatPrice(0)}
+                valueSx={couponDiscount ? { color: '#00a53b' } : undefined}
+              />
+
+              <SummaryRow
+                label="Shipping Charge"
+                value={shippingCharge ? formatPrice(shippingCharge) : 'Free'}
+                valueSx={{ color: '#00a53b', fontWeight: 600 }}
+              />
+
+              {savings ? (
+                <Typography
+                  sx={{
+                    color: '#008f35',
+                    fontSize: '0.84rem',
+                    fontWeight: 550,
+                    lineHeight: 1.35,
+                  }}
+                >
+                  You save {formatPrice(savings)} on this order.
+                </Typography>
+              ) : null}
             </Stack>
+          </Box>
+        </Box>
 
-            <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
-              <Typography color="text.secondary" sx={{ fontWeight: 500 }}>
-                Subtotal
-              </Typography>
-              <Typography sx={{ fontWeight: 650 }}>
-                {formatPrice(subtotal)}
-              </Typography>
-            </Stack>
+        <Stack
+          sx={{
+            bgcolor: '#f8f5f0',
+            border: '1px solid',
+            borderColor: 'rgba(31, 41, 55, 0.1)',
+            borderRadius: 2,
+            mt: '0px !important',
+            p: isDrawer ? 1.35 : 1.5,
+          }}
+        >
+          <SummaryRow
+            label="Total Payable"
+            labelSx={{
+              color: 'text.primary',
+              fontSize: rowTextSize,
+              fontWeight: 700,
+            }}
+            value={formatPrice(totalPayable)}
+            valueSx={{
+              color: 'text.primary',
+              fontSize: rowTextSize,
+              fontWeight: 700,
+            }}
+          />
+        </Stack>
 
-            <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
-              <Typography color="text.secondary" sx={{ fontWeight: 500 }}>
-                Shipping
-              </Typography>
-              <Typography color="text.secondary" sx={{ fontWeight: 500 }}>
-                Calculated at checkout
-              </Typography>
-            </Stack>
-          </Stack>
-
-          <Divider />
-
-          <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
-            <Typography sx={{ color: 'text.primary', fontSize: '1rem', fontWeight: 650 }}>
-              Estimated Total
-            </Typography>
-            <Typography sx={{ color: 'primary.main', fontSize: '1.16rem', fontWeight: 700 }}>
-              {formatPrice(subtotal)}
-            </Typography>
-          </Stack>
-
+        {isDrawer ? (
+          <AppButton
+            component={RouterLink}
+            disabled={disabled}
+            fullWidth
+            onClick={onNavigate}
+            to="/shop"
+            variant="contained"
+          >
+            Continue Shopping
+          </AppButton>
+        ) : (
           <AppButton
             disabled={disabled}
             fullWidth
@@ -91,82 +271,7 @@ function CartSummary({
           >
             Proceed to Checkout
           </AppButton>
-        </Stack>
-      </Paper>
-    )
-  }
-
-  return (
-    <Paper
-      sx={{
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 2,
-        boxShadow: 'none',
-        p: 2,
-        position: 'static',
-      }}
-      variant="outlined"
-    >
-      <Stack spacing={2}>
-        <Typography sx={{ fontSize: '1rem', fontWeight: 650 }}>
-          Order Summary
-        </Typography>
-
-        <Stack spacing={1.1}>
-          <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
-            <Typography color="text.secondary">
-              Items
-            </Typography>
-            <Typography fontWeight={650}>
-              {quantity}
-            </Typography>
-          </Stack>
-
-          <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
-            <Typography color="text.secondary">
-              Subtotal
-            </Typography>
-            <Typography fontWeight={650}>
-              {formatPrice(subtotal)}
-            </Typography>
-          </Stack>
-
-          <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
-            <Typography color="text.secondary">
-              Shipping
-            </Typography>
-            <Typography color="text.secondary" fontWeight={500}>
-              Calculated later
-            </Typography>
-          </Stack>
-        </Stack>
-
-        <Divider />
-
-        <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
-          <Typography sx={{ fontSize: '1rem', fontWeight: 650 }}>
-            Total
-          </Typography>
-          <Typography sx={{ color: 'primary.main', fontSize: '1.1rem', fontWeight: 700 }}>
-            {formatPrice(subtotal)}
-          </Typography>
-        </Stack>
-
-        <Typography color="text.secondary" sx={{ fontSize: '0.88rem', lineHeight: 1.45 }}>
-          Taxes are included. Shipping is confirmed during checkout.
-        </Typography>
-
-        <AppButton
-          component={RouterLink}
-          disabled={disabled}
-          fullWidth
-          onClick={onNavigate}
-          to="/shop"
-          variant="contained"
-        >
-          Continue Shopping
-        </AppButton>
+        )}
       </Stack>
     </Paper>
   )

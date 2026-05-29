@@ -16,7 +16,6 @@ import {
   removeItem,
   replaceCartItems,
   selectCartItems,
-  selectCartQuantity,
   selectCartSubtotal,
 } from '../../../store/cartSlice'
 import { getCartItemActionId } from '../../../utils/utils.js'
@@ -27,7 +26,6 @@ import CartSummary from './CartSummary.jsx'
 function CartContent({ layout = 'page', onNavigate }) {
   const dispatch = useDispatch()
   const items = useSelector(selectCartItems)
-  const quantity = useSelector(selectCartQuantity)
   const subtotal = useSelector(selectCartSubtotal)
   const isAuthenticated = useSelector(selectIsAuthenticated)
   const { isDesktop, isMobile } = useScreenSize()
@@ -140,8 +138,8 @@ function CartContent({ layout = 'page', onNavigate }) {
     <CartSummary
       disabled={isBusy}
       isDrawer={isDrawer}
+      items={items}
       onNavigate={onNavigate}
-      quantity={quantity}
       subtotal={subtotal}
     />
   )
