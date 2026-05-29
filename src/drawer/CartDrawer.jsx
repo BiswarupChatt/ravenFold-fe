@@ -4,6 +4,7 @@ import CartContent from '../pages/cart/components/CartContent.jsx'
 function CartDrawer({ open, onClose }) {
   return (
     <AppDrawer
+      contentSx={{ overflowY: 'hidden' }}
       onClose={onClose}
       open={open}
       title="Cart"

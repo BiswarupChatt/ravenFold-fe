@@ -86,6 +86,8 @@ function CartSummary({ disabled, isDrawer, items = [], onNavigate, subtotal }) {
   const titleSize = isDrawer ? '1rem' : '1.12rem'
   const rowTextSize = isDrawer ? '0.96rem' : '1rem'
   const savings = bagDiscount + couponDiscount
+  const iconBoxSize = isDrawer ? 26 : 32
+  const summarySpacing = isDrawer ? 0.9 : 2
 
   return (
     <Paper
@@ -95,11 +97,11 @@ function CartSummary({ disabled, isDrawer, items = [], onNavigate, subtotal }) {
         borderColor: 'divider',
         borderRadius: 2,
         boxShadow: isDrawer ? 'none' : '0 20px 56px rgba(15, 23, 42, 0.1)',
-        p: isDrawer ? 2 : { xs: 2.25, md: 2.75 },
+        p: isDrawer ? 1 : { xs: 2.25, md: 2.75 },
       }}
       variant="outlined"
     >
-      <Stack spacing={2}>
+      <Stack spacing={summarySpacing}>
         <Box
           aria-expanded={expanded}
           component="button"
@@ -144,9 +146,9 @@ function CartSummary({ disabled, isDrawer, items = [], onNavigate, subtotal }) {
               color: 'text.primary',
               display: 'flex',
               flexShrink: 0,
-              height: 32,
+              height: iconBoxSize,
               justifyContent: 'center',
-              width: 32,
+              width: iconBoxSize,
             }}
           >
             <KeyboardArrowDownRoundedIcon
@@ -173,14 +175,14 @@ function CartSummary({ disabled, isDrawer, items = [], onNavigate, subtotal }) {
         >
           <Box sx={{ minHeight: 0, overflow: 'hidden' }}>
             <Stack
-              spacing={1.45}
+              spacing={isDrawer ? 0.8 : 1.45}
               sx={{
                 bgcolor: 'rgba(248, 245, 240, 0.62)',
                 border: '1px solid',
                 borderColor: 'divider',
                 borderRadius: 2,
                 opacity: expanded ? 1 : 0,
-                p: isDrawer ? 1.45 : 1.65,
+                p: isDrawer ? 0.9 : 1.65,
                 transform: expanded ? 'translateY(0)' : 'translateY(-6px)',
                 transition: expanded
                   ? 'opacity 220ms ease 90ms, transform 340ms cubic-bezier(0.16, 1, 0.3, 1)'
@@ -232,7 +234,7 @@ function CartSummary({ disabled, isDrawer, items = [], onNavigate, subtotal }) {
             border: '1px solid',
             borderColor: 'rgba(31, 41, 55, 0.1)',
             borderRadius: 2,
-            p: isDrawer ? 1.35 : 1.5,
+            p: isDrawer ? 0.85 : 1.5,
           }}
         >
           <SummaryRow
@@ -257,6 +259,7 @@ function CartSummary({ disabled, isDrawer, items = [], onNavigate, subtotal }) {
             disabled={disabled}
             fullWidth
             onClick={onNavigate}
+            sx={{ minHeight: 38 }}
             to="/shop"
             variant="contained"
           >

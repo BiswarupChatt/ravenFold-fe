@@ -7,6 +7,8 @@
 
 * {
   box-sizing: border-box;
+  scrollbar-color: #b8afa4 transparent;
+  scrollbar-width: thin;
 }
 
 body {
@@ -15,4 +17,29 @@ body {
 
 a {
   color: inherit;
+}
+
+::-webkit-scrollbar {
+  height: 8px;
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #b8afa4;
+  background-clip: content-box;
+  border: 2px solid transparent;
+  border-left-width: 4px;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #8f8579;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }

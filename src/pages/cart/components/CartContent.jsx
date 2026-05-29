@@ -146,9 +146,51 @@ function CartContent({ layout = 'page', onNavigate }) {
 
   if (isDrawer) {
     return (
-      <Stack spacing={2}>
-        {itemList}
-        {summary}
+      <Stack
+        spacing={1.5}
+        sx={{
+          flex: 1,
+          height: '100%',
+          minHeight: 0,
+        }}
+      >
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: 0,
+            mr: -0.75,
+            overflowY: 'auto',
+            pb: 1.25,
+            pr: 0.75,
+          }}
+        >
+          {itemList}
+        </Box>
+
+        <Box
+          sx={{
+            bgcolor: 'rgba(255, 255, 255, 0.94)',
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            flexShrink: 0,
+            mx: -0.5,
+            px: 0.5,
+            position: 'relative',
+            pt: 0.75,
+            '&::before': {
+              background: 'linear-gradient(180deg, rgba(247, 244, 239, 0), rgba(247, 244, 239, 0.82))',
+              content: '""',
+              height: 16,
+              left: 0,
+              pointerEvents: 'none',
+              position: 'absolute',
+              right: 0,
+              top: -17,
+            },
+          }}
+        >
+          {summary}
+        </Box>
       </Stack>
     )
   }

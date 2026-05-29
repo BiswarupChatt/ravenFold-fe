@@ -34,7 +34,7 @@ function AppDrawer({
               height: '100dvh',
               maxHeight: '100dvh',
               maxWidth: '100vw',
-              p: isMobile ? 2.5 : 3,
+              p: isMobile ? 2 : 2.5,
               width: isMobile ? '100vw' : width,
             },
             paperSx,
@@ -49,9 +49,9 @@ function AppDrawer({
             borderBottom: hasHeaderContent ? 1 : 0,
             borderColor: 'divider',
             display: 'flex',
-            gap: 2,
+            gap: 1.5,
             justifyContent: 'space-between',
-            pb: hasHeaderContent ? 2 : 1.5,
+            pb: hasHeaderContent ? 1.25 : 1,
           }}
         >
           {hasHeaderContent ? (
@@ -76,8 +76,8 @@ function AppDrawer({
               alignSelf: 'flex-start',
               color: 'text.primary',
               flexShrink: 0,
-              height: 44,
-              width: 44,
+              height: 38,
+              width: 38,
             }}
           >
             <CloseRoundedIcon />
@@ -92,7 +92,7 @@ function AppDrawer({
               flexDirection: 'column',
               minHeight: 0,
               overflowY: 'auto',
-              pt: hasHeaderContent ? 2.5 : 0,
+              pt: hasHeaderContent ? 1.5 : 0,
             },
             contentSx,
           ]}
