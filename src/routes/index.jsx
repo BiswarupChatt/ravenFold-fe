@@ -11,6 +11,7 @@ import Address from '../pages/profile/subPages/address/Address.jsx'
 import Info from '../pages/profile/subPages/info/Info.jsx'
 import Order from '../pages/profile/subPages/order/Order.jsx'
 import Cart from "../pages/cart/Cart.jsx"
+import Checkout from '../pages/checkout/Checkout.jsx'
 import Reviews from '../pages/profile/subPages/reviews/Reviews.jsx'
 import Wishlist from '../pages/profile/subPages/wishlist/Wishlist.jsx'
 import ReturnsRefunds from '../pages/ReturnsRefunds.jsx'
@@ -43,6 +44,7 @@ const routes = [
         ],
       },
       { path: 'cart', element: <Cart /> },
+      { path: 'checkout', element: <Checkout /> },
       { path: 'wishlist', element: <Navigate replace to="/profile/wishlist" /> },
       { path: 'terms-and-conditions', element: <TermsConditions /> },
       { path: 'privacy-policy', element: <PrivacyPolicy /> },

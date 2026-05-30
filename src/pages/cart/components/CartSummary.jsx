@@ -266,9 +266,10 @@ function CartSummary({ disabled, isDrawer, items = [], onNavigate, subtotal }) {
           </AppButton>
         ) : (
           <AppButton
+            component={RouterLink}
             disabled={disabled}
             fullWidth
-            onClick={() => errorToast('Checkout is not available yet.')}
+            to="/checkout"
             sx={{
               bgcolor: 'primary.main',
               borderRadius: 2,
