@@ -21,6 +21,7 @@ import ProductDetails from '../pages/shop/product/ProductDetails.jsx'
 import Shop from '../pages/shop/catalog/Shop.jsx'
 
 const ProtectedProfile = withAuthRequired(Profile)
+const ProtectedCheckout = withAuthRequired(Checkout)
 
 const routes = [
   {
@@ -44,7 +45,7 @@ const routes = [
         ],
       },
       { path: 'cart', element: <Cart /> },
-      { path: 'checkout', element: <Checkout /> },
+      { path: 'checkout', element: <ProtectedCheckout /> },
       { path: 'wishlist', element: <Navigate replace to="/profile/wishlist" /> },
       { path: 'terms-and-conditions', element: <TermsConditions /> },
       { path: 'privacy-policy', element: <PrivacyPolicy /> },

@@ -259,10 +259,10 @@ function CartSummary({ disabled, isDrawer, items = [], onNavigate, subtotal }) {
             fullWidth
             onClick={onNavigate}
             sx={{ minHeight: 38 }}
-            to="/shop"
+            to="/checkout"
             variant="contained"
           >
-            Continue Shopping
+            Proceed to Checkout
           </AppButton>
         ) : (
           <AppButton

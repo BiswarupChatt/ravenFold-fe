@@ -45,10 +45,10 @@ function CartEmptyState({ isDrawer, isMobile, onNavigate }) {
         fullWidth={isDrawer || isMobile}
         onClick={onNavigate}
         sx={{ alignSelf: isDrawer || isMobile ? 'stretch' : 'center' }}
-        to="/shop"
+        to="/checkout"
         variant="contained"
       >
-        Continue Shopping
+        Proceed to Checkout
       </AppButton>
     </Stack>
   )

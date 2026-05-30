@@ -16,7 +16,6 @@ const navigationActions = [
     path: '/cart',
     isDrawer: true,
     Icon: ShoppingBagOutlinedIcon,
-    requiresAuth: true,
     showBadge: true,
   },
   {
