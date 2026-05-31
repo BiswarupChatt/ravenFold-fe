@@ -1,17 +1,14 @@
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
-import { Box, Divider, Paper, Stack, Typography } from '@mui/material'
+import { Box, Button, Paper, Stack, Typography } from '@mui/material'
 import AppButton from '../../../../../components/AppButton.jsx'
-import { formatPrice } from '../../../../../utils/utils.js'
 import {
   formatOrderDate,
   getItemMeta,
   getItemName,
   getOrderAmountLabel,
-  getOrderItemsLabel,
   getOrderProgressCopy,
   getOrderStatusMeta,
-  getPaymentMethodLabel,
-  getPaymentStatusMeta,
+  getPreviewItemCountLabel,
   getPreviewOrderItem,
   getProductPath,
 } from './orderFormatters.js'
@@ -46,7 +43,7 @@ function SummaryMetric({ align = 'left', label, value }) {
   )
 }
 
-function ProductPreview({ isMobile, item, onViewProduct }) {
+function ProductPreview({ isMobile, item, onViewDetails, onViewProduct, order }) {
   const imageSize = isMobile ? 58 : 66
 
   if (!item) {
@@ -164,9 +161,27 @@ function ProductPreview({ isMobile, item, onViewProduct }) {
             {getItemMeta(item)}
           </Typography>
         ) : null}
-        <Typography sx={{ color: 'text.primary', fontSize: '0.84rem', fontWeight: 600 }}>
-          {Number(item.quantity || 0).toLocaleString('en-IN')} x {formatPrice(item.priceAtTime)}
-        </Typography>
+        <Button
+          onClick={() => onViewDetails(order)}
+          sx={{
+            alignSelf: 'flex-start',
+            color: 'text.secondary',
+            fontSize: '0.84rem',
+            fontWeight: 600,
+            minHeight: 'auto',
+            minWidth: 0,
+            p: 0,
+            textTransform: 'none',
+            '&:hover': {
+              bgcolor: 'transparent',
+              color: 'primary.main',
+              textDecoration: 'underline',
+            },
+          }}
+          variant="text"
+        >
+          {getPreviewItemCountLabel(order)}
+        </Button>
       </Stack>
     </Stack>
   )
@@ -174,7 +189,6 @@ function ProductPreview({ isMobile, item, onViewProduct }) {
 
 function OrderCard({ isMobile, order, onViewDetails, onViewProduct }) {
   const orderStatus = getOrderStatusMeta(order.status)
-  const paymentStatus = getPaymentStatusMeta(order.paymentStatus)
   const progress = getOrderProgressCopy(order)
   const previewItem = getPreviewOrderItem(order)
   const shipTo = order.shippingAddress?.fullName || 'Shipping address'
@@ -243,21 +257,10 @@ function OrderCard({ isMobile, order, onViewDetails, onViewProduct }) {
           <ProductPreview
             isMobile={isMobile}
             item={previewItem}
+            onViewDetails={onViewDetails}
             onViewProduct={onViewProduct}
+            order={order}
           />
-
-          <Stack
-            divider={<Divider flexItem orientation={isMobile ? 'horizontal' : 'vertical'} />}
-            direction={isMobile ? 'column' : 'row'}
-            spacing={isMobile ? 0.65 : 1.1}
-            sx={{ color: 'text.secondary', pt: isMobile ? 0 : 0.5 }}
-          >
-            <Typography sx={{ fontSize: '0.82rem' }}>{getOrderItemsLabel(order)}</Typography>
-            <Typography sx={{ fontSize: '0.82rem' }}>{getPaymentMethodLabel(order)}</Typography>
-            <Typography sx={{ color: paymentStatus.sx.color, fontSize: '0.82rem', fontWeight: 600 }}>
-              {paymentStatus.label}
-            </Typography>
-          </Stack>
         </Stack>
 
         <Stack alignItems={isMobile ? 'stretch' : 'flex-end'} justifyContent="center">
@@ -265,6 +268,7 @@ function OrderCard({ isMobile, order, onViewDetails, onViewProduct }) {
             onClick={() => onViewDetails(order)}
             size="small"
             sx={{
+              alignSelf: isMobile ? 'stretch' : 'flex-end',
               fontSize: '0.84rem',
               fontWeight: 700,
               minHeight: 34,

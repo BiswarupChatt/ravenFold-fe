@@ -108,6 +108,30 @@ export const getOrderItemsLabel = (order = {}) => {
   return getItemCountLabel(order)
 }
 
+export const getPreviewItemCountLabel = (order = {}) => {
+  const itemCount = Number(order.itemCount || 0)
+  const remainingItems = Math.max(itemCount - 1, 0)
+
+  if (remainingItems > 0) {
+    return `${remainingItems.toLocaleString('en-IN')} more ${remainingItems === 1 ? 'item' : 'items'}`
+  }
+
+  return getItemCountLabel(order)
+}
+
+export const shouldShowOrderNotice = (order = {}) => {
+  const stableOrderStatuses = ['confirmed', 'packed', 'shipped', 'delivered']
+
+  return !stableOrderStatuses.includes(order.status) || order.paymentStatus !== 'paid'
+}
+
+export const getOrderNoticeLabel = (order = {}) => {
+  const orderStatus = getOrderStatusMeta(order.status).label
+  const paymentStatus = getPaymentStatusMeta(order.paymentStatus).label
+
+  return `Order: ${orderStatus}. Payment: ${paymentStatus}.`
+}
+
 export const getOrderAmountLabel = (order = {}) => formatPrice(order.totalPayable)
 
 export const getPaymentMethodLabel = (order = {}) => {
