@@ -103,14 +103,15 @@ function CheckoutDetailsPanel({
 
         <Paper sx={billingSectionSx} variant="outlined">
           <Stack
-            alignItems={{ xs: 'flex-start', sm: 'center' }}
-            direction={{ xs: 'column', sm: 'row' }}
-            justifyContent="space-between"
-            spacing={1.25}
             sx={{
+              alignItems: 'center',
+              columnGap: 2,
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'minmax(0, 1fr) auto' },
               minHeight: 66,
               px: { xs: 1.5, md: 2 },
               py: 1.25,
+              rowGap: 1.25,
             }}
           >
             <SectionTitle
@@ -123,15 +124,31 @@ function CheckoutDetailsPanel({
                 <Checkbox
                   checked={billing.sameAsShipping}
                   onChange={billing.handleSameAsShippingChange}
-                  size="small"
+                  sx={{
+                    ml: 1,
+                    p: 0,
+                    '& .MuiSvgIcon-root': {
+                      fontSize: 25,
+                    },
+                  }}
                 />
               )}
+              labelPlacement="start"
               label={(
-                <Typography sx={{ color: 'text.primary', fontSize: '0.9rem', fontWeight: 650 }}>
+                <Typography sx={{ color: 'text.primary', fontSize: '1rem', fontWeight: 750 }}>
                   Same as shipping address
                 </Typography>
               )}
-              sx={{ m: 0 }}
+              sx={{
+                justifyContent: 'flex-end',
+                justifySelf: 'end',
+                m: 0,
+                width: { xs: '100%', sm: 'auto' },
+                '& .MuiFormControlLabel-label': {
+                  flex: { xs: 1, sm: 'initial' },
+                  textAlign: 'right',
+                },
+              }}
             />
           </Stack>
 
