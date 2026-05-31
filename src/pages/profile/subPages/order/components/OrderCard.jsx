@@ -1,5 +1,6 @@
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
-import { Box, Button, Divider, Paper, Stack, Typography } from '@mui/material'
+import { Box, Divider, Paper, Stack, Typography } from '@mui/material'
+import AppButton from '../../../../../components/AppButton.jsx'
 import { formatPrice } from '../../../../../utils/utils.js'
 import {
   formatOrderDate,
@@ -15,14 +16,14 @@ import {
   getProductPath,
 } from './orderFormatters.js'
 
-function SummaryMetric({ label, value, valueSx }) {
+function SummaryMetric({ align = 'left', label, value }) {
   return (
-    <Box sx={{ minWidth: 0 }}>
+    <Box sx={{ minWidth: 0, textAlign: align }}>
       <Typography
-        color="text.secondary"
+        color="text.primary"
         sx={{
-          fontSize: '0.74rem',
-          fontWeight: 800,
+          fontSize: '0.68rem',
+          fontWeight: 700,
           lineHeight: 1.2,
           textTransform: 'uppercase',
         }}
@@ -32,12 +33,11 @@ function SummaryMetric({ label, value, valueSx }) {
       <Typography
         sx={{
           color: 'text.primary',
-          fontSize: '0.96rem',
-          fontWeight: 650,
-          lineHeight: 1.35,
+          fontSize: { xs: '0.86rem', md: '0.92rem' },
+          fontWeight: 600,
+          lineHeight: 1.3,
           mt: 0.35,
           overflowWrap: 'anywhere',
-          ...valueSx,
         }}
       >
         {value}
@@ -47,6 +47,8 @@ function SummaryMetric({ label, value, valueSx }) {
 }
 
 function ProductPreview({ isMobile, item, onViewProduct }) {
+  const imageSize = isMobile ? 58 : 66
+
   if (!item) {
     return (
       <Stack direction="row" spacing={1.5}>
@@ -56,19 +58,21 @@ function ProductPreview({ isMobile, item, onViewProduct }) {
             bgcolor: '#f4efe8',
             border: '1px solid',
             borderColor: 'rgba(31, 41, 55, 0.1)',
-            borderRadius: 2,
+            borderRadius: 1,
             display: 'flex',
             flexShrink: 0,
-            height: 74,
+            height: imageSize,
             justifyContent: 'center',
-            width: 74,
+            width: imageSize,
           }}
         >
-          <ShoppingBagOutlinedIcon sx={{ color: 'text.secondary', fontSize: 30 }} />
+          <ShoppingBagOutlinedIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
         </Box>
-        <Stack justifyContent="center" spacing={0.5}>
-          <Typography fontWeight={800}>Order items</Typography>
-          <Typography color="text.secondary">Open details to review the items in this order.</Typography>
+        <Stack justifyContent="center" spacing={0.55}>
+          <Typography fontWeight={650}>Order items</Typography>
+          <Typography color="text.secondary" sx={{ fontSize: '0.88rem' }}>
+            Open details to review this order.
+          </Typography>
         </Stack>
       </Stack>
     )
@@ -88,15 +92,15 @@ function ProductPreview({ isMobile, item, onViewProduct }) {
           bgcolor: '#f4efe8',
           border: '1px solid',
           borderColor: 'rgba(31, 41, 55, 0.1)',
-          borderRadius: 2,
+          borderRadius: 1,
           cursor: productPath ? 'pointer' : 'default',
           display: 'flex',
           flexShrink: 0,
-          height: isMobile ? 72 : 86,
+          height: imageSize,
           justifyContent: 'center',
           overflow: 'hidden',
           p: 0,
-          width: isMobile ? 72 : 86,
+          width: imageSize,
           '&:hover': productPath
             ? {
               borderColor: 'primary.main',
@@ -117,7 +121,7 @@ function ProductPreview({ isMobile, item, onViewProduct }) {
             sx={{ height: '100%', objectFit: 'cover', width: '100%' }}
           />
         ) : (
-          <ShoppingBagOutlinedIcon sx={{ color: 'text.secondary', fontSize: 30 }} />
+          <ShoppingBagOutlinedIcon sx={{ color: 'text.secondary', fontSize: 24 }} />
         )}
       </Box>
 
@@ -133,8 +137,9 @@ function ProductPreview({ isMobile, item, onViewProduct }) {
             color: productPath ? 'primary.main' : 'text.primary',
             cursor: productPath ? 'pointer' : 'default',
             font: 'inherit',
-            fontWeight: 800,
-            lineHeight: 1.3,
+            fontSize: { xs: '0.88rem', md: '0.92rem' },
+            fontWeight: 650,
+            lineHeight: 1.28,
             overflowWrap: 'anywhere',
             p: 0,
             textAlign: 'left',
@@ -155,41 +160,15 @@ function ProductPreview({ isMobile, item, onViewProduct }) {
           {getItemName(item)}
         </Typography>
         {getItemMeta(item) ? (
-          <Typography color="text.secondary" sx={{ fontSize: '0.9rem', lineHeight: 1.35 }}>
+          <Typography color="text.primary" sx={{ fontSize: '0.84rem', lineHeight: 1.35 }}>
             {getItemMeta(item)}
           </Typography>
         ) : null}
-        <Typography sx={{ color: 'text.primary', fontSize: '0.9rem', fontWeight: 650 }}>
+        <Typography sx={{ color: 'text.primary', fontSize: '0.84rem', fontWeight: 600 }}>
           {Number(item.quantity || 0).toLocaleString('en-IN')} x {formatPrice(item.priceAtTime)}
         </Typography>
       </Stack>
     </Stack>
-  )
-}
-
-function ActionButton({ children, onClick, variant = 'outlined' }) {
-  return (
-    <Button
-      fullWidth
-      onClick={onClick}
-      sx={{
-        borderColor: variant === 'outlined' ? 'rgba(31, 41, 55, 0.34)' : undefined,
-        borderRadius: 999,
-        color: variant === 'outlined' ? 'text.primary' : undefined,
-        fontWeight: 800,
-        minHeight: 42,
-        px: 2,
-        '&:hover': variant === 'outlined'
-          ? {
-            bgcolor: 'rgba(248, 245, 240, 0.7)',
-            borderColor: 'primary.main',
-          }
-          : undefined,
-      }}
-      variant={variant}
-    >
-      {children}
-    </Button>
   )
 }
 
@@ -205,65 +184,58 @@ function OrderCard({ isMobile, order, onViewDetails, onViewProduct }) {
       sx={{
         bgcolor: 'background.paper',
         border: '1px solid',
-        borderColor: 'rgba(31, 41, 55, 0.14)',
-        borderRadius: 2,
+        borderColor: 'rgba(31, 41, 55, 0.16)',
+        borderRadius: 1.5,
         boxShadow: 'none',
         overflow: 'hidden',
-        transition: 'background-color 180ms ease, border-color 180ms ease',
-        '&:hover': {
-          bgcolor: 'rgba(255, 255, 255, 0.92)',
-          borderColor: 'rgba(31, 41, 55, 0.24)',
-        },
       }}
       variant="outlined"
     >
       <Box
         sx={{
-          bgcolor: 'rgba(248, 245, 240, 0.86)',
+          bgcolor: 'rgba(248, 245, 240, 0.7)',
           borderBottom: '1px solid',
           borderColor: 'divider',
           display: 'grid',
-          gap: { xs: 1.25, md: 2 },
+          gap: { xs: 1.25, md: 1.75 },
           gridTemplateColumns: isMobile
-            ? '1fr'
-            : 'minmax(110px, 0.85fr) minmax(100px, 0.8fr) minmax(130px, 1fr) minmax(180px, 1.2fr)',
-          px: { xs: 1.75, md: 2.25 },
-          py: 1.45,
+            ? '1fr 1fr'
+            : 'minmax(120px, 0.8fr) minmax(110px, 0.65fr) minmax(150px, 1fr) minmax(210px, 1.25fr)',
+          px: { xs: 1.35, md: 1.75 },
+          py: 0.95,
         }}
       >
         <SummaryMetric label="Order placed" value={formatOrderDate(order.placedAt || order.createdAt)} />
         <SummaryMetric label="Total" value={getOrderAmountLabel(order)} />
         <SummaryMetric label="Ship to" value={shipTo} />
-        <Stack alignItems={isMobile ? 'flex-start' : 'flex-end'} spacing={0.35} sx={{ minWidth: 0 }}>
-          <SummaryMetric
-            label="Order"
-            value={`#${order.orderNumber || order.id}`}
-            valueSx={{ textAlign: isMobile ? 'left' : 'right' }}
-          />
-        </Stack>
+        <SummaryMetric
+          align={isMobile ? 'left' : 'right'}
+          label="Order"
+          value={`#${order.orderNumber || order.id}`}
+        />
       </Box>
 
       <Box
         sx={{
           display: 'grid',
-          gap: { xs: 2, md: 2.5 },
-          gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 1fr) minmax(190px, 240px)',
-          p: { xs: 1.75, md: 2.25 },
+          gap: { xs: 1.5, md: 2 },
+          gridTemplateColumns: isMobile ? '1fr' : 'minmax(0, 1fr) minmax(150px, 190px)',
+          p: { xs: 1.35, md: 1.75 },
         }}
       >
-        <Stack spacing={1.8} sx={{ minWidth: 0 }}>
+        <Stack spacing={1.25} sx={{ minWidth: 0 }}>
           <Box>
             <Typography
               sx={{
                 color: orderStatus.sx.color || 'text.primary',
-                fontSize: { xs: '1.08rem', md: '1.22rem' },
-                fontWeight: 900,
-                lineHeight: 1.18,
+                fontSize: { xs: '0.94rem', md: '1rem' },
+                fontWeight: 700,
+                lineHeight: 1.15,
               }}
             >
               {progress.title}
             </Typography>
-            <Typography color="text.secondary" sx={{ mt: 0.4 }}>
+            <Typography color="text.primary" sx={{ fontSize: '0.86rem', mt: 0.25 }}>
               {progress.body}
             </Typography>
           </Box>
@@ -277,24 +249,33 @@ function OrderCard({ isMobile, order, onViewDetails, onViewProduct }) {
           <Stack
             divider={<Divider flexItem orientation={isMobile ? 'horizontal' : 'vertical'} />}
             direction={isMobile ? 'column' : 'row'}
-            spacing={isMobile ? 0.75 : 1.5}
-            sx={{ color: 'text.secondary' }}
+            spacing={isMobile ? 0.65 : 1.1}
+            sx={{ color: 'text.secondary', pt: isMobile ? 0 : 0.5 }}
           >
-            <Typography sx={{ fontSize: '0.92rem' }}>{getOrderItemsLabel(order)}</Typography>
-            <Typography sx={{ fontSize: '0.92rem' }}>{getPaymentMethodLabel(order)}</Typography>
-            <Typography sx={{ color: paymentStatus.sx.color, fontSize: '0.92rem', fontWeight: 750 }}>
+            <Typography sx={{ fontSize: '0.82rem' }}>{getOrderItemsLabel(order)}</Typography>
+            <Typography sx={{ fontSize: '0.82rem' }}>{getPaymentMethodLabel(order)}</Typography>
+            <Typography sx={{ color: paymentStatus.sx.color, fontSize: '0.82rem', fontWeight: 600 }}>
               {paymentStatus.label}
             </Typography>
           </Stack>
         </Stack>
 
-        <Stack spacing={1} sx={{ alignSelf: 'center', width: '100%' }}>
-          <ActionButton
+        <Stack alignItems={isMobile ? 'stretch' : 'flex-end'} justifyContent="center">
+          <AppButton
             onClick={() => onViewDetails(order)}
+            size="small"
+            sx={{
+              fontSize: '0.84rem',
+              fontWeight: 700,
+              minHeight: 34,
+              px: 2,
+              width: isMobile ? '100%' : 150,
+            }}
+            type="button"
             variant="contained"
           >
             View Details
-          </ActionButton>
+          </AppButton>
         </Stack>
       </Box>
     </Paper>
