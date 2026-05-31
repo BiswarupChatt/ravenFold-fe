@@ -1,4 +1,4 @@
-import apiClient from './apiClient.js'
+import apiClient, { getApiErrorMessage } from './apiClient.js'
 
 const unwrapOrderResponse = (response) => {
   const order = response.data?.data
@@ -10,8 +10,49 @@ const unwrapOrderResponse = (response) => {
   return order
 }
 
-export const createCheckoutOrder = async (orderData) => {
-  const response = await apiClient.post('/orders/checkout', orderData)
+const unwrapOrderListResponse = (response) => {
+  const data = response.data?.data || {}
+  const pagination = data.pagination || {}
 
-  return unwrapOrderResponse(response)
+  return {
+    items: Array.isArray(data.items) ? data.items : [],
+    pagination: {
+      hasNextPage: Boolean(pagination.hasNextPage),
+      hasPrevPage: Boolean(pagination.hasPrevPage),
+      limit: Number(pagination.limit || 10),
+      page: Number(pagination.page || 1),
+      total: Number(pagination.total || 0),
+      totalPages: Number(pagination.totalPages || 0),
+    },
+  }
+}
+
+export const createCheckoutOrder = async (orderData) => {
+  try {
+    const response = await apiClient.post('/orders/checkout', orderData)
+
+    return unwrapOrderResponse(response)
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error))
+  }
+}
+
+export const fetchCustomerOrders = async (params = {}) => {
+  try {
+    const response = await apiClient.get('/orders/me', { params })
+
+    return unwrapOrderListResponse(response)
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error))
+  }
+}
+
+export const fetchCustomerOrder = async (orderId) => {
+  try {
+    const response = await apiClient.get(`/orders/me/${orderId}`)
+
+    return unwrapOrderResponse(response)
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error))
+  }
 }
