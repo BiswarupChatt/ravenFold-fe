@@ -3,7 +3,7 @@ import { Box, Button, InputBase } from '@mui/material'
 import { useState } from 'react'
 import { errorToast } from '../../../services/toast.js'
 
-function CartCoupon({ isDrawer }) {
+function CartCoupon() {
   const [couponCode, setCouponCode] = useState('')
 
   const handleApply = () => {
