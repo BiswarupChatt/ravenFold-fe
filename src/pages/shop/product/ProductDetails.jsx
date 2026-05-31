@@ -1,4 +1,3 @@
-import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import {
   Alert,
   Box,
@@ -7,8 +6,8 @@ import {
   Stack,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import AppButton from '../../../components/AppButton.jsx'
+import { useParams } from 'react-router-dom'
+import PageIntro from '../../../components/PageIntro.jsx'
 import useScreenSize from '../../../hooks/useScreenSize.js'
 import { getApiErrorMessage } from '../../../services/apiClient.js'
 import { getProduct, getProductVariants } from '../../../services/productApi.js'
@@ -18,7 +17,6 @@ import Gallery from './components/Gallery.jsx'
 import Info from './components/Info.jsx'
 
 function ProductDetails() {
-  const navigate = useNavigate()
   const { productIdOrSlug } = useParams()
   const { isDesktop, isMobile, isTab } = useScreenSize()
   const [product, setProduct] = useState(null)
@@ -89,24 +87,12 @@ function ProductDetails() {
             </Box>
           ) : product ? (
             <Stack spacing={4}>
-              <Stack alignItems="flex-start" spacing={1.25} sx={{ width: '100%' }}>
-                <AppButton
-                  onClick={() => navigate(-1)}
-                  startIcon={<ArrowBackRoundedIcon />}
-                  size="small"
-                  sx={{
-                    alignSelf: 'flex-start',
-                    fontSize: '0.85rem',
-                    minHeight: 32,
-                    px: 0,
-                  }}
-                  type="button"
-                  variant="text"
-                >
-                  Back
-                </AppButton>
+              <PageIntro
+                showBackButton
+                sx={{ width: '100%' }}
+              >
                 <Breadcrumb product={product} />
-              </Stack>
+              </PageIntro>
 
               <Box
                 sx={{

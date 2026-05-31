@@ -90,8 +90,6 @@ function Profile() {
     <Container sx={{ py: isDesktop ? 8 : 5 }}>
       <Stack spacing={4}>
         <PageIntro
-          description="Manage your personal details, saved addresses, orders, and saved pieces from one place."
-          eyebrow="Account"
           sx={{ maxWidth: 680 }}
           title="Profile"
         />

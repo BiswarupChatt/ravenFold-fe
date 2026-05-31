@@ -2,15 +2,38 @@ import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownR
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import { Box, Button, Collapse, Divider, Paper, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import AppButton from '../../../components/AppButton.jsx'
 import {
   formatPrice,
   getCartLineTotal,
+  getProductDetailsPath,
   parseVariantDetails,
 } from '../../../utils/utils.js'
 import { getSummaryTotals } from '../../cart/components/cartSummaryUtils.js'
 
 const previewItemCount = 2
+
+const productLinkSx = {
+  appearance: 'none',
+  bgcolor: 'transparent',
+  border: 0,
+  color: 'inherit',
+  cursor: 'pointer',
+  font: 'inherit',
+  p: 0,
+  textAlign: 'left',
+  '&:hover': {
+    color: 'primary.main',
+    textDecoration: 'underline',
+  },
+  '&:focus-visible': {
+    borderRadius: 1,
+    outline: '2px solid',
+    outlineColor: 'primary.main',
+    outlineOffset: 2,
+  },
+}
 
 function SummaryRow({
   label,
@@ -56,9 +79,13 @@ function SummaryRow({
   )
 }
 
-function ProductImage({ item }) {
+function ProductImage({ item, onViewProduct }) {
   return (
     <Box
+      aria-label={`View ${item.name || 'product'} details`}
+      component="button"
+      onClick={() => onViewProduct(item)}
+      type="button"
       sx={{
         alignItems: 'center',
         bgcolor: '#f4efe8',
@@ -70,7 +97,17 @@ function ProductImage({ item }) {
         height: 38,
         justifyContent: 'center',
         overflow: 'hidden',
+        p: 0,
         width: 38,
+        '&:hover': {
+          borderColor: 'primary.main',
+          cursor: 'pointer',
+        },
+        '&:focus-visible': {
+          outline: '2px solid',
+          outlineColor: 'primary.main',
+          outlineOffset: 2,
+        },
       }}
     >
       {item.image ? (
@@ -91,15 +128,16 @@ function ProductImage({ item }) {
   )
 }
 
-function OrderItem({ item }) {
+function OrderItem({ item, onViewProduct }) {
   const detailItems = parseVariantDetails(item.variantLabel || '')
   const variantText = detailItems
     .map((detail) => (detail.label ? `${detail.label}: ${detail.value}` : detail.value))
     .join(' / ')
+  const quantity = Number(item.quantity || 1)
 
   return (
     <Stack direction="row" spacing={1} sx={{ minWidth: 0 }}>
-      <ProductImage item={item} />
+      <ProductImage item={item} onViewProduct={onViewProduct} />
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Box
@@ -111,19 +149,37 @@ function OrderItem({ item }) {
           }}
         >
           <Typography
+            component="button"
+            onClick={() => onViewProduct(item)}
+            type="button"
             sx={{
+              ...productLinkSx,
               color: 'text.primary',
               display: '-webkit-box',
               fontSize: '0.9rem',
               fontWeight: 700,
               lineHeight: 1.25,
-              overflow: 'hidden',
               overflowWrap: 'anywhere',
               WebkitBoxOrient: 'vertical',
               WebkitLineClamp: 2,
             }}
           >
             {item.name}
+            {quantity > 1 ? (
+              <Typography
+                component="span"
+                sx={{
+                  color: 'text.secondary',
+                  display: 'inline',
+                  fontSize: '0.82rem',
+                  fontWeight: 550,
+                  lineHeight: 1.25,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {' '}x {quantity}
+              </Typography>
+            ) : null}
           </Typography>
 
           <Typography
@@ -165,6 +221,7 @@ function CheckoutOrderSummary({
   onPayment,
   subtotal,
 }) {
+  const navigate = useNavigate()
   const [itemsExpanded, setItemsExpanded] = useState(false)
   const [itemsCollapsing, setItemsCollapsing] = useState(false)
   const {
@@ -185,6 +242,10 @@ function CheckoutOrderSummary({
       setItemsCollapsing(currentValue)
       return !currentValue
     })
+  }
+
+  const handleViewProduct = (item) => {
+    navigate(getProductDetailsPath(item))
   }
 
   const renderItemsToggleButton = (expanded) => (
@@ -259,7 +320,11 @@ function CheckoutOrderSummary({
           }}
         >
           {visibleItems.map((item) => (
-            <OrderItem item={item} key={`${item.id}:${item.variantId || ''}`} />
+            <OrderItem
+              item={item}
+              key={`${item.id}:${item.variantId || ''}`}
+              onViewProduct={handleViewProduct}
+            />
           ))}
 
           {hasMoreItems && !itemsExpanded && !itemsCollapsing ? renderItemsToggleButton(false) : null}
@@ -273,7 +338,11 @@ function CheckoutOrderSummary({
             >
               <Stack divider={<Divider flexItem />} spacing={0.75}>
                 {collapsedItems.map((item) => (
-                  <OrderItem item={item} key={`${item.id}:${item.variantId || ''}`} />
+                  <OrderItem
+                    item={item}
+                    key={`${item.id}:${item.variantId || ''}`}
+                    onViewProduct={handleViewProduct}
+                  />
                 ))}
 
                 {renderItemsToggleButton(true)}

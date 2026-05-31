@@ -65,9 +65,34 @@ function CartItemPrice({ isDrawer, item, stacked = false }) {
   )
 }
 
-function ProductImage({ imageSize, isDrawer, item }) {
+const productLinkSx = {
+  appearance: 'none',
+  bgcolor: 'transparent',
+  border: 0,
+  color: 'inherit',
+  cursor: 'pointer',
+  font: 'inherit',
+  p: 0,
+  textAlign: 'left',
+  '&:hover': {
+    color: 'primary.main',
+    textDecoration: 'underline',
+  },
+  '&:focus-visible': {
+    borderRadius: 1,
+    outline: '2px solid',
+    outlineColor: 'primary.main',
+    outlineOffset: 2,
+  },
+}
+
+function ProductImage({ imageSize, isDrawer, item, onViewProduct }) {
   return (
     <Box
+      aria-label={`View ${item.name || 'product'} details`}
+      component="button"
+      onClick={() => onViewProduct(item)}
+      type="button"
       sx={{
         alignItems: 'center',
         bgcolor: '#f4efe8',
@@ -79,7 +104,17 @@ function ProductImage({ imageSize, isDrawer, item }) {
         height: imageSize,
         justifyContent: 'center',
         overflow: 'hidden',
+        p: 0,
         width: imageSize,
+        '&:hover': {
+          borderColor: 'primary.main',
+          cursor: 'pointer',
+        },
+        '&:focus-visible': {
+          outline: '2px solid',
+          outlineColor: 'primary.main',
+          outlineOffset: 2,
+        },
       }}
     >
       {item.image ? (
@@ -254,6 +289,7 @@ function CartItemCard({
   onDecrease,
   onIncrease,
   onRemove,
+  onViewProduct,
 }) {
   const detailItems = parseVariantDetails(item.variantLabel || '')
   const imageSize = isDrawer ? 72 : isDesktop ? 92 : 84
@@ -283,11 +319,20 @@ function CartItemCard({
             spacing={1.6}
             sx={{ minWidth: 0, width: '100%' }}
           >
-            <ProductImage imageSize={imageSize} isDrawer={false} item={item} />
+            <ProductImage
+              imageSize={imageSize}
+              isDrawer={false}
+              item={item}
+              onViewProduct={onViewProduct}
+            />
 
             <Stack spacing={0.65} sx={{ minWidth: 0, pt: 0.35 }}>
               <Typography
+                component="button"
+                onClick={() => onViewProduct(item)}
+                type="button"
                 sx={{
+                  ...productLinkSx,
                   color: 'text.primary',
                   fontSize: isDesktop ? '0.98rem' : '0.94rem',
                   fontWeight: 600,
@@ -367,11 +412,20 @@ function CartItemCard({
     >
       <Stack spacing={1.3}>
         <Stack direction="row" spacing={1.15} sx={{ minWidth: 0, width: '100%' }}>
-          <ProductImage imageSize={imageSize} isDrawer={isDrawer} item={item} />
+          <ProductImage
+            imageSize={imageSize}
+            isDrawer={isDrawer}
+            item={item}
+            onViewProduct={onViewProduct}
+          />
 
           <Stack justifyContent="center" spacing={0.58} sx={{ minWidth: 0 }}>
             <Typography
+              component="button"
+              onClick={() => onViewProduct(item)}
+              type="button"
               sx={{
+                ...productLinkSx,
                 color: 'text.primary',
                 fontSize: '0.91rem',
                 fontWeight: 600,

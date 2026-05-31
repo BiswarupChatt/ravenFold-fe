@@ -62,6 +62,7 @@ function Checkout() {
         <Stack spacing={3}>
           <PageIntro
             title="Checkout"
+            showBackButton
           />
 
           <Box

@@ -100,6 +100,13 @@ export const getCartItemKey = (item = {}) => {
 
 export const getCartItemActionId = (item = {}) => item.id || getCartItemKey(item)
 
+export const getProductDetailsPath = (item = {}) => {
+  const id = String(item.id || '')
+  const productIdentifier = item.slug || item.productSlug || item.productId || id.split(':')[0]
+
+  return productIdentifier ? `/shop/${encodeURIComponent(productIdentifier)}` : '/shop'
+}
+
 export const getCartLineTotal = (item = {}) => {
   if (item.lineTotal !== undefined && item.lineTotal !== null) {
     return toFiniteNumber(item.lineTotal)

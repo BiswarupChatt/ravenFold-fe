@@ -1,7 +1,15 @@
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import { Stack, Typography } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import AppButton from './AppButton.jsx'
 
 function PageIntro({
+  backButtonLabel = 'Back',
+  backButtonSx,
+  children,
   eyebrow,
+  onBack,
+  showBackButton = false,
   title,
   description,
   titleVariant = 'h2',
@@ -9,8 +17,44 @@ function PageIntro({
   spacing = 1.25,
   sx,
 }) {
+  const navigate = useNavigate()
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack()
+      return
+    }
+
+    navigate(-1)
+  }
+
   return (
     <Stack spacing={spacing} sx={sx}>
+      {showBackButton ? (
+        <AppButton
+          onClick={handleBack}
+          size="small"
+          startIcon={<ArrowBackRoundedIcon />}
+          sx={{
+            alignSelf: 'flex-start',
+            display: 'inline-flex',
+            flexShrink: 0,
+            fontSize: '0.85rem',
+            justifyContent: 'flex-start',
+            minHeight: 32,
+            minWidth: 0,
+            px: 0,
+            textAlign: 'left',
+            width: 'fit-content',
+            ...backButtonSx,
+          }}
+          type="button"
+          variant="text"
+        >
+          {backButtonLabel}
+        </AppButton>
+      ) : null}
+
       {eyebrow ? (
         <Typography
           color="secondary.main"
@@ -23,7 +67,9 @@ function PageIntro({
         </Typography>
       ) : null}
 
-      <Typography variant={titleVariant}>{title}</Typography>
+      {title ? (
+        <Typography variant={titleVariant}>{title}</Typography>
+      ) : null}
 
       {description ? (
         <Typography
@@ -33,6 +79,8 @@ function PageIntro({
           {description}
         </Typography>
       ) : null}
+
+      {children}
     </Stack>
   )
 }

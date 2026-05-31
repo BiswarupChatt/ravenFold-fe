@@ -1,6 +1,7 @@
 import { Box, Stack } from '@mui/material'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import useScreenSize from '../../../hooks/useScreenSize.js'
 import { getApiErrorMessage } from '../../../services/apiClient.js'
 import {
@@ -18,7 +19,7 @@ import {
   selectCartItems,
   selectCartSubtotal,
 } from '../../../store/cartSlice'
-import { getCartItemActionId } from '../../../utils/utils.js'
+import { getCartItemActionId, getProductDetailsPath } from '../../../utils/utils.js'
 import CartCoupon from './CartCoupon.jsx'
 import CartEmptyState from './CartEmptyState.jsx'
 import CartItemCard from './CartItemCard.jsx'
@@ -26,6 +27,7 @@ import CartSummary from './CartSummary.jsx'
 
 function CartContent({ layout = 'page', onNavigate }) {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const items = useSelector(selectCartItems)
   const subtotal = useSelector(selectCartSubtotal)
   const isAuthenticated = useSelector(selectIsAuthenticated)
@@ -103,6 +105,11 @@ function CartContent({ layout = 'page', onNavigate }) {
     })
   }
 
+  const handleViewProduct = (item) => {
+    navigate(getProductDetailsPath(item))
+    onNavigate?.()
+  }
+
   if (items.length === 0) {
     return (
       <CartEmptyState
@@ -129,6 +136,7 @@ function CartContent({ layout = 'page', onNavigate }) {
             onDecrease={handleDecreaseQuantity}
             onIncrease={handleIncreaseQuantity}
             onRemove={handleRemoveItem}
+            onViewProduct={handleViewProduct}
           />
         )
       })}

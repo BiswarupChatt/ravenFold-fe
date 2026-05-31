@@ -19,6 +19,7 @@ function Cart() {
             <PageIntro
               sx={{ maxWidth: 640 }}
               title="My Cart"
+              showBackButton
             />
           </Stack>
 
