@@ -2,10 +2,10 @@ import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownR
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import { Box, Button, Collapse, Divider, Paper, Stack, Typography } from '@mui/material'
 import { useState } from 'react'
+import AppButton from '../../../components/AppButton.jsx'
 import {
   formatPrice,
   getCartLineTotal,
-  getCartPricing,
   parseVariantDetails,
 } from '../../../utils/utils.js'
 import { getSummaryTotals } from '../../cart/components/cartSummaryUtils.js'
@@ -30,9 +30,9 @@ function SummaryRow({
       <Typography
         sx={{
           color: 'text.secondary',
-          fontSize: '0.94rem',
+          fontSize: '0.86rem',
           fontWeight: 450,
-          lineHeight: 1.35,
+          lineHeight: 1.25,
           minWidth: 0,
           ...labelSx,
         }}
@@ -42,9 +42,9 @@ function SummaryRow({
       <Typography
         sx={{
           color: 'text.secondary',
-          fontSize: '0.94rem',
+          fontSize: '0.86rem',
           fontWeight: 500,
-          lineHeight: 1.35,
+          lineHeight: 1.25,
           textAlign: 'right',
           whiteSpace: 'nowrap',
           ...valueSx,
@@ -64,13 +64,13 @@ function ProductImage({ item }) {
         bgcolor: '#f4efe8',
         border: '1px solid',
         borderColor: 'rgba(31, 41, 55, 0.1)',
-        borderRadius: 2,
+        borderRadius: 1,
         display: 'flex',
         flexShrink: 0,
-        height: 58,
+        height: 38,
         justifyContent: 'center',
         overflow: 'hidden',
-        width: 58,
+        width: 38,
       }}
     >
       {item.image ? (
@@ -85,7 +85,7 @@ function ProductImage({ item }) {
           }}
         />
       ) : (
-        <ShoppingBagOutlinedIcon sx={{ color: 'text.secondary', fontSize: 28 }} />
+        <ShoppingBagOutlinedIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
       )}
     </Box>
   )
@@ -93,68 +93,78 @@ function ProductImage({ item }) {
 
 function OrderItem({ item }) {
   const detailItems = parseVariantDetails(item.variantLabel || '')
-  const { price } = getCartPricing(item)
+  const variantText = detailItems
+    .map((detail) => (detail.label ? `${detail.label}: ${detail.value}` : detail.value))
+    .join(' / ')
 
   return (
-    <Stack direction="row" spacing={1.2} sx={{ minWidth: 0 }}>
+    <Stack direction="row" spacing={1} sx={{ minWidth: 0 }}>
       <ProductImage item={item} />
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Typography
+        <Box
           sx={{
-            color: 'text.primary',
-            fontSize: '0.92rem',
-            fontWeight: 650,
-            lineHeight: 1.3,
-            overflowWrap: 'anywhere',
+            alignItems: 'start',
+            columnGap: 1,
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1fr) auto',
           }}
         >
-          {item.name}
-        </Typography>
-
-        {detailItems.length ? (
           <Typography
-            color="text.secondary"
             sx={{
-              fontSize: '0.78rem',
-              lineHeight: 1.4,
-              mt: 0.35,
+              color: 'text.primary',
+              display: '-webkit-box',
+              fontSize: '0.9rem',
+              fontWeight: 700,
+              lineHeight: 1.25,
+              overflow: 'hidden',
               overflowWrap: 'anywhere',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 2,
             }}
           >
-            {detailItems
-              .map((detail) => (detail.label ? `${detail.label}: ${detail.value}` : detail.value))
-              .join(' / ')}
+            {item.name}
           </Typography>
-        ) : null}
 
-        <Stack
-          alignItems="center"
-          direction="row"
-          justifyContent="space-between"
-          spacing={1}
-          sx={{ mt: 0.75 }}
-        >
-          <Typography color="text.secondary" sx={{ fontSize: '0.82rem' }}>
-            Qty {item.quantity} x {formatPrice(price)}
-          </Typography>
           <Typography
             sx={{
               color: 'text.primary',
               fontSize: '0.9rem',
               fontWeight: 750,
+              lineHeight: 1.25,
+              textAlign: 'right',
               whiteSpace: 'nowrap',
             }}
           >
             {formatPrice(getCartLineTotal(item))}
           </Typography>
-        </Stack>
+        </Box>
+
+        {variantText ? (
+          <Typography
+            color="text.secondary"
+            sx={{
+              fontSize: '0.82rem',
+              lineHeight: 1.35,
+              mt: 0.3,
+              overflowWrap: 'anywhere',
+            }}
+          >
+            {variantText}
+          </Typography>
+        ) : null}
       </Box>
     </Stack>
   )
 }
 
-function CheckoutOrderSummary({ items = [], subtotal }) {
+function CheckoutOrderSummary({
+  disabled,
+  items = [],
+  loading,
+  onPayment,
+  subtotal,
+}) {
   const [itemsExpanded, setItemsExpanded] = useState(false)
   const {
     bagDiscount,
@@ -180,55 +190,39 @@ function CheckoutOrderSummary({ items = [], subtotal }) {
         border: '1px solid',
         borderColor: 'divider',
         borderRadius: 2,
-        p: { xs: 2.25, md: 2.75 },
+        p: { xs: 1.75, md: 2 },
       }}
       variant="outlined"
     >
-      <Stack spacing={2}>
+      <Stack spacing={1}>
         <Stack alignItems="center" direction="row" justifyContent="space-between" spacing={2}>
           <Box sx={{ minWidth: 0 }}>
             <Typography
               sx={{
                 color: 'text.primary',
-                fontSize: '1.12rem',
+                fontSize: '1rem',
                 fontWeight: 700,
                 lineHeight: 1.2,
               }}
             >
               Order Summary
             </Typography>
-            <Typography color="text.secondary" sx={{ fontSize: '0.84rem', mt: 0.35 }}>
+            <Typography color="text.secondary" sx={{ fontSize: '0.84rem', mt: 0.25 }}>
               {items.length} item{items.length === 1 ? '' : 's'} in your order
             </Typography>
           </Box>
 
-          <Box
-            sx={{
-              alignItems: 'center',
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 2,
-              color: 'text.primary',
-              display: 'flex',
-              flexShrink: 0,
-              height: 32,
-              justifyContent: 'center',
-              width: 32,
-            }}
-          >
-            <KeyboardArrowDownRoundedIcon sx={{ transform: 'rotate(180deg)' }} />
-          </Box>
         </Stack>
 
         <Stack
           divider={<Divider flexItem />}
-          spacing={1.35}
+          spacing={0.75}
           sx={{
             bgcolor: 'rgba(248, 245, 240, 0.62)',
             border: '1px solid',
             borderColor: 'divider',
-            borderRadius: 2,
-            p: 1.35,
+            borderRadius: 1.25,
+            p: 0.8,
           }}
         >
           {visibleItems.map((item) => (
@@ -252,7 +246,7 @@ function CheckoutOrderSummary({ items = [], subtotal }) {
                 justifyContent: 'space-between',
                 fontSize: '0.86rem',
                 fontWeight: 800,
-                minHeight: 34,
+                minHeight: 32,
                 mt: '0 !important',
                 px: 0.75,
                 textTransform: 'none',
@@ -260,13 +254,13 @@ function CheckoutOrderSummary({ items = [], subtotal }) {
               type="button"
               variant="text"
             >
-              {itemsExpanded ? 'Show Less' : `Load More (${remainingCount})`}
+              {itemsExpanded ? 'Show Less' : `(${remainingCount}) More Item${remainingCount === 1 ? '' : 's'} `}
             </Button>
           ) : null}
 
           {hasMoreItems ? (
             <Collapse in={itemsExpanded} timeout={260} unmountOnExit>
-              <Stack divider={<Divider flexItem />} spacing={1.35}>
+              <Stack divider={<Divider flexItem />} spacing={0.75}>
                 {collapsedItems.map((item) => (
                   <OrderItem item={item} key={`${item.id}:${item.variantId || ''}`} />
                 ))}
@@ -276,13 +270,13 @@ function CheckoutOrderSummary({ items = [], subtotal }) {
         </Stack>
 
         <Stack
-          spacing={1.45}
+          spacing={0.65}
           sx={{
             bgcolor: 'rgba(248, 245, 240, 0.62)',
             border: '1px solid',
             borderColor: 'divider',
-            borderRadius: 2,
-            p: 1.65,
+            borderRadius: 1.25,
+            p: 0.9,
           }}
         >
           <SummaryRow
@@ -311,9 +305,9 @@ function CheckoutOrderSummary({ items = [], subtotal }) {
             <Typography
               sx={{
                 color: '#008f35',
-                fontSize: '0.84rem',
+                fontSize: '0.82rem',
                 fontWeight: 550,
-                lineHeight: 1.35,
+                lineHeight: 1.2,
               }}
             >
               You save {formatPrice(savings)} on this order.
@@ -321,30 +315,21 @@ function CheckoutOrderSummary({ items = [], subtotal }) {
           ) : null}
         </Stack>
 
-        <Stack
+        <AppButton
+          disabled={disabled}
+          fullWidth
+          loading={loading}
+          loadingText="Checking..."
+          onClick={onPayment}
           sx={{
-            bgcolor: '#f8f5f0',
-            border: '1px solid',
-            borderColor: 'rgba(31, 41, 55, 0.1)',
             borderRadius: 2,
-            p: 1.5,
+            minHeight: 50,
           }}
+          type="button"
+          variant="contained"
         >
-          <SummaryRow
-            label="Total Payable"
-            labelSx={{
-              color: 'text.primary',
-              fontSize: '1rem',
-              fontWeight: 700,
-            }}
-            value={formatPrice(totalPayable)}
-            valueSx={{
-              color: 'text.primary',
-              fontSize: '1rem',
-              fontWeight: 700,
-            }}
-          />
-        </Stack>
+          Pay {formatPrice(totalPayable)}
+        </AppButton>
       </Stack>
     </Paper>
   )

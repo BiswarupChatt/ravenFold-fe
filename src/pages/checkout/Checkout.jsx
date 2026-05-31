@@ -76,14 +76,15 @@ function Checkout() {
           >
             <CheckoutDetailsPanel
               billing={billing}
-              onPayment={handleProceedToPayment}
-              paymentLoading={paymentLoading}
               shipping={shipping}
             />
 
             <Stack sx={{ position: isMobile ? 'static' : 'sticky', top: isMobile ? 'auto' : 20 }}>
               <CheckoutOrderSummary
+                disabled={shipping.addressLoading || shipping.isPincodeLookupLoading || billing.isPincodeLookupLoading}
                 items={items}
+                loading={paymentLoading}
+                onPayment={handleProceedToPayment}
                 subtotal={subtotal}
               />
             </Stack>

@@ -1,50 +1,30 @@
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
-import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined'
-import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
+  Checkbox,
+  Collapse,
+  FormControlLabel,
   Paper,
   Stack,
   Typography,
 } from '@mui/material'
-import AppButton from '../../../components/AppButton.jsx'
 import BillingDetails from './BillingDetails.jsx'
 import ShippingDetails from './ShippingDetails.jsx'
 
 function SectionTitle({
   description,
-  icon,
   title,
 }) {
   return (
-    <Stack alignItems="center" direction="row" spacing={1.25} sx={{ minWidth: 0 }}>
-      <Box
-        sx={{
-          alignItems: 'center',
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 1.25,
-          color: 'primary.main',
-          display: 'flex',
-          flexShrink: 0,
-          height: 36,
-          justifyContent: 'center',
-          width: 36,
-        }}
-      >
-        {icon}
-      </Box>
-      <Box sx={{ minWidth: 0 }}>
-        <Typography sx={{ color: 'text.primary', fontSize: '1rem', fontWeight: 850 }}>
-          {title}
-        </Typography>
-        <Typography color="text.secondary" sx={{ fontSize: '0.84rem', lineHeight: 1.35 }}>
-          {description}
-        </Typography>
-      </Box>
+    <Stack spacing={0.35} sx={{ minWidth: 0 }}>
+      <Typography sx={{ color: 'text.primary', fontSize: '1rem', fontWeight: 850 }}>
+        {title}
+      </Typography>
+      <Typography color="text.secondary" sx={{ fontSize: '0.84rem', lineHeight: 1.35 }}>
+        {description}
+      </Typography>
     </Stack>
   )
 }
@@ -74,10 +54,17 @@ const accordionSx = {
   },
 }
 
+const billingSectionSx = {
+  bgcolor: 'background.paper',
+  border: '1px solid',
+  borderColor: 'divider',
+  borderRadius: 2,
+  boxShadow: 'none',
+  overflow: 'hidden',
+}
+
 function CheckoutDetailsPanel({
   billing,
-  onPayment,
-  paymentLoading,
   shipping,
 }) {
   return (
@@ -92,7 +79,6 @@ function CheckoutDetailsPanel({
           <AccordionSummary expandIcon={<ExpandMoreRoundedIcon />}>
             <SectionTitle
               description="Select or add the delivery address."
-              icon={<LocalShippingOutlinedIcon fontSize="small" />}
               title="Shipping Details"
             />
           </AccordionSummary>
@@ -115,40 +101,59 @@ function CheckoutDetailsPanel({
           </AccordionDetails>
         </Accordion>
 
-        <Accordion defaultExpanded disableGutters sx={accordionSx}>
-          <AccordionSummary expandIcon={<ExpandMoreRoundedIcon />}>
+        <Paper sx={billingSectionSx} variant="outlined">
+          <Stack
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            direction={{ xs: 'column', sm: 'row' }}
+            justifyContent="space-between"
+            spacing={1.25}
+            sx={{
+              minHeight: 66,
+              px: { xs: 1.5, md: 2 },
+              py: 1.25,
+            }}
+          >
             <SectionTitle
               description="Used for invoice and payment records."
-              icon={<ReceiptLongOutlinedIcon fontSize="small" />}
               title="Billing Details"
             />
-          </AccordionSummary>
-          <AccordionDetails>
-            <BillingDetails
-              fieldErrors={billing.fieldErrors}
-              formState={billing.formState}
-              isPincodeLookupLoading={billing.isPincodeLookupLoading}
-              onFieldBlur={billing.handleFieldBlur}
-              onFieldChange={billing.handleFieldChange}
-              onSameAsShippingChange={billing.handleSameAsShippingChange}
-              sameAsShipping={billing.sameAsShipping}
-            />
-          </AccordionDetails>
-        </Accordion>
 
-        <Box sx={{ display: 'flex', justifyContent: { xs: 'stretch', sm: 'flex-end' }, pt: 0.5 }}>
-          <AppButton
-            disabled={shipping.addressLoading || shipping.isPincodeLookupLoading || billing.isPincodeLookupLoading}
-            loading={paymentLoading}
-            loadingText="Checking..."
-            onClick={onPayment}
-            sx={{ minHeight: 50, width: { xs: '100%', sm: 'auto' } }}
-            type="button"
-            variant="contained"
-          >
-            Proceed to Payment
-          </AppButton>
-        </Box>
+            <FormControlLabel
+              control={(
+                <Checkbox
+                  checked={billing.sameAsShipping}
+                  onChange={billing.handleSameAsShippingChange}
+                  size="small"
+                />
+              )}
+              label={(
+                <Typography sx={{ color: 'text.primary', fontSize: '0.9rem', fontWeight: 650 }}>
+                  Same as shipping address
+                </Typography>
+              )}
+              sx={{ m: 0 }}
+            />
+          </Stack>
+
+          <Collapse in={!billing.sameAsShipping} timeout={240} unmountOnExit>
+            <Stack
+              sx={{
+                borderTop: '1px solid',
+                borderColor: 'divider',
+                px: { xs: 1.5, md: 2 },
+                py: 2,
+              }}
+            >
+              <BillingDetails
+                fieldErrors={billing.fieldErrors}
+                formState={billing.formState}
+                isPincodeLookupLoading={billing.isPincodeLookupLoading}
+                onFieldBlur={billing.handleFieldBlur}
+                onFieldChange={billing.handleFieldChange}
+              />
+            </Stack>
+          </Collapse>
+        </Paper>
       </Stack>
     </Paper>
   )
