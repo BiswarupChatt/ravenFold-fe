@@ -58,7 +58,7 @@ function AddressOption({
             <Typography
               sx={{
                 color: 'text.primary',
-                fontSize: '0.96rem',
+                fontSize: '1rem',
                 fontWeight: 800,
                 lineHeight: 1.3,
                 overflowWrap: 'anywhere',
@@ -84,7 +84,7 @@ function AddressOption({
           <Typography
             sx={{
               color: 'text.primary',
-              fontSize: '0.9rem',
+              fontSize: '0.95rem',
               lineHeight: 1.5,
               mt: 0.75,
               overflowWrap: 'anywhere',
@@ -94,7 +94,7 @@ function AddressOption({
               .filter(Boolean)
               .join(', ')}
           </Typography>
-          <Typography color="text.secondary" sx={{ fontSize: '0.84rem', mt: 0.35 }}>
+          <Typography color="text.secondary" sx={{ fontSize: '0.94rem', mt: 0.35 }}>
             {address.phone}
           </Typography>
         </Box>

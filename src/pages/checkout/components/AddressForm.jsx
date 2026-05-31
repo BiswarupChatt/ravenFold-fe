@@ -9,7 +9,7 @@ const formFieldSx = {
       opacity: 1,
     },
     color: 'text.primary',
-    fontSize: '0.85rem',
+    fontSize: '0.95rem',
     px: 1.5,
     py: 1.05,
   },
@@ -38,7 +38,7 @@ const formFieldSx = {
 
 const fieldLabelSx = {
   color: 'text.primary',
-  fontSize: '0.82rem',
+  fontSize: '0.9rem',
   fontWeight: 700,
   mb: 0.5,
 }
@@ -122,7 +122,7 @@ function AddressForm({
             />
           )}
           label={(
-            <Typography sx={{ color: 'text.primary', fontSize: '0.88rem' }}>
+            <Typography sx={{ color: 'text.primary', fontSize: '0.95rem' }}>
               {hasSavedAddresses
                 ? 'Set as default delivery address'
                 : 'This will be saved as your default delivery address'}

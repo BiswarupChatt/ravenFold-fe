@@ -53,9 +53,9 @@ function SummaryRow({
       <Typography
         sx={{
           color: 'text.secondary',
-          fontSize: '0.86rem',
+          fontSize: '0.94rem',
           fontWeight: 450,
-          lineHeight: 1.25,
+          lineHeight: 1.35,
           minWidth: 0,
           ...labelSx,
         }}
@@ -65,9 +65,9 @@ function SummaryRow({
       <Typography
         sx={{
           color: 'text.secondary',
-          fontSize: '0.86rem',
+          fontSize: '0.94rem',
           fontWeight: 500,
-          lineHeight: 1.25,
+          lineHeight: 1.35,
           textAlign: 'right',
           whiteSpace: 'nowrap',
           ...valueSx,
@@ -156,9 +156,9 @@ function OrderItem({ item, onViewProduct }) {
               ...productLinkSx,
               color: 'text.primary',
               display: '-webkit-box',
-              fontSize: '0.9rem',
+              fontSize: '0.96rem',
               fontWeight: 700,
-              lineHeight: 1.25,
+              lineHeight: 1.3,
               overflowWrap: 'anywhere',
               WebkitBoxOrient: 'vertical',
               WebkitLineClamp: 2,
@@ -171,9 +171,9 @@ function OrderItem({ item, onViewProduct }) {
                 sx={{
                   color: 'text.secondary',
                   display: 'inline',
-                  fontSize: '0.82rem',
+                  fontSize: '0.88rem',
                   fontWeight: 550,
-                  lineHeight: 1.25,
+                  lineHeight: 1.3,
                   whiteSpace: 'nowrap',
                 }}
               >
@@ -185,9 +185,9 @@ function OrderItem({ item, onViewProduct }) {
           <Typography
             sx={{
               color: 'text.primary',
-              fontSize: '0.9rem',
+              fontSize: '0.96rem',
               fontWeight: 750,
-              lineHeight: 1.25,
+              lineHeight: 1.3,
               textAlign: 'right',
               whiteSpace: 'nowrap',
             }}
@@ -200,7 +200,7 @@ function OrderItem({ item, onViewProduct }) {
           <Typography
             color="text.secondary"
             sx={{
-              fontSize: '0.82rem',
+              fontSize: '0.9rem',
               lineHeight: 1.35,
               mt: 0.3,
               overflowWrap: 'anywhere',
@@ -263,7 +263,7 @@ function CheckoutOrderSummary({
       sx={{
         alignSelf: 'stretch',
         justifyContent: 'space-between',
-        fontSize: '0.86rem',
+        fontSize: '0.94rem',
         fontWeight: 800,
         minHeight: 32,
         mt: '0 !important',
@@ -294,14 +294,14 @@ function CheckoutOrderSummary({
             <Typography
               sx={{
                 color: 'text.primary',
-                fontSize: '1rem',
+                fontSize: '1.12rem',
                 fontWeight: 700,
                 lineHeight: 1.2,
               }}
             >
               Order Summary
             </Typography>
-            <Typography color="text.secondary" sx={{ fontSize: '0.84rem', mt: 0.25 }}>
+            <Typography color="text.secondary" sx={{ fontSize: '0.94rem', mt: 0.25 }}>
               {items.length} item{items.length === 1 ? '' : 's'} in your order
             </Typography>
           </Box>
@@ -387,9 +387,9 @@ function CheckoutOrderSummary({
             <Typography
               sx={{
                 color: '#008f35',
-                fontSize: '0.82rem',
+                fontSize: '0.9rem',
                 fontWeight: 550,
-                lineHeight: 1.2,
+                lineHeight: 1.35,
               }}
             >
               You save {formatPrice(savings)} on this order.

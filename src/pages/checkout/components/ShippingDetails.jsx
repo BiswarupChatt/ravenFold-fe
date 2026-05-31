@@ -28,6 +28,7 @@ function ModeButton({
         display: 'inline-flex',
         flex: 1,
         font: 'inherit',
+        fontSize: '0.95rem',
         fontWeight: 800,
         gap: 0.75,
         justifyContent: 'center',

@@ -19,10 +19,10 @@ function SectionTitle({
 }) {
   return (
     <Stack spacing={0.35} sx={{ minWidth: 0 }}>
-      <Typography sx={{ color: 'text.primary', fontSize: '1rem', fontWeight: 850 }}>
+      <Typography sx={{ color: 'text.primary', fontSize: '1.12rem', fontWeight: 850 }}>
         {title}
       </Typography>
-      <Typography color="text.secondary" sx={{ fontSize: '0.84rem', lineHeight: 1.35 }}>
+      <Typography color="text.secondary" sx={{ fontSize: '0.94rem', lineHeight: 1.35 }}>
         {description}
       </Typography>
     </Stack>
