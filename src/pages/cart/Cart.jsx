@@ -17,7 +17,6 @@ function Cart() {
             spacing={2.5}
           >
             <PageIntro
-              eyebrow="Cart"
               sx={{ maxWidth: 640 }}
               title="My Cart"
             />

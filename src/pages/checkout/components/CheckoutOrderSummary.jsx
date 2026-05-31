@@ -166,6 +166,7 @@ function CheckoutOrderSummary({
   subtotal,
 }) {
   const [itemsExpanded, setItemsExpanded] = useState(false)
+  const [itemsCollapsing, setItemsCollapsing] = useState(false)
   const {
     bagDiscount,
     couponDiscount,
@@ -180,8 +181,40 @@ function CheckoutOrderSummary({
   const savings = bagDiscount + couponDiscount
 
   const handleToggleItems = () => {
-    setItemsExpanded((currentValue) => !currentValue)
+    setItemsExpanded((currentValue) => {
+      setItemsCollapsing(currentValue)
+      return !currentValue
+    })
   }
+
+  const renderItemsToggleButton = (expanded) => (
+    <Button
+      aria-expanded={expanded}
+      endIcon={(
+        <KeyboardArrowDownRoundedIcon
+          sx={{
+            transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 220ms ease',
+          }}
+        />
+      )}
+      onClick={handleToggleItems}
+      sx={{
+        alignSelf: 'stretch',
+        justifyContent: 'space-between',
+        fontSize: '0.86rem',
+        fontWeight: 800,
+        minHeight: 32,
+        mt: '0 !important',
+        px: 0.75,
+        textTransform: 'none',
+      }}
+      type="button"
+      variant="text"
+    >
+      {expanded ? 'Show Less' : `(${remainingCount}) More Item${remainingCount === 1 ? '' : 's'} `}
+    </Button>
+  )
 
   return (
     <Paper
@@ -229,41 +262,21 @@ function CheckoutOrderSummary({
             <OrderItem item={item} key={`${item.id}:${item.variantId || ''}`} />
           ))}
 
-          {hasMoreItems ? (
-            <Button
-              aria-expanded={itemsExpanded}
-              endIcon={(
-                <KeyboardArrowDownRoundedIcon
-                  sx={{
-                    transform: itemsExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition: 'transform 220ms ease',
-                  }}
-                />
-              )}
-              onClick={handleToggleItems}
-              sx={{
-                alignSelf: 'stretch',
-                justifyContent: 'space-between',
-                fontSize: '0.86rem',
-                fontWeight: 800,
-                minHeight: 32,
-                mt: '0 !important',
-                px: 0.75,
-                textTransform: 'none',
-              }}
-              type="button"
-              variant="text"
-            >
-              {itemsExpanded ? 'Show Less' : `(${remainingCount}) More Item${remainingCount === 1 ? '' : 's'} `}
-            </Button>
-          ) : null}
+          {hasMoreItems && !itemsExpanded && !itemsCollapsing ? renderItemsToggleButton(false) : null}
 
           {hasMoreItems ? (
-            <Collapse in={itemsExpanded} timeout={260} unmountOnExit>
+            <Collapse
+              in={itemsExpanded}
+              onExited={() => setItemsCollapsing(false)}
+              timeout={260}
+              unmountOnExit
+            >
               <Stack divider={<Divider flexItem />} spacing={0.75}>
                 {collapsedItems.map((item) => (
                   <OrderItem item={item} key={`${item.id}:${item.variantId || ''}`} />
                 ))}
+
+                {renderItemsToggleButton(true)}
               </Stack>
             </Collapse>
           ) : null}

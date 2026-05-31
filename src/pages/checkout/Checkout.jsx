@@ -61,8 +61,6 @@ function Checkout() {
       <Container>
         <Stack spacing={3}>
           <PageIntro
-            description="Confirm shipping and billing details before payment."
-            eyebrow="Checkout"
             title="Checkout"
           />
 
