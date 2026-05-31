@@ -181,7 +181,7 @@ function useCheckoutAddress() {
         return false
       }
 
-      return true
+      return selectedAddress
     }
 
     const nextFieldErrors = validateAddress(formState)
@@ -211,7 +211,7 @@ function useCheckoutAddress() {
       setAddressMode('saved')
       successToast('Address saved for checkout.')
 
-      return true
+      return savedAddress
     } catch (error) {
       const message = getApiErrorMessage(error)
 

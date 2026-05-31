@@ -3,11 +3,14 @@ import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import PageIntro from '../../components/PageIntro.jsx'
 import useResponsiveView from '../../hooks/useResponsiveView.js'
-import { successToast } from '../../services/toast.js'
+import { getApiErrorMessage } from '../../services/apiClient.js'
+import { createCheckoutOrder } from '../../services/orderApi.js'
+import { errorToast, successToast } from '../../services/toast.js'
 import { selectCartItems, selectCartSubtotal } from '../../store/cartSlice.js'
 import CheckoutDetailsPanel from './components/CheckoutDetailsPanel.jsx'
 import EmptyCheckout from './components/EmptyCheckout.jsx'
 import CheckoutOrderSummary from './components/CheckoutOrderSummary.jsx'
+import { trimAddressPayload } from './components/checkoutAddressUtils.js'
 import useBillingAddress from './components/useBillingAddress.js'
 import useCheckoutAddress from './components/useCheckoutAddress.js'
 
@@ -17,9 +20,20 @@ function Checkout() {
   const subtotal = useSelector(selectCartSubtotal)
   const shipping = useCheckoutAddress()
   const billing = useBillingAddress()
+  const [checkoutOrder, setCheckoutOrder] = useState(null)
   const [paymentLoading, setPaymentLoading] = useState(false)
+  const checkoutDisabled = Boolean(checkoutOrder) ||
+    shipping.addressLoading ||
+    shipping.isPincodeLookupLoading ||
+    shipping.savingAddress ||
+    billing.isPincodeLookupLoading
 
   const handleProceedToPayment = async () => {
+    if (checkoutOrder) {
+      successToast(`Order ${checkoutOrder.orderNumber} is ready for payment.`)
+      return
+    }
+
     if (!billing.validateBillingAddress()) {
       return
     }
@@ -27,13 +41,27 @@ function Checkout() {
     setPaymentLoading(true)
 
     try {
-      const hasShippingAddress = await shipping.continueWithAddress()
+      const shippingAddress = await shipping.continueWithAddress()
 
-      if (!hasShippingAddress) {
+      if (!shippingAddress) {
         return
       }
 
-      successToast('Payment is not connected yet.')
+      const orderPayload = {
+        billingSameAsShipping: billing.sameAsShipping,
+        shippingAddressId: shippingAddress.id,
+      }
+
+      if (!billing.sameAsShipping) {
+        orderPayload.billingAddress = trimAddressPayload(billing.formState)
+      }
+
+      const createdOrder = await createCheckoutOrder(orderPayload)
+
+      setCheckoutOrder(createdOrder)
+      successToast(`Order ${createdOrder.orderNumber} created. Payment can be connected next.`)
+    } catch (error) {
+      errorToast(getApiErrorMessage(error))
     } finally {
       setPaymentLoading(false)
     }
@@ -80,7 +108,7 @@ function Checkout() {
 
             <Stack sx={{ position: isMobile ? 'static' : 'sticky', top: isMobile ? 'auto' : 20 }}>
               <CheckoutOrderSummary
-                disabled={shipping.addressLoading || shipping.isPincodeLookupLoading || billing.isPincodeLookupLoading}
+                disabled={checkoutDisabled}
                 items={items}
                 loading={paymentLoading}
                 onPayment={handleProceedToPayment}
