@@ -23,6 +23,7 @@ export const getPaymentStatusMeta = (status = 'pending') => {
   const statusMap = {
     failed: { label: 'Failed', sx: { color: '#dc2626' } },
     paid: { label: 'Paid', sx: { color: '#059669' } },
+    partially_refunded: { label: 'Partially refunded', sx: { color: '#0369a1' } },
     pending: { label: 'Pending', sx: { color: '#b45309' } },
     refunded: { label: 'Refunded', sx: { color: '#0369a1' } },
   }
