@@ -33,7 +33,7 @@ export const createCheckoutOrder = async (orderData) => {
 
     return unwrapOrderResponse(response)
   } catch (error) {
-    throw new Error(getApiErrorMessage(error))
+    throw new Error(getApiErrorMessage(error), { cause: error })
   }
 }
 
@@ -43,7 +43,7 @@ export const fetchCustomerOrders = async (params = {}) => {
 
     return unwrapOrderListResponse(response)
   } catch (error) {
-    throw new Error(getApiErrorMessage(error))
+    throw new Error(getApiErrorMessage(error), { cause: error })
   }
 }
 
@@ -53,6 +53,6 @@ export const fetchCustomerOrder = async (orderId) => {
 
     return unwrapOrderResponse(response)
   } catch (error) {
-    throw new Error(getApiErrorMessage(error))
+    throw new Error(getApiErrorMessage(error), { cause: error })
   }
 }

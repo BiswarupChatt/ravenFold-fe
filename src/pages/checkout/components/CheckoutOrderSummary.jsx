@@ -401,7 +401,7 @@ function CheckoutOrderSummary({
           disabled={disabled}
           fullWidth
           loading={loading}
-          loadingText="Checking..."
+          loadingText="Processing..."
           onClick={onPayment}
           sx={{
             borderRadius: 2,

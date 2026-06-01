@@ -1,11 +1,15 @@
 import { Box, Container, Stack } from '@mui/material'
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import PageIntro from '../../components/PageIntro.jsx'
 import useResponsiveView from '../../hooks/useResponsiveView.js'
 import { getApiErrorMessage } from '../../services/apiClient.js'
 import { createCheckoutOrder } from '../../services/orderApi.js'
-import { errorToast, successToast } from '../../services/toast.js'
+import { createPaymentSession, verifyPaymentAttempt } from '../../services/paymentApi.js'
+import { openPaymentCheckout, PAYMENT_CHECKOUT_ERROR } from '../../services/paymentCheckout.js'
+import { errorToast, successToast, warningToast } from '../../services/toast.js'
+import { clearCart } from '../../store/cartSlice.js'
 import { selectCartItems, selectCartSubtotal } from '../../store/cartSlice.js'
 import CheckoutDetailsPanel from './components/CheckoutDetailsPanel.jsx'
 import EmptyCheckout from './components/EmptyCheckout.jsx'
@@ -16,52 +20,79 @@ import useCheckoutAddress from './components/useCheckoutAddress.js'
 
 function Checkout() {
   const { isDesktop, isMobile } = useResponsiveView()
+  const dispatch = useDispatch()
   const items = useSelector(selectCartItems)
+  const navigate = useNavigate()
   const subtotal = useSelector(selectCartSubtotal)
   const shipping = useCheckoutAddress()
   const billing = useBillingAddress()
   const [checkoutOrder, setCheckoutOrder] = useState(null)
   const [paymentLoading, setPaymentLoading] = useState(false)
-  const checkoutDisabled = Boolean(checkoutOrder) ||
+  const checkoutDisabled =
     shipping.addressLoading ||
     shipping.isPincodeLookupLoading ||
     shipping.savingAddress ||
     billing.isPincodeLookupLoading
 
-  const handleProceedToPayment = async () => {
+  const ensureCheckoutOrder = async () => {
     if (checkoutOrder) {
-      successToast(`Order ${checkoutOrder.orderNumber} is ready for payment.`)
-      return
+      return checkoutOrder
     }
 
     if (!billing.validateBillingAddress()) {
-      return
+      return null
     }
 
+    const shippingAddress = await shipping.continueWithAddress()
+
+    if (!shippingAddress) {
+      return null
+    }
+
+    const orderPayload = {
+      billingSameAsShipping: billing.sameAsShipping,
+      shippingAddressId: shippingAddress.id,
+    }
+
+    if (!billing.sameAsShipping) {
+      orderPayload.billingAddress = trimAddressPayload(billing.formState)
+    }
+
+    const createdOrder = await createCheckoutOrder(orderPayload)
+
+    setCheckoutOrder(createdOrder)
+    return createdOrder
+  }
+
+  const handleProceedToPayment = async () => {
     setPaymentLoading(true)
 
     try {
-      const shippingAddress = await shipping.continueWithAddress()
+      const order = await ensureCheckoutOrder()
 
-      if (!shippingAddress) {
+      if (!order) {
         return
       }
 
-      const orderPayload = {
-        billingSameAsShipping: billing.sameAsShipping,
-        shippingAddressId: shippingAddress.id,
+      const session = await createPaymentSession({
+        orderId: order.id,
+      })
+      const paymentPayload = await openPaymentCheckout(session)
+      const paymentResult = await verifyPaymentAttempt(session.paymentAttempt.id, paymentPayload)
+
+      if (paymentResult.paymentStatus !== 'paid' && paymentResult.paymentAttempt?.status !== 'paid') {
+        throw new Error('Payment could not be confirmed. Please check the order status and retry.')
       }
 
-      if (!billing.sameAsShipping) {
-        orderPayload.billingAddress = trimAddressPayload(billing.formState)
-      }
-
-      const createdOrder = await createCheckoutOrder(orderPayload)
-
-      setCheckoutOrder(createdOrder)
-      successToast(`Order ${createdOrder.orderNumber} created. Payment can be connected next.`)
+      dispatch(clearCart())
+      successToast(`Payment successful for order ${order.orderNumber}.`)
+      navigate('/profile/order', { replace: true })
     } catch (error) {
-      errorToast(getApiErrorMessage(error))
+      if (error?.code === PAYMENT_CHECKOUT_ERROR.DISMISSED) {
+        warningToast('Payment was not completed. You can retry from checkout.')
+      } else {
+        errorToast(getApiErrorMessage(error))
+      }
     } finally {
       setPaymentLoading(false)
     }
