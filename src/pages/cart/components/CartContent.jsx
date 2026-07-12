@@ -5,19 +5,21 @@ import { useNavigate } from 'react-router-dom'
 import useScreenSize from '../../../hooks/useScreenSize.js'
 import { getApiErrorMessage } from '../../../services/apiClient.js'
 import {
-  mapServerCartItems,
+  applyCartCoupon,
+  mapServerCartState,
   removeCartItem,
+  removeCartCoupon,
   updateCartItem,
 } from '../../../services/cartApi.js'
-import { errorToast } from '../../../services/toast.js'
+import { errorToast, successToast } from '../../../services/toast.js'
 import { selectIsAuthenticated } from '../../../store/authSlice.js'
 import {
   addItem,
   decreaseItemQuantity,
   removeItem,
-  replaceCartItems,
+  replaceServerCart,
   selectCartItems,
-  selectCartSubtotal,
+  selectCartSummary,
 } from '../../../store/cartSlice'
 import { getCartItemActionId, getProductDetailsPath } from '../../../utils/utils.js'
 import CartCoupon from './CartCoupon.jsx'
@@ -29,15 +31,18 @@ function CartContent({ layout = 'page', onNavigate }) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const items = useSelector(selectCartItems)
-  const subtotal = useSelector(selectCartSubtotal)
+  const cartSummary = useSelector(selectCartSummary)
   const isAuthenticated = useSelector(selectIsAuthenticated)
   const { isDesktop, isMobile } = useScreenSize()
   const isDrawer = layout === 'drawer'
   const [updatingItemId, setUpdatingItemId] = useState('')
-  const isBusy = Boolean(updatingItemId)
+  const [couponLoading, setCouponLoading] = useState(false)
+  const [rejectedCoupon, setRejectedCoupon] = useState(null)
+  const isBusy = Boolean(updatingItemId || couponLoading)
 
   const replaceWithServerCart = (cart) => {
-    dispatch(replaceCartItems(mapServerCartItems(cart.items)))
+    setRejectedCoupon(null)
+    dispatch(replaceServerCart(mapServerCartState(cart)))
   }
 
   const runItemAction = async (item, action) => {
@@ -110,6 +115,49 @@ function CartContent({ layout = 'page', onNavigate }) {
     onNavigate?.()
   }
 
+  const handleApplyCoupon = async (couponCode) => {
+    if (!isAuthenticated) {
+      errorToast('Sign in to apply coupon codes.')
+      return
+    }
+
+    setCouponLoading(true)
+
+    try {
+      const cart = await applyCartCoupon(couponCode)
+
+      if (cart.rejectedCoupon?.reason) {
+        setRejectedCoupon(cart.rejectedCoupon)
+        errorToast(cart.rejectedCoupon.reason)
+        return
+      }
+
+      replaceWithServerCart(cart)
+      successToast(`Coupon ${cart.couponCode} applied.`)
+    } catch (error) {
+      errorToast(getApiErrorMessage(error))
+    } finally {
+      setCouponLoading(false)
+    }
+  }
+
+  const handleRemoveCoupon = async () => {
+    if (!isAuthenticated || !cartSummary.couponCode) {
+      return
+    }
+
+    setCouponLoading(true)
+
+    try {
+      replaceWithServerCart(await removeCartCoupon())
+      successToast('Coupon removed.')
+    } catch (error) {
+      errorToast(getApiErrorMessage(error))
+    } finally {
+      setCouponLoading(false)
+    }
+  }
+
   if (items.length === 0) {
     return (
       <CartEmptyState
@@ -143,15 +191,23 @@ function CartContent({ layout = 'page', onNavigate }) {
     </Stack>
   )
 
-  const summary = (
+  const summarySection = (
     <Stack spacing={isDrawer ? 1 : 2}>
-      <CartCoupon isDrawer={isDrawer} />
+      <CartCoupon
+        couponCode={cartSummary.couponCode}
+        disabled={isBusy}
+        isAuthenticated={isAuthenticated}
+        loading={couponLoading}
+        productDiscountAmount={cartSummary.productDiscountAmount}
+        rejectedCoupon={rejectedCoupon}
+        onApply={handleApplyCoupon}
+        onRemove={handleRemoveCoupon}
+      />
       <CartSummary
         disabled={isBusy}
         isDrawer={isDrawer}
-        items={items}
         onNavigate={onNavigate}
-        subtotal={subtotal}
+        summary={cartSummary}
       />
     </Stack>
   )
@@ -190,7 +246,7 @@ function CartContent({ layout = 'page', onNavigate }) {
             pt: 0.75,
           }}
         >
-          {summary}
+          {summarySection}
         </Box>
       </Stack>
     )
@@ -210,7 +266,7 @@ function CartContent({ layout = 'page', onNavigate }) {
       </Stack>
 
       <Stack sx={{ position: isMobile ? 'static' : 'sticky', top: isMobile ? 'auto' : 20 }}>
-        {summary}
+        {summarySection}
       </Stack>
     </Box>
   )

@@ -16,12 +16,12 @@ import useScreenSize from '../../../hooks/useScreenSize.js'
 import { getApiErrorMessage } from '../../../services/apiClient.js'
 import {
   addCartItem,
-  mapServerCartItems,
+  mapServerCartState,
 } from '../../../services/cartApi.js'
 import { getProducts, getProductVariants } from '../../../services/productApi.js'
 import { errorToast, successToast } from '../../../services/toast.js'
 import { selectIsAuthenticated } from '../../../store/authSlice.js'
-import { addItem, replaceCartItems } from '../../../store/cartSlice.js'
+import { addItem, replaceServerCart } from '../../../store/cartSlice.js'
 import {
   selectWishlistItems,
   toggleWishlistItem,
@@ -189,7 +189,7 @@ function Shop() {
       variantId: cartProduct.variantId || '',
     })
 
-    dispatch(replaceCartItems(mapServerCartItems(cart.items)))
+    dispatch(replaceServerCart(mapServerCartState(cart)))
     return cartProduct
   }
 

@@ -10,7 +10,6 @@ import {
   getProductDetailsPath,
   parseVariantDetails,
 } from '../../../utils/utils.js'
-import { getSummaryTotals } from '../../cart/components/cartSummaryUtils.js'
 
 const previewItemCount = 2
 
@@ -219,23 +218,25 @@ function CheckoutOrderSummary({
   items = [],
   loading,
   onPayment,
-  subtotal,
+  summary,
 }) {
   const navigate = useNavigate()
   const [itemsExpanded, setItemsExpanded] = useState(false)
   const [itemsCollapsing, setItemsCollapsing] = useState(false)
   const {
-    bagDiscount,
-    couponDiscount,
-    shippingCharge,
-    totalMrp,
-    totalPayable,
-  } = getSummaryTotals(items, subtotal)
+    appliedPromotions = [],
+    bagDiscount = 0,
+    couponDiscount = 0,
+    shippingCharge = 0,
+    shippingDiscountAmount = 0,
+    totalMrp = 0,
+    totalPayable = 0,
+  } = summary || {}
   const visibleItems = items.slice(0, previewItemCount)
   const collapsedItems = items.slice(previewItemCount)
   const hasMoreItems = collapsedItems.length > 0
   const remainingCount = collapsedItems.length
-  const savings = bagDiscount + couponDiscount
+  const savings = bagDiscount + couponDiscount + shippingDiscountAmount
 
   const handleToggleItems = () => {
     setItemsExpanded((currentValue) => {
@@ -372,9 +373,15 @@ function CheckoutOrderSummary({
           />
 
           <SummaryRow
-            label="Coupon Discount"
+            label="Promotion Discount"
             value={couponDiscount ? `- ${formatPrice(couponDiscount)}` : formatPrice(0)}
             valueSx={couponDiscount ? { color: '#00a53b' } : undefined}
+          />
+
+          <SummaryRow
+            label="Shipping Discount"
+            value={shippingDiscountAmount ? `- ${formatPrice(shippingDiscountAmount)}` : formatPrice(0)}
+            valueSx={shippingDiscountAmount ? { color: '#00a53b' } : undefined}
           />
 
           <SummaryRow
@@ -393,6 +400,18 @@ function CheckoutOrderSummary({
               }}
             >
               You save {formatPrice(savings)} on this order.
+            </Typography>
+          ) : null}
+
+          {appliedPromotions.length ? (
+            <Typography
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.82rem',
+                lineHeight: 1.35,
+              }}
+            >
+              Applied offers: {appliedPromotions.map((promotion) => promotion.title || promotion.couponCode).filter(Boolean).join(', ')}
             </Typography>
           ) : null}
         </Stack>

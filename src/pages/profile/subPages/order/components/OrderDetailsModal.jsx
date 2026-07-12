@@ -436,8 +436,28 @@ function OrderDetailsModal({
                 <TotalRow label="MRP" value={formatPrice(order.totalMrp)} />
                 <TotalRow label="Subtotal" value={formatPrice(order.subtotal)} />
                 <TotalRow label="Bag discount" value={`-${formatPrice(order.bagDiscount)}`} />
-                <TotalRow label="Coupon discount" value={`-${formatPrice(order.couponDiscount)}`} />
+                <TotalRow label="Promotion discount" value={`-${formatPrice(order.productDiscountAmount || order.couponDiscount)}`} />
+                {(order.shippingDiscountAmount || 0) > 0 ? (
+                  <TotalRow label="Shipping discount" value={`-${formatPrice(order.shippingDiscountAmount)}`} />
+                ) : null}
                 <TotalRow label="Shipping" value={formatPrice(order.shippingCharge)} />
+                {Array.isArray(order.appliedPromotions) && order.appliedPromotions.length ? (
+                  <>
+                    <Divider sx={{ my: 0.3 }} />
+                    <Stack spacing={0.45}>
+                      {order.appliedPromotions.map((promotion) => (
+                        <Typography
+                          color="text.secondary"
+                          key={`${promotion.promotionId}:${promotion.couponCode || promotion.title}`}
+                          sx={{ fontSize: '0.82rem', lineHeight: 1.35 }}
+                        >
+                          {promotion.title || promotion.couponCode}
+                          {promotion.couponCode ? ` (${promotion.couponCode})` : ''}
+                        </Typography>
+                      ))}
+                    </Stack>
+                  </>
+                ) : null}
                 <Divider sx={{ my: 0.3 }} />
                 <TotalRow label="Total payable" value={formatPrice(order.totalPayable)} strong />
               </Stack>

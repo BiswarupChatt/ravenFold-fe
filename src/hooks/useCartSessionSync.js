@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getApiErrorMessage } from '../services/apiClient.js'
 import {
   getCart,
-  mapServerCartItems,
+  mapServerCartState,
   syncGuestCartItems,
 } from '../services/cartApi.js'
 import {
@@ -13,7 +13,7 @@ import {
 } from '../services/cartStorage.js'
 import { errorToast } from '../services/toast.js'
 import { selectIsAuthenticated } from '../store/authSlice.js'
-import { replaceCartItems } from '../store/cartSlice.js'
+import { clearCartPricing, replaceServerCart } from '../store/cartSlice.js'
 
 function useCartSessionSync() {
   const dispatch = useDispatch()
@@ -23,6 +23,7 @@ function useCartSessionSync() {
   useEffect(() => {
     if (!isAuthenticated) {
       hasLoadedServerCartRef.current = false
+      dispatch(clearCartPricing())
       return undefined
     }
 
@@ -39,7 +40,7 @@ function useCartSessionSync() {
           return
         }
 
-        dispatch(replaceCartItems(mapServerCartItems(cartResult.cart.items)))
+        dispatch(replaceServerCart(mapServerCartState(cartResult.cart)))
         hasLoadedServerCartRef.current = true
 
         if (cartResult.failedItems.length === 0) {

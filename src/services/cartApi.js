@@ -64,6 +64,25 @@ export const mapServerCartItems = (items = []) => {
   })
 }
 
+export const mapServerCartSummary = (cart = {}) => ({
+  appliedPromotions: Array.isArray(cart.appliedPromotions) ? cart.appliedPromotions : [],
+  couponCode: cart.couponCode || '',
+  itemCount: toFiniteNumber(cart.itemCount, 0),
+  productDiscountAmount: toFiniteNumber(cart.productDiscountAmount, 0),
+  rejectedCoupon: cart.rejectedCoupon || null,
+  shippingCharge: toFiniteNumber(cart.shippingCharge, 0),
+  shippingDiscountAmount: toFiniteNumber(cart.shippingDiscountAmount, 0),
+  subtotal: toFiniteNumber(cart.subtotal, 0),
+  total: toFiniteNumber(cart.total, toFiniteNumber(cart.subtotal, 0)),
+  totalDiscountAmount: toFiniteNumber(cart.totalDiscountAmount, 0),
+  totalQuantity: toFiniteNumber(cart.totalQuantity, 0),
+})
+
+export const mapServerCartState = (cart = {}) => ({
+  items: mapServerCartItems(cart.items),
+  summary: mapServerCartSummary(cart),
+})
+
 export const getCart = async () => {
   const response = await apiClient.get('/cart')
 
@@ -96,6 +115,20 @@ export const removeCartItem = async (cartItemId) => {
 
 export const clearCart = async () => {
   const response = await apiClient.delete('/cart')
+
+  return unwrapCartResponse(response)
+}
+
+export const applyCartCoupon = async (couponCode) => {
+  const response = await apiClient.post('/cart/apply-coupon', {
+    couponCode,
+  })
+
+  return unwrapCartResponse(response)
+}
+
+export const removeCartCoupon = async () => {
+  const response = await apiClient.post('/cart/remove-coupon')
 
   return unwrapCartResponse(response)
 }

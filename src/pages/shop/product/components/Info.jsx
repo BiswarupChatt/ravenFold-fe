@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { getApiErrorMessage } from '../../../../services/apiClient.js'
 import {
   addCartItem,
-  mapServerCartItems,
+  mapServerCartState,
   removeCartItem as removeServerCartItem,
   updateCartItem,
 } from '../../../../services/cartApi.js'
@@ -15,7 +15,7 @@ import {
   addItem,
   decreaseItemQuantity,
   removeItem,
-  replaceCartItems,
+  replaceServerCart,
   selectCartItems,
 } from '../../../../store/cartSlice.js'
 import { selectWishlistItems, toggleWishlistItem } from '../../../../store/wishlistSlice.js'
@@ -202,7 +202,7 @@ function Info({ product, variants = [] }) {
       variantId: cartProduct.variantId,
     })
 
-    dispatch(replaceCartItems(mapServerCartItems(cart.items)))
+    dispatch(replaceServerCart(mapServerCartState(cart)))
     return cartProduct
   }
 
@@ -248,7 +248,7 @@ function Info({ product, variants = [] }) {
         ? await removeServerCartItem(currentCartItem.cartItemId)
         : await updateCartItem(currentCartItem.cartItemId, { quantity: nextQuantity })
 
-      dispatch(replaceCartItems(mapServerCartItems(cart.items)))
+      dispatch(replaceServerCart(mapServerCartState(cart)))
     } catch (error) {
       errorToast(getApiErrorMessage(error))
     } finally {

@@ -9,7 +9,7 @@ import { payForOrder } from '../../services/paymentFlow.js'
 import { PAYMENT_CHECKOUT_ERROR } from '../../services/paymentCheckout.js'
 import { errorToast, successToast, warningToast } from '../../services/toast.js'
 import { clearCart } from '../../store/cartSlice.js'
-import { selectCartItems, selectCartSubtotal } from '../../store/cartSlice.js'
+import { selectCartItems, selectCartSummary } from '../../store/cartSlice.js'
 import CheckoutDetailsPanel from './components/CheckoutDetailsPanel.jsx'
 import EmptyCheckout from './components/EmptyCheckout.jsx'
 import CheckoutOrderSummary from './components/CheckoutOrderSummary.jsx'
@@ -22,7 +22,7 @@ function Checkout() {
   const dispatch = useDispatch()
   const items = useSelector(selectCartItems)
   const navigate = useNavigate()
-  const subtotal = useSelector(selectCartSubtotal)
+  const cartSummary = useSelector(selectCartSummary)
   const shipping = useCheckoutAddress()
   const billing = useBillingAddress()
   const [checkoutOrder, setCheckoutOrder] = useState(null)
@@ -134,7 +134,7 @@ function Checkout() {
                 items={items}
                 loading={paymentLoading}
                 onPayment={handleProceedToPayment}
-                subtotal={subtotal}
+                summary={cartSummary}
               />
             </Stack>
           </Box>
