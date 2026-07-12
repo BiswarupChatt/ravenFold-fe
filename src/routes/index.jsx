@@ -1,24 +1,25 @@
+import { lazy } from 'react'
 import { Navigate, useRoutes } from 'react-router-dom'
-import Blog from '../pages/Blog.jsx'
-import MainLayout from '../layouts/MainLayout.jsx'
-import Contacts from '../pages/Contacts.jsx'
 import withAuthRequired from '../hoc/withAuthRequired.jsx'
-import Home from '../pages/Home.jsx'
-import NotFound from '../pages/NotFound.jsx'
-import PrivacyPolicy from '../pages/PrivacyPolicy.jsx'
-import Profile from '../pages/profile/Profile.jsx'
-import Address from '../pages/profile/subPages/address/Address.jsx'
-import Info from '../pages/profile/subPages/info/Info.jsx'
-import Order from '../pages/profile/subPages/order/Order.jsx'
-import Cart from "../pages/cart/Cart.jsx"
-import Checkout from '../pages/checkout/Checkout.jsx'
-import Reviews from '../pages/profile/subPages/reviews/Reviews.jsx'
-import Wishlist from '../pages/profile/subPages/wishlist/Wishlist.jsx'
-import ReturnsRefunds from '../pages/ReturnsRefunds.jsx'
-import ShippingReturns from '../pages/ShippingReturns.jsx'
-import TermsConditions from '../pages/TermsConditions.jsx'
-import ProductDetails from '../pages/shop/product/ProductDetails.jsx'
-import Shop from '../pages/shop/catalog/Shop.jsx'
+const Blog = lazy(() => import('../pages/Blog.jsx'))
+const MainLayout = lazy(() => import('../layouts/MainLayout.jsx'))
+const Contacts = lazy(() => import('../pages/Contacts.jsx'))
+const Home = lazy(() => import('../pages/Home.jsx'))
+const NotFound = lazy(() => import('../pages/NotFound.jsx'))
+const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy.jsx'))
+const Profile = lazy(() => import('../pages/profile/Profile.jsx'))
+const Address = lazy(() => import('../pages/profile/subPages/address/Address.jsx'))
+const Info = lazy(() => import('../pages/profile/subPages/info/Info.jsx'))
+const Order = lazy(() => import('../pages/profile/subPages/order/Order.jsx'))
+const Cart = lazy(() => import('../pages/cart/Cart.jsx'))
+const Checkout = lazy(() => import('../pages/checkout/Checkout.jsx'))
+const Reviews = lazy(() => import('../pages/profile/subPages/reviews/Reviews.jsx'))
+const Wishlist = lazy(() => import('../pages/profile/subPages/wishlist/Wishlist.jsx'))
+const ReturnsRefunds = lazy(() => import('../pages/ReturnsRefunds.jsx'))
+const ShippingReturns = lazy(() => import('../pages/ShippingReturns.jsx'))
+const TermsConditions = lazy(() => import('../pages/TermsConditions.jsx'))
+const ProductDetails = lazy(() => import('../pages/shop/product/ProductDetails.jsx'))
+const Shop = lazy(() => import('../pages/shop/catalog/Shop.jsx'))
 
 const ProtectedProfile = withAuthRequired(Profile)
 const ProtectedCheckout = withAuthRequired(Checkout)
