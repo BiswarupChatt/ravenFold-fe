@@ -10,7 +10,10 @@ import {
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useResponsiveView from '../../../../hooks/useResponsiveView'
+import { payForOrder } from '../../../../services/paymentFlow.js'
 import { fetchCustomerOrder, fetchCustomerOrders } from '../../../../services/orderApi.js'
+import { PAYMENT_CHECKOUT_ERROR } from '../../../../services/paymentCheckout.js'
+import { errorToast, successToast, warningToast } from '../../../../services/toast.js'
 import ProfileIntro from '../../components/ProfileIntro'
 import OrderCard from './components/OrderCard.jsx'
 import OrderDetailsModal from './components/OrderDetailsModal.jsx'
@@ -27,6 +30,7 @@ function Order() {
   const [detailsOpen, setDetailsOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [loadingDetails, setLoadingDetails] = useState(false)
+  const [retryingOrderId, setRetryingOrderId] = useState('')
 
   const loadOrders = useCallback(async ({ append = false, page = 1 } = {}) => {
     if (append) {
@@ -104,6 +108,36 @@ function Order() {
     }
   }
 
+  const handleRetryPayment = async (order) => {
+    setRetryingOrderId(order.id)
+
+    try {
+      await payForOrder(order.id)
+      successToast(`Payment successful for order ${order.orderNumber}.`)
+      await loadOrders()
+
+      if (selectedOrder?.id === order.id) {
+        setSelectedOrder(await fetchCustomerOrder(order.id))
+      }
+    } catch (error) {
+      if (error?.code === PAYMENT_CHECKOUT_ERROR.DISMISSED) {
+        warningToast('Payment was not completed. You can retry this order again.')
+      } else {
+        errorToast(error?.message || 'Payment failed. Please try again.')
+      }
+
+      if (selectedOrder?.id === order.id) {
+        try {
+          setSelectedOrder(await fetchCustomerOrder(order.id))
+        } catch {
+          // Keep the current details view if the refresh fails.
+        }
+      }
+    } finally {
+      setRetryingOrderId('')
+    }
+  }
+
   return (
     <Stack spacing={3}>
       <ProfileIntro
@@ -152,9 +186,11 @@ function Order() {
             <OrderCard
               isMobile={isMobile}
               key={order.id}
+              onRetryPayment={handleRetryPayment}
               onViewDetails={openOrderDetails}
               onViewProduct={handleViewProduct}
               order={order}
+              retrying={retryingOrderId === order.id}
             />
           ))}
 
@@ -176,9 +212,11 @@ function Order() {
         isMobile={isMobile}
         loading={loadingDetails}
         onClose={closeOrderDetails}
+        onRetryPayment={handleRetryPayment}
         onViewProduct={handleViewProduct}
         open={detailsOpen}
         order={selectedOrder}
+        retrying={retryingOrderId === selectedOrder?.id}
       />
     </Stack>
   )

@@ -3,6 +3,7 @@ import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined'
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import {
+  Alert,
   Box,
   CircularProgress,
   Divider,
@@ -10,17 +11,18 @@ import {
   Typography,
 } from '@mui/material'
 import AppModal from '../../../../../components/AppModal.jsx'
+import AppButton from '../../../../../components/AppButton.jsx'
 import { formatPrice } from '../../../../../utils/utils.js'
 import {
+  canRetryPayment,
   formatAddressLines,
   formatOrderDate,
+  getCustomerOrderStatusMeta,
   getItemMeta,
   getItemName,
   getOrderItemsLabel,
   getOrderProgressCopy,
-  getOrderStatusMeta,
   getPaymentMethodLabel,
-  getPaymentStatusMeta,
   getProductPath,
   getQuantityLabel,
 } from './orderFormatters.js'
@@ -272,14 +274,17 @@ function OrderDetailsModal({
   isMobile,
   loading,
   onClose,
+  onRetryPayment,
   onViewProduct,
   open,
   order,
+  retrying = false,
 }) {
   const orderItems = Array.isArray(order?.items) ? order.items : []
-  const orderStatus = getOrderStatusMeta(order?.status)
-  const paymentStatus = getPaymentStatusMeta(order?.paymentStatus)
+  const customerStatus = getCustomerOrderStatusMeta(order || {})
   const progress = getOrderProgressCopy(order || {})
+  const retryAllowed = canRetryPayment(order || {})
+  const StatusIcon = customerStatus.kind === 'payment' ? PaymentsOutlinedIcon : LocalShippingOutlinedIcon
 
   return (
     <AppModal
@@ -314,7 +319,7 @@ function OrderDetailsModal({
                 gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, minmax(0, 1fr))',
               }}
             >
-              <DetailStat label="Placed" value={formatOrderDate(order.placedAt || order.createdAt)} />
+              <DetailStat label="Created" value={formatOrderDate(order.placedAt || order.createdAt)} />
               <DetailStat label="Items" value={`${getOrderItemsLabel(order)} / ${getQuantityLabel(order)}`} />
               <DetailStat label="Payment" value={getPaymentMethodLabel(order)} />
               <DetailStat label="Total" value={formatPrice(order.totalPayable)} />
@@ -339,7 +344,7 @@ function OrderDetailsModal({
               <Box sx={{ minWidth: 0 }}>
                 <Typography
                   sx={{
-                    color: orderStatus.sx?.color || 'text.primary',
+                    color: customerStatus.sx?.color || 'text.primary',
                     fontSize: '1rem',
                     fontWeight: 750,
                     lineHeight: 1.2,
@@ -359,11 +364,29 @@ function OrderDetailsModal({
                 justifyContent={isMobile ? 'flex-start' : 'flex-end'}
                 sx={{ justifySelf: isMobile ? 'start' : 'end' }}
               >
-                <StatusBadge Icon={LocalShippingOutlinedIcon} meta={orderStatus} />
-                <StatusBadge Icon={PaymentsOutlinedIcon} meta={paymentStatus} />
+                {retryAllowed ? (
+                  <AppButton
+                    loading={retrying}
+                    loadingText="Retrying..."
+                    onClick={() => onRetryPayment(order)}
+                    size="small"
+                    sx={{ minWidth: isMobile ? '100%' : 160 }}
+                    type="button"
+                    variant="outlined"
+                  >
+                    Retry Payment
+                  </AppButton>
+                ) : null}
+                <StatusBadge Icon={StatusIcon} meta={customerStatus} />
               </Stack>
             </Box>
           </Box>
+
+          {order?.paymentFailureReason ? (
+            <Alert severity={order?.paymentStatus === 'failed' ? 'error' : 'warning'}>
+              {order.paymentFailureReason}
+            </Alert>
+          ) : null}
 
           <Box
             sx={{
@@ -429,6 +452,7 @@ function OrderDetailsModal({
               <AddressBlock address={order.billingAddress} title="Billing address" />
             </Box>
           </Stack>
+
         </Stack>
       ) : null}
     </AppModal>

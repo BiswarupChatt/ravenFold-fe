@@ -4,10 +4,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import PageIntro from '../../components/PageIntro.jsx'
 import useResponsiveView from '../../hooks/useResponsiveView.js'
-import { getApiErrorMessage } from '../../services/apiClient.js'
 import { createCheckoutOrder } from '../../services/orderApi.js'
-import { createPaymentSession, verifyPaymentAttempt } from '../../services/paymentApi.js'
-import { openPaymentCheckout, PAYMENT_CHECKOUT_ERROR } from '../../services/paymentCheckout.js'
+import { payForOrder } from '../../services/paymentFlow.js'
+import { PAYMENT_CHECKOUT_ERROR } from '../../services/paymentCheckout.js'
 import { errorToast, successToast, warningToast } from '../../services/toast.js'
 import { clearCart } from '../../store/cartSlice.js'
 import { selectCartItems, selectCartSubtotal } from '../../store/cartSlice.js'
@@ -74,15 +73,7 @@ function Checkout() {
         return
       }
 
-      const session = await createPaymentSession({
-        orderId: order.id,
-      })
-      const paymentPayload = await openPaymentCheckout(session)
-      const paymentResult = await verifyPaymentAttempt(session.paymentAttempt.id, paymentPayload)
-
-      if (paymentResult.paymentStatus !== 'paid' && paymentResult.paymentAttempt?.status !== 'paid') {
-        throw new Error('Payment could not be confirmed. Please check the order status and retry.')
-      }
+      await payForOrder(order.id)
 
       dispatch(clearCart())
       successToast(`Payment successful for order ${order.orderNumber}.`)
@@ -91,7 +82,7 @@ function Checkout() {
       if (error?.code === PAYMENT_CHECKOUT_ERROR.DISMISSED) {
         warningToast('Payment was not completed. You can retry from checkout.')
       } else {
-        errorToast(getApiErrorMessage(error))
+        errorToast(error?.message || 'Payment failed. Please try again.')
       }
     } finally {
       setPaymentLoading(false)

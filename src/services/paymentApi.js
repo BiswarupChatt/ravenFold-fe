@@ -49,3 +49,13 @@ export const verifyPaymentAttempt = async (paymentAttemptId, paymentData) => {
     throw new Error(getApiErrorMessage(error), { cause: error })
   }
 }
+
+export const recordPaymentAttemptFailure = async (paymentAttemptId, paymentData) => {
+  try {
+    const response = await apiClient.post(`/payments/attempts/${paymentAttemptId}/failure`, paymentData)
+
+    return unwrapPaymentResultResponse(response)
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error), { cause: error })
+  }
+}

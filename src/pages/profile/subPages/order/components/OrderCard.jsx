@@ -2,12 +2,13 @@ import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
 import { Box, Button, Paper, Stack, Typography } from '@mui/material'
 import AppButton from '../../../../../components/AppButton.jsx'
 import {
+  canRetryPayment,
   formatOrderDate,
+  getCustomerOrderStatusMeta,
   getItemMeta,
   getItemName,
   getOrderAmountLabel,
   getOrderProgressCopy,
-  getOrderStatusMeta,
   getPreviewItemCountLabel,
   getPreviewOrderItem,
   getProductPath,
@@ -187,11 +188,12 @@ function ProductPreview({ isMobile, item, onViewDetails, onViewProduct, order })
   )
 }
 
-function OrderCard({ isMobile, order, onViewDetails, onViewProduct }) {
-  const orderStatus = getOrderStatusMeta(order.status)
+function OrderCard({ isMobile, onRetryPayment, onViewDetails, onViewProduct, order, retrying = false }) {
+  const customerStatus = getCustomerOrderStatusMeta(order)
   const progress = getOrderProgressCopy(order)
   const previewItem = getPreviewOrderItem(order)
   const shipTo = order.shippingAddress?.fullName || 'Shipping address'
+  const retryAllowed = canRetryPayment(order)
 
   return (
     <Paper
@@ -219,7 +221,7 @@ function OrderCard({ isMobile, order, onViewDetails, onViewProduct }) {
           py: 0.95,
         }}
       >
-        <SummaryMetric label="Order placed" value={formatOrderDate(order.placedAt || order.createdAt)} />
+        <SummaryMetric label="Created" value={formatOrderDate(order.placedAt || order.createdAt)} />
         <SummaryMetric label="Total" value={getOrderAmountLabel(order)} />
         <SummaryMetric label="Ship to" value={shipTo} />
         <SummaryMetric
@@ -241,7 +243,7 @@ function OrderCard({ isMobile, order, onViewDetails, onViewProduct }) {
           <Box>
             <Typography
               sx={{
-                color: orderStatus.sx.color || 'text.primary',
+                color: customerStatus.sx?.color || 'text.primary',
                 fontSize: { xs: '0.94rem', md: '1rem' },
                 fontWeight: 700,
                 lineHeight: 1.15,
@@ -263,7 +265,27 @@ function OrderCard({ isMobile, order, onViewDetails, onViewProduct }) {
           />
         </Stack>
 
-        <Stack alignItems={isMobile ? 'stretch' : 'flex-end'} justifyContent="center">
+        <Stack alignItems={isMobile ? 'stretch' : 'flex-end'} justifyContent="center" spacing={1}>
+          {retryAllowed ? (
+            <AppButton
+              loading={retrying}
+              loadingText="Retrying..."
+              onClick={() => onRetryPayment(order)}
+              size="small"
+              sx={{
+                alignSelf: isMobile ? 'stretch' : 'flex-end',
+                fontSize: '0.84rem',
+                fontWeight: 700,
+                minHeight: 34,
+                px: 2,
+                width: isMobile ? '100%' : 150,
+              }}
+              type="button"
+              variant="outlined"
+            >
+              Retry Payment
+            </AppButton>
+          ) : null}
           <AppButton
             onClick={() => onViewDetails(order)}
             size="small"
