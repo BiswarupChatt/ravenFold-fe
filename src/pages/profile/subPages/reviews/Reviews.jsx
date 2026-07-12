@@ -1,5 +1,4 @@
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
-import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined'
 import StarBorderRoundedIcon from '@mui/icons-material/StarBorderRounded'
 import {
   Alert,
@@ -12,36 +11,19 @@ import {
   Typography,
 } from '@mui/material'
 import { useCallback, useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import AppButton from '../../../../components/AppButton.jsx'
 import { getApiErrorMessage } from '../../../../services/apiClient.js'
 import {
-  createReview,
   deleteReview,
   fetchMyReviews,
-  fetchReviewEligibility,
-  updateReview,
 } from '../../../../services/reviewApi.js'
 import { errorToast, successToast } from '../../../../services/toast.js'
 import ProfileIntro from '../../components/ProfileIntro'
-import ReviewFormDialog from './ReviewFormDialog.jsx'
-import {
-  formatReviewDate,
-  getEligibilityReasonLabel,
-} from './reviewUtils.js'
+import { formatReviewDate } from './reviewUtils.js'
 
 function Reviews() {
-  const [searchParams, setSearchParams] = useSearchParams()
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
   const [pageError, setPageError] = useState('')
-  const [dialogState, setDialogState] = useState({
-    item: null,
-    open: false,
-    orderId: '',
-    review: null,
-  })
-  const [savingReview, setSavingReview] = useState(false)
   const [deletingReviewId, setDeletingReviewId] = useState('')
 
   const loadReviews = useCallback(async () => {
@@ -64,107 +46,6 @@ function Reviews() {
     loadReviews()
   }, [loadReviews])
 
-  useEffect(() => {
-    const orderId = searchParams.get('orderId') || ''
-    const orderItemId = searchParams.get('orderItemId') || ''
-
-    if (!orderId || !orderItemId) {
-      return
-    }
-
-    let isActive = true
-
-    const openFromQuery = async () => {
-      try {
-        const [eligibility, reviewList] = await Promise.all([
-          fetchReviewEligibility({ orderId }),
-          fetchMyReviews({ limit: 50, orderId }),
-        ])
-        const existingReview = (reviewList.items || []).find((review) => review.orderItem?.id === orderItemId) || null
-        const eligibleItem = (eligibility.items || []).find((item) => item.orderItemId === orderItemId) || null
-
-        if (!isActive) {
-          return
-        }
-
-        if (existingReview) {
-          return
-        }
-
-        if (eligibleItem?.eligible) {
-          setDialogState({
-            item: {
-              id: eligibleItem.orderItemId,
-              productId: eligibleItem.productId,
-              productSnapshot: eligibleItem.productSnapshot,
-              variantId: eligibleItem.variantId,
-            },
-            open: true,
-            orderId,
-            review: null,
-          })
-          return
-        }
-
-        if (eligibleItem?.reason) {
-          errorToast(getEligibilityReasonLabel(eligibleItem.reason, eligibleItem.reasonMessage))
-        }
-      } catch (error) {
-        if (isActive) {
-          errorToast(getApiErrorMessage(error))
-        }
-      } finally {
-        if (isActive) {
-          setSearchParams((currentParams) => {
-            const nextParams = new URLSearchParams(currentParams)
-
-            nextParams.delete('orderId')
-            nextParams.delete('orderItemId')
-
-            return nextParams
-          }, { replace: true })
-        }
-      }
-    }
-
-    openFromQuery()
-
-    return () => {
-      isActive = false
-    }
-  }, [searchParams, setSearchParams])
-
-  const handleCloseDialog = () => {
-    setDialogState({
-      item: null,
-      open: false,
-      orderId: '',
-      review: null,
-    })
-  }
-
-  const handleSubmitReview = async (payload) => {
-    setSavingReview(true)
-
-    try {
-      await createReview({
-        ...payload,
-        orderId: dialogState.orderId,
-        orderItemId: dialogState.item?.id,
-        productId: dialogState.item?.productId,
-        variantId: dialogState.item?.variantId || undefined,
-      })
-      successToast('Review submitted successfully.')
-
-      handleCloseDialog()
-      await loadReviews()
-    } catch (error) {
-      errorToast(getApiErrorMessage(error))
-    } finally {
-      setSavingReview(false)
-    }
-  }
-
   const handleDeleteReview = async (reviewId) => {
     setDeletingReviewId(reviewId)
 
@@ -182,16 +63,6 @@ function Reviews() {
   return (
     <Stack spacing={3}>
       <ProfileIntro
-        action={(
-          <AppButton
-            disabled
-            startIcon={<RateReviewOutlinedIcon />}
-            type="button"
-            variant="contained"
-          >
-            Open from Orders
-          </AppButton>
-        )}
         description="Ratings and feedback you have shared on purchased products."
         title="Reviews"
       />
@@ -211,7 +82,7 @@ function Reviews() {
         <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 3 }}>
           <Typography fontWeight={800}>No reviews yet</Typography>
           <Typography color="text.secondary" sx={{ mt: 0.75 }}>
-            Delivered order items will let you write reviews from the order details screen.
+            Delivered order items will let you open the dedicated review page from your orders or reminder email.
           </Typography>
         </Box>
       ) : null}
@@ -282,15 +153,6 @@ function Reviews() {
           })}
         </Stack>
       ) : null}
-
-      <ReviewFormDialog
-        item={dialogState.item}
-        onClose={handleCloseDialog}
-        onSubmit={handleSubmitReview}
-        open={dialogState.open}
-        review={dialogState.review}
-        saving={savingReview}
-      />
     </Stack>
   )
 }

@@ -14,6 +14,7 @@ const Order = lazy(() => import('../pages/profile/subPages/order/Order.jsx'))
 const Cart = lazy(() => import('../pages/cart/Cart.jsx'))
 const Checkout = lazy(() => import('../pages/checkout/Checkout.jsx'))
 const Reviews = lazy(() => import('../pages/profile/subPages/reviews/Reviews.jsx'))
+const WriteReview = lazy(() => import('../pages/profile/subPages/reviews/WriteReview.jsx'))
 const Wishlist = lazy(() => import('../pages/profile/subPages/wishlist/Wishlist.jsx'))
 const ReturnsRefunds = lazy(() => import('../pages/ReturnsRefunds.jsx'))
 const ShippingReturns = lazy(() => import('../pages/ShippingReturns.jsx'))
@@ -43,6 +44,7 @@ const routes = [
           { path: 'order', element: <Order /> },
           { path: 'wishlist', element: <Wishlist /> },
           { path: 'reviews', element: <Reviews /> },
+          { path: 'reviews/write/:orderId/:orderItemId', element: <WriteReview /> },
         ],
       },
       { path: 'cart', element: <Cart /> },

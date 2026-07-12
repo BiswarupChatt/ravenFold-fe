@@ -13,10 +13,9 @@ import useResponsiveView from '../../../../hooks/useResponsiveView'
 import { payForOrder } from '../../../../services/paymentFlow.js'
 import { fetchCustomerOrder, fetchCustomerOrders } from '../../../../services/orderApi.js'
 import { PAYMENT_CHECKOUT_ERROR } from '../../../../services/paymentCheckout.js'
-import { createReview, fetchMyReviews, fetchReviewEligibility } from '../../../../services/reviewApi.js'
+import { fetchMyReviews, fetchReviewEligibility } from '../../../../services/reviewApi.js'
 import { errorToast, successToast, warningToast } from '../../../../services/toast.js'
 import ProfileIntro from '../../components/ProfileIntro'
-import ReviewFormDialog from '../reviews/ReviewFormDialog.jsx'
 import OrderCard from './components/OrderCard.jsx'
 import OrderDetailsModal from './components/OrderDetailsModal.jsx'
 import { ORDER_PAGE_LIMIT, getProductPath } from './components/orderFormatters.js'
@@ -34,11 +33,6 @@ function Order() {
   const [selectedOrderReviewContext, setSelectedOrderReviewContext] = useState(null)
   const [loadingDetails, setLoadingDetails] = useState(false)
   const [retryingOrderId, setRetryingOrderId] = useState('')
-  const [reviewDialogState, setReviewDialogState] = useState({
-    item: null,
-    open: false,
-  })
-  const [savingReview, setSavingReview] = useState(false)
 
   const loadOrders = useCallback(async ({ append = false, page = 1 } = {}) => {
     if (append) {
@@ -173,49 +167,13 @@ function Order() {
     }
   }
 
-  const handleOpenReviewDialog = (item) => {
-    setReviewDialogState({
-      item,
-      open: true,
-    })
-  }
-
-  const handleCloseReviewDialog = () => {
-    setReviewDialogState({
-      item: null,
-      open: false,
-    })
-  }
-
-  const handleSubmitReview = async (payload) => {
-    const item = reviewDialogState.item
-
-    if (!item) {
+  const handleOpenReviewPage = (item) => {
+    if (!selectedOrder?.id || !item?.id) {
       return
     }
 
-    setSavingReview(true)
-
-    try {
-      await createReview({
-        ...payload,
-        orderId: selectedOrder.id,
-        orderItemId: item.id,
-        productId: item.productId,
-        variantId: item.variantId || undefined,
-      })
-      successToast('Review submitted successfully.')
-
-      if (selectedOrder?.id) {
-        setSelectedOrderReviewContext(await loadReviewContext(selectedOrder.id))
-      }
-
-      handleCloseReviewDialog()
-    } catch (error) {
-      errorToast(error.message || 'Failed to save review.')
-    } finally {
-      setSavingReview(false)
-    }
+    closeOrderDetails()
+    navigate(`/profile/reviews/write/${selectedOrder.id}/${item.id}`)
   }
 
   return (
@@ -292,21 +250,13 @@ function Order() {
         isMobile={isMobile}
         loading={loadingDetails}
         onClose={closeOrderDetails}
-        onOpenReview={handleOpenReviewDialog}
+        onOpenReview={handleOpenReviewPage}
         onRetryPayment={handleRetryPayment}
         onViewProduct={handleViewProduct}
         open={detailsOpen}
         order={selectedOrder}
         reviewContext={selectedOrderReviewContext}
         retrying={retryingOrderId === selectedOrder?.id}
-      />
-
-      <ReviewFormDialog
-        item={reviewDialogState.item}
-        onClose={handleCloseReviewDialog}
-        onSubmit={handleSubmitReview}
-        open={reviewDialogState.open}
-        saving={savingReview}
       />
     </Stack>
   )
