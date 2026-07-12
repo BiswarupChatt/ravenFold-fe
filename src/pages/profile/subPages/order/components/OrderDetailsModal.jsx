@@ -145,7 +145,33 @@ function TotalRow({ label, value, strong = false }) {
   )
 }
 
-function OrderItemRow({ isMobile, item, onViewProduct }) {
+function ReviewActionBlock({ item, onOpenReview, reviewContext }) {
+  const eligibility = reviewContext?.eligibilityByOrderItemId?.[item.id] || null
+  const review = reviewContext?.reviewsByOrderItemId?.[item.id] || eligibility?.review || null
+
+  if (review) {
+    return null
+  }
+
+  if (!eligibility?.eligible) {
+    return null
+  }
+
+  return (
+    <Stack alignItems="flex-start" spacing={0.8} sx={{ mt: 1.1 }}>
+      <AppButton
+        onClick={() => onOpenReview?.(item)}
+        size="small"
+        type="button"
+        variant="contained"
+      >
+        Write Review
+      </AppButton>
+    </Stack>
+  )
+}
+
+function OrderItemRow({ isMobile, item, onOpenReview, onViewProduct, reviewContext }) {
   const productPath = getProductPath(item)
 
   return (
@@ -252,6 +278,12 @@ function OrderItemRow({ isMobile, item, onViewProduct }) {
             <Typography color="text.secondary" sx={{ fontSize: '0.84rem' }}>
               {Number(item.quantity || 0).toLocaleString('en-IN')} x {formatPrice(item.priceAtTime)}
             </Typography>
+
+            <ReviewActionBlock
+              item={item}
+              onOpenReview={onOpenReview}
+              reviewContext={reviewContext}
+            />
           </Stack>
         </Stack>
 
@@ -274,10 +306,12 @@ function OrderDetailsModal({
   isMobile,
   loading,
   onClose,
+  onOpenReview,
   onRetryPayment,
   onViewProduct,
   open,
   order,
+  reviewContext = null,
   retrying = false,
 }) {
   const orderItems = Array.isArray(order?.items) ? order.items : []
@@ -410,7 +444,9 @@ function OrderDetailsModal({
                     isMobile={isMobile}
                     item={item}
                     key={item.id}
+                    onOpenReview={onOpenReview}
                     onViewProduct={onViewProduct}
+                    reviewContext={reviewContext}
                   />
                 ))}
               </Stack>

@@ -11,10 +11,12 @@ import PageIntro from '../../../components/PageIntro.jsx'
 import useScreenSize from '../../../hooks/useScreenSize.js'
 import { getApiErrorMessage } from '../../../services/apiClient.js'
 import { getProduct, getProductVariants } from '../../../services/productApi.js'
+import { fetchProductReviewSummary, fetchProductReviews } from '../../../services/reviewApi.js'
 import { errorToast } from '../../../services/toast.js'
 import Breadcrumb from './components/Breadcrumb.jsx'
 import Gallery from './components/Gallery.jsx'
 import Info from './components/Info.jsx'
+import ProductReviewsSection from './components/sections/ProductReviewsSection.jsx'
 
 function ProductDetails() {
   const { productIdOrSlug } = useParams()
@@ -23,6 +25,12 @@ function ProductDetails() {
   const [variants, setVariants] = useState([])
   const [loading, setLoading] = useState(true)
   const [pageError, setPageError] = useState('')
+  const [reviewSummary, setReviewSummary] = useState(null)
+  const [productReviews, setProductReviews] = useState([])
+  const [reviewPagination, setReviewPagination] = useState(null)
+  const [reviewLoading, setReviewLoading] = useState(false)
+  const [reviewPage, setReviewPage] = useState(1)
+  const [reviewRatingFilter, setReviewRatingFilter] = useState('')
   const pagePaddingY = isDesktop ? 8 : isTab ? 6 : 5
   const detailsGridColumns = isDesktop
     ? 'minmax(0, 1.08fr) minmax(0, 0.92fr)'
@@ -48,6 +56,8 @@ function ProductDetails() {
 
         setProduct(productData)
         setVariants(variantData.items)
+        setReviewPage(1)
+        setReviewRatingFilter('')
       } catch (error) {
         if (!isActive) {
           return
@@ -70,6 +80,52 @@ function ProductDetails() {
       isActive = false
     }
   }, [productIdOrSlug])
+
+  useEffect(() => {
+    if (!product?.id) {
+      return
+    }
+
+    let isActive = true
+
+    const loadReviews = async () => {
+      setReviewLoading(true)
+
+      try {
+        const [summary, reviewList] = await Promise.all([
+          fetchProductReviewSummary(product.id),
+          fetchProductReviews(product.id, {
+            limit: 5,
+            page: reviewPage,
+            rating: reviewRatingFilter || undefined,
+            sortBy: 'newest',
+          }),
+        ])
+
+        if (!isActive) {
+          return
+        }
+
+        setReviewSummary(summary)
+        setProductReviews(Array.isArray(reviewList.reviews) ? reviewList.reviews : [])
+        setReviewPagination(reviewList.pagination || null)
+      } catch (error) {
+        if (isActive) {
+          errorToast(getApiErrorMessage(error))
+        }
+      } finally {
+        if (isActive) {
+          setReviewLoading(false)
+        }
+      }
+    }
+
+    loadReviews()
+
+    return () => {
+      isActive = false
+    }
+  }, [product?.id, reviewPage, reviewRatingFilter])
 
   return (
     <Box sx={{ overflowX: 'hidden', py: pagePaddingY }}>
@@ -110,6 +166,20 @@ function ProductDetails() {
                 <Gallery product={product} variants={variants} />
                 <Info product={product} variants={variants} />
               </Box>
+
+              <ProductReviewsSection
+                loading={reviewLoading}
+                onPageChange={setReviewPage}
+                onRatingFilterChange={(value) => {
+                  setReviewRatingFilter(value)
+                  setReviewPage(1)
+                }}
+                page={reviewPage}
+                ratingFilter={reviewRatingFilter}
+                reviews={productReviews}
+                summary={reviewSummary}
+                totalPages={Number(reviewPagination?.totalPages || 1)}
+              />
             </Stack>
           ) : null}
         </Stack>
