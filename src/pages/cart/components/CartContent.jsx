@@ -121,6 +121,7 @@ function CartContent({ layout = 'page', onNavigate }) {
       return
     }
 
+    setRejectedCoupon(null)
     setCouponLoading(true)
 
     try {
@@ -198,6 +199,7 @@ function CartContent({ layout = 'page', onNavigate }) {
         disabled={isBusy}
         isAuthenticated={isAuthenticated}
         loading={couponLoading}
+        onDraftChange={() => setRejectedCoupon(null)}
         productDiscountAmount={cartSummary.productDiscountAmount}
         rejectedCoupon={rejectedCoupon}
         onApply={handleApplyCoupon}

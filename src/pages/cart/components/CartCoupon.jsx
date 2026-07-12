@@ -8,6 +8,7 @@ function CartCoupon({
   disabled = false,
   isAuthenticated = false,
   loading = false,
+  onDraftChange,
   productDiscountAmount = 0,
   rejectedCoupon = null,
   onApply,
@@ -54,7 +55,10 @@ function CartCoupon({
           <InputBase
             fullWidth
             disabled={disabled || !isAuthenticated}
-            onChange={(e) => setDraftCode(e.target.value.toUpperCase())}
+            onChange={(e) => {
+              setDraftCode(e.target.value.toUpperCase())
+              onDraftChange?.()
+            }}
             placeholder={isAuthenticated ? 'Enter coupon code' : 'Sign in to apply coupons'}
             sx={{
               fontSize: '0.94rem',
