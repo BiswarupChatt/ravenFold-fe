@@ -34,3 +34,27 @@ export const loginWithFacebook = async (accessToken) => {
 
   return unwrapAuthResponse(response)
 }
+
+export const requestPasswordReset = async ({ email }) => {
+  const response = await apiClient.post('/auth/request-password-reset', {
+    email,
+  })
+
+  return response.data?.data || {
+    delivery: 'log',
+    message:
+      response.data?.message ||
+      'If an account exists for this email, a reset link will be sent.',
+  }
+}
+
+export const resetPassword = async ({ token, newPassword }) => {
+  const response = await apiClient.post('/auth/reset-password', {
+    token,
+    newPassword,
+  })
+
+  return response.data?.data || {
+    message: response.data?.message || 'Password reset successfully.',
+  }
+}

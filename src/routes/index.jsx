@@ -4,6 +4,7 @@ import withAuthRequired from '../hoc/withAuthRequired.jsx'
 const Blog = lazy(() => import('../pages/Blog.jsx'))
 const MainLayout = lazy(() => import('../layouts/MainLayout.jsx'))
 const Contacts = lazy(() => import('../pages/Contacts.jsx'))
+const ForgotPassword = lazy(() => import('../pages/ForgotPassword.jsx'))
 const Home = lazy(() => import('../pages/Home.jsx'))
 const NotFound = lazy(() => import('../pages/NotFound.jsx'))
 const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy.jsx'))
@@ -14,6 +15,7 @@ const Order = lazy(() => import('../pages/profile/subPages/order/Order.jsx'))
 const Cart = lazy(() => import('../pages/cart/Cart.jsx'))
 const Checkout = lazy(() => import('../pages/checkout/Checkout.jsx'))
 const Reviews = lazy(() => import('../pages/profile/subPages/reviews/Reviews.jsx'))
+const ResetPassword = lazy(() => import('../pages/ResetPassword.jsx'))
 const WriteReview = lazy(() => import('../pages/profile/subPages/reviews/WriteReview.jsx'))
 const Wishlist = lazy(() => import('../pages/profile/subPages/wishlist/Wishlist.jsx'))
 const ReturnsRefunds = lazy(() => import('../pages/ReturnsRefunds.jsx'))
@@ -49,6 +51,8 @@ const routes = [
       },
       { path: 'cart', element: <Cart /> },
       { path: 'checkout', element: <ProtectedCheckout /> },
+      { path: 'forgot-password', element: <ForgotPassword /> },
+      { path: 'reset-password', element: <ResetPassword /> },
       { path: 'wishlist', element: <Navigate replace to="/profile/wishlist" /> },
       { path: 'terms-and-conditions', element: <TermsConditions /> },
       { path: 'privacy-policy', element: <PrivacyPolicy /> },

@@ -140,13 +140,6 @@ export const openPaymentCheckout = async (session) => {
     return openRazorpayCheckout(session)
   }
 
-  if (provider === 'juspay') {
-    throw createPaymentError(
-      'Juspay checkout is not wired in this frontend yet.',
-      PAYMENT_CHECKOUT_ERROR.UNSUPPORTED_PROVIDER,
-    )
-  }
-
   throw createPaymentError(
     `Unsupported payment provider: ${session?.provider || 'unknown'}.`,
     PAYMENT_CHECKOUT_ERROR.UNSUPPORTED_PROVIDER,

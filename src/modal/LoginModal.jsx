@@ -1,8 +1,9 @@
 import FacebookIcon from '@mui/icons-material/Facebook'
 import GoogleIcon from '@mui/icons-material/Google'
-import { Alert, Divider, Stack } from '@mui/material'
+import { Alert, Divider, Link, Stack } from '@mui/material'
 import { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { Link as RouterLink } from 'react-router-dom'
 import AppButton from '../components/AppButton.jsx'
 import AppInput from '../components/AppInput.jsx'
 import AppModal from '../components/AppModal.jsx'
@@ -244,6 +245,16 @@ function LoginModal({ open, onClose, onLoginSuccess }) {
           value={credentials.password}
           onChange={handleFieldChange('password')}
         />
+
+        <Link
+          component={RouterLink}
+          onClick={handleClose}
+          sx={{ alignSelf: 'flex-end', fontSize: '0.85rem', fontWeight: 600 }}
+          to="/forgot-password"
+          underline="hover"
+        >
+          Forgot password?
+        </Link>
 
         <AppButton
           disabled={Boolean(providerLoading)}
