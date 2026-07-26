@@ -6,6 +6,7 @@ import {
   Checkbox,
   Collapse,
   FormControlLabel,
+  MenuItem,
   Paper,
   Stack,
   TextField,
@@ -63,6 +64,46 @@ const billingSectionSx = {
   boxShadow: 'none',
   overflow: 'hidden',
 }
+
+const GST_STATE_OPTIONS = [
+  'Andaman and Nicobar Islands',
+  'Andhra Pradesh',
+  'Arunachal Pradesh',
+  'Assam',
+  'Bihar',
+  'Chandigarh',
+  'Chhattisgarh',
+  'Dadra and Nagar Haveli and Daman and Diu',
+  'Delhi',
+  'Goa',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jammu and Kashmir',
+  'Jharkhand',
+  'Karnataka',
+  'Kerala',
+  'Ladakh',
+  'Lakshadweep',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Odisha',
+  'Other Territory',
+  'Puducherry',
+  'Punjab',
+  'Rajasthan',
+  'Sikkim',
+  'Tamil Nadu',
+  'Telangana',
+  'Tripura',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal',
+]
 
 function CheckoutDetailsPanel({
   billing,
@@ -244,8 +285,12 @@ function CheckoutDetailsPanel({
               </Stack>
               <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5}>
                 <TextField label="Trade name" name="tradeName" value={gstDetails.tradeName} onChange={onGstDetailsChange} fullWidth size="small" />
-                <TextField label="State" name="state" value={gstDetails.state} onChange={onGstDetailsChange} fullWidth size="small" />
-                <TextField label="State code" name="stateCode" value={gstDetails.stateCode} onChange={onGstDetailsChange} required fullWidth size="small" inputProps={{ inputMode: 'numeric', maxLength: 2 }} />
+                <TextField select label="State" name="state" value={gstDetails.state} onChange={onGstDetailsChange} required fullWidth size="small">
+                  <MenuItem value="">Select state</MenuItem>
+                  {GST_STATE_OPTIONS.map((state) => (
+                    <MenuItem key={state} value={state}>{state}</MenuItem>
+                  ))}
+                </TextField>
               </Stack>
               <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5}>
                 <TextField label="City" name="city" value={gstDetails.city} onChange={onGstDetailsChange} fullWidth size="small" />

@@ -36,7 +36,6 @@ function Checkout() {
     gstin: '',
     pincode: '',
     state: '',
-    stateCode: '',
     tradeName: '',
   })
   const checkoutDisabled =
@@ -56,20 +55,19 @@ function Checkout() {
 
     if (gstEnabled) {
       const gstin = gstDetails.gstin.trim().toUpperCase()
-      const stateCode = gstDetails.stateCode.trim()
 
       if (!gstDetails.businessName.trim()) {
         errorToast('Business name is required for GST invoice.')
         return null
       }
 
-      if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(gstin)) {
-        errorToast('Enter a valid GSTIN.')
+      if (!gstDetails.state.trim()) {
+        errorToast('State is required for GST invoice.')
         return null
       }
 
-      if (!/^\d{2}$/.test(stateCode) || gstin.slice(0, 2) !== stateCode) {
-        errorToast('GSTIN state code must match the billing state code.')
+      if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(gstin)) {
+        errorToast('Enter a valid GSTIN.')
         return null
       }
     }
@@ -94,7 +92,7 @@ function Checkout() {
         ...gstDetails,
         businessName: gstDetails.businessName.trim(),
         gstin: gstDetails.gstin.trim().toUpperCase(),
-        stateCode: gstDetails.stateCode.trim(),
+        state: gstDetails.state.trim(),
         tradeName: gstDetails.tradeName.trim(),
       }
     }
