@@ -1,4 +1,5 @@
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined'
+import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined'
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined'
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined'
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined'
@@ -13,6 +14,8 @@ import {
 import AppModal from '../../../../../components/AppModal.jsx'
 import AppButton from '../../../../../components/AppButton.jsx'
 import { formatPrice } from '../../../../../utils/utils.js'
+import { downloadCustomerInvoice } from '../../../../../services/orderApi.js'
+import { errorToast } from '../../../../../services/toast.js'
 import {
   canRetryPayment,
   formatAddressLines,
@@ -319,6 +322,8 @@ function OrderDetailsModal({
   const progress = getOrderProgressCopy(order || {})
   const retryAllowed = canRetryPayment(order || {})
   const StatusIcon = customerStatus.kind === 'payment' ? PaymentsOutlinedIcon : LocalShippingOutlinedIcon
+  const invoice = order?.invoice || {}
+  const hasInvoice = Boolean(invoice.number)
 
   return (
     <AppModal
@@ -411,6 +416,24 @@ function OrderDetailsModal({
                     Retry Payment
                   </AppButton>
                 ) : null}
+                {hasInvoice ? (
+                  <AppButton
+                    onClick={async () => {
+                      try {
+                        await downloadCustomerInvoice(order.id, invoice.number)
+                      } catch (error) {
+                        errorToast(error.message || 'Failed to download invoice.')
+                      }
+                    }}
+                    size="small"
+                    startIcon={<DownloadOutlinedIcon />}
+                    sx={{ minWidth: isMobile ? '100%' : 170 }}
+                    type="button"
+                    variant="outlined"
+                  >
+                    GST Invoice
+                  </AppButton>
+                ) : null}
                 <StatusBadge Icon={StatusIcon} meta={customerStatus} />
               </Stack>
             </Box>
@@ -469,6 +492,14 @@ function OrderDetailsModal({
                 Payment summary
               </Typography>
               <Stack spacing={0.8}>
+                {hasInvoice ? (
+                  <>
+                    <TotalRow label="Invoice" value={invoice.number} />
+                    <TotalRow label="Invoice date" value={invoice.date ? new Date(invoice.date).toLocaleDateString('en-IN') : '-'} />
+                    <TotalRow label="Invoice type" value={(order.invoiceType || 'b2c').toUpperCase()} />
+                    <Divider sx={{ my: 0.3 }} />
+                  </>
+                ) : null}
                 <TotalRow label="MRP" value={formatPrice(order.totalMrp)} />
                 <TotalRow label="Subtotal" value={formatPrice(order.subtotal)} />
                 <TotalRow label="Bag discount" value={`-${formatPrice(order.bagDiscount)}`} />
@@ -477,6 +508,15 @@ function OrderDetailsModal({
                   <TotalRow label="Shipping discount" value={`-${formatPrice(order.shippingDiscountAmount)}`} />
                 ) : null}
                 <TotalRow label="Shipping" value={formatPrice(order.shippingCharge)} />
+                {(order.taxTotals?.totalTaxableValue || 0) > 0 ? (
+                  <>
+                    <TotalRow label="Taxable value" value={formatPrice(order.taxTotals.totalTaxableValue)} />
+                    <TotalRow label="CGST" value={formatPrice(order.taxTotals.totalCgst)} />
+                    <TotalRow label="SGST" value={formatPrice(order.taxTotals.totalSgst)} />
+                    <TotalRow label="IGST" value={formatPrice(order.taxTotals.totalIgst)} />
+                    <TotalRow label="Total GST" value={formatPrice(order.taxTotals.totalGst)} />
+                  </>
+                ) : null}
                 {Array.isArray(order.appliedPromotions) && order.appliedPromotions.length ? (
                   <>
                     <Divider sx={{ my: 0.3 }} />

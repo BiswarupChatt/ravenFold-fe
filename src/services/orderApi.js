@@ -56,3 +56,22 @@ export const fetchCustomerOrder = async (orderId) => {
     throw new Error(getApiErrorMessage(error), { cause: error })
   }
 }
+
+export const downloadCustomerInvoice = async (orderId, invoiceNumber = 'gst-invoice') => {
+  try {
+    const response = await apiClient.get(`/gst/invoices/me/${orderId}/download`, {
+      responseType: 'blob',
+    })
+    const blobUrl = URL.createObjectURL(response.data)
+    const link = document.createElement('a')
+
+    link.href = blobUrl
+    link.download = `${invoiceNumber || 'gst-invoice'}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(blobUrl)
+  } catch (error) {
+    throw new Error(getApiErrorMessage(error), { cause: error })
+  }
+}

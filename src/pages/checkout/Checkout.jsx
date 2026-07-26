@@ -27,6 +27,18 @@ function Checkout() {
   const billing = useBillingAddress()
   const [checkoutOrder, setCheckoutOrder] = useState(null)
   const [paymentLoading, setPaymentLoading] = useState(false)
+  const [gstEnabled, setGstEnabled] = useState(false)
+  const [gstDetails, setGstDetails] = useState({
+    businessName: '',
+    city: '',
+    contactNumber: '',
+    email: '',
+    gstin: '',
+    pincode: '',
+    state: '',
+    stateCode: '',
+    tradeName: '',
+  })
   const checkoutDisabled =
     shipping.addressLoading ||
     shipping.isPincodeLookupLoading ||
@@ -42,6 +54,26 @@ function Checkout() {
       return null
     }
 
+    if (gstEnabled) {
+      const gstin = gstDetails.gstin.trim().toUpperCase()
+      const stateCode = gstDetails.stateCode.trim()
+
+      if (!gstDetails.businessName.trim()) {
+        errorToast('Business name is required for GST invoice.')
+        return null
+      }
+
+      if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(gstin)) {
+        errorToast('Enter a valid GSTIN.')
+        return null
+      }
+
+      if (!/^\d{2}$/.test(stateCode) || gstin.slice(0, 2) !== stateCode) {
+        errorToast('GSTIN state code must match the billing state code.')
+        return null
+      }
+    }
+
     const shippingAddress = await shipping.continueWithAddress()
 
     if (!shippingAddress) {
@@ -55,6 +87,16 @@ function Checkout() {
 
     if (!billing.sameAsShipping) {
       orderPayload.billingAddress = trimAddressPayload(billing.formState)
+    }
+
+    if (gstEnabled) {
+      orderPayload.gstDetails = {
+        ...gstDetails,
+        businessName: gstDetails.businessName.trim(),
+        gstin: gstDetails.gstin.trim().toUpperCase(),
+        stateCode: gstDetails.stateCode.trim(),
+        tradeName: gstDetails.tradeName.trim(),
+      }
     }
 
     const createdOrder = await createCheckoutOrder(orderPayload)
@@ -125,6 +167,21 @@ function Checkout() {
           >
             <CheckoutDetailsPanel
               billing={billing}
+              gstDetails={gstDetails}
+              gstEnabled={gstEnabled}
+              onGstDetailsChange={(event) => {
+                const { name, value } = event.target
+
+                setCheckoutOrder(null)
+                setGstDetails((current) => ({
+                  ...current,
+                  [name]: name === 'gstin' ? value.toUpperCase() : value,
+                }))
+              }}
+              onGstEnabledChange={(event) => {
+                setCheckoutOrder(null)
+                setGstEnabled(event.target.checked)
+              }}
               shipping={shipping}
             />
 
