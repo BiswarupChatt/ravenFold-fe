@@ -30,11 +30,18 @@ const genderOptions = [
 
 const profileFieldDefinitions = [
     {
-        autoComplete: 'name',
-        label: 'Full Name',
-        name: 'name',
-        placeholder: 'Add full name',
+        autoComplete: 'given-name',
+        label: 'First Name',
+        name: 'firstName',
+        placeholder: 'Add first name',
         required: true,
+        type: 'text',
+    },
+    {
+        autoComplete: 'family-name',
+        label: 'Last Name',
+        name: 'lastName',
+        placeholder: 'Add last name',
         type: 'text',
     },
     {
@@ -56,11 +63,9 @@ const profileFieldDefinitions = [
     { label: 'Date of Birth', name: 'dob', type: 'date' },
 ]
 
-const fieldOrder = ['name', 'gender', 'dob', 'email', 'phone']
+const fieldOrder = ['firstName', 'lastName', 'gender', 'dob', 'email', 'phone']
 
-const fieldLayout = {
-    name: { gridColumn: '1 / -1' },
-}
+const fieldLayout = {}
 
 const formFieldSx = {
     '& .MuiInputBase-input': {
@@ -147,15 +152,25 @@ const trimValue = (value) => (
     typeof value === 'string' ? value.trim() : value
 )
 
+const splitName = (name = '') => {
+    const parts = String(name || '').trim().split(/\s+/).filter(Boolean)
+
+    return {
+        firstName: parts[0] || '',
+        lastName: parts.slice(1).join(' '),
+    }
+}
+
 const buildProfileFields = (user = {}) => {
     const sourceUser = user || {}
+    const fallbackNameParts = splitName(sourceUser.name)
 
     return profileFieldDefinitions.map((field) => ({
         ...field,
         value:
             field.name === 'gender'
                 ? normalizeGender(sourceUser.gender)
-                : sourceUser[field.name] || '',
+                : sourceUser[field.name] || fallbackNameParts[field.name] || '',
     }))
 }
 
@@ -187,11 +202,11 @@ const validateEmail = (value) => {
 }
 
 const validateProfileFields = (fields) => {
-    const name = getFieldValue(getFieldByName(fields, 'name')).trim()
+    const firstName = getFieldValue(getFieldByName(fields, 'firstName')).trim()
     const email = getFieldValue(getFieldByName(fields, 'email'))
 
     return {
-        name: name ? '' : 'Full name is required.',
+        firstName: firstName ? '' : 'First name is required.',
         email: validateEmail(email),
     }
 }
