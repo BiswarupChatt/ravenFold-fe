@@ -28,24 +28,21 @@ function ReviewFormCard({
   saving = false,
 }) {
   const [form, setForm] = useState(EMPTY_FORM)
-  const [imageUrls, setImageUrls] = useState([])
   const [pendingFiles, setPendingFiles] = useState([])
   const [formError, setFormError] = useState('')
   const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
     setForm(EMPTY_FORM)
-    setImageUrls([])
     setPendingFiles([])
     setFormError('')
   }, [item?.id])
 
   const previewImages = useMemo(() => {
     return [
-      ...imageUrls.map((url) => ({ kind: 'existing', url })),
       ...pendingFiles.map((file) => ({ kind: 'pending', url: URL.createObjectURL(file), name: file.name })),
     ]
-  }, [imageUrls, pendingFiles])
+  }, [pendingFiles])
 
   useEffect(() => {
     return () => {
@@ -66,10 +63,6 @@ function ReviewFormCard({
 
     setPendingFiles((current) => [...current, ...nextFiles].slice(0, 5))
     event.target.value = ''
-  }
-
-  const handleRemoveExistingImage = (targetUrl) => {
-    setImageUrls((current) => current.filter((url) => url !== targetUrl))
   }
 
   const handleRemovePendingFile = (targetName) => {
@@ -104,11 +97,11 @@ function ReviewFormCard({
     setUploading(true)
 
     try {
-      const uploadedUrls = await uploadReviewImages(pendingFiles)
+      const uploadedImages = await uploadReviewImages(pendingFiles)
 
       await onSubmit?.({
         comment: form.comment.trim(),
-        images: [...imageUrls, ...uploadedUrls],
+        images: uploadedImages,
         rating: Number(form.rating),
         title: form.title.trim(),
       })
@@ -210,11 +203,7 @@ function ReviewFormCard({
                   sx={{ display: 'block', height: 80, objectFit: 'cover', width: 80 }}
                 />
                 <IconButton
-                  onClick={() => (
-                    image.kind === 'existing'
-                      ? handleRemoveExistingImage(image.url)
-                      : handleRemovePendingFile(image.name)
-                  )}
+                  onClick={() => handleRemovePendingFile(image.name)}
                   size="small"
                   sx={{
                     bgcolor: 'rgba(17, 24, 39, 0.7)',

@@ -11,7 +11,7 @@ import {
 import { useState } from 'react'
 import AppOverlayDialog from '../../../../components/AppOverlayDialog.jsx'
 import useResponsiveView from '../../../../hooks/useResponsiveView.js'
-import { getOptionKey, getValueKey, getValueLabel } from './utils.js'
+import { getImageUrl, getOptionKey, getValueKey, getValueLabel } from './utils.js'
 
 function Options({
   groups = [],
@@ -36,7 +36,7 @@ function Options({
           const displayStyle = group.displayStyle || (group.optionType === 'color' ? 'swatch' : 'button')
           const shouldRenderSwatches = group.optionType === 'color' || displayStyle === 'swatch'
           const shouldRenderDropdown = displayStyle === 'dropdown'
-          const sizeGuideUrl = group.optionType === 'size' ? group.sizeGuideImageUrl : ''
+          const sizeGuideUrl = group.optionType === 'size' ? getImageUrl(group.sizeGuideImageAsset) : ''
 
           return (
             <Stack key={optionKey} spacing={1.15}>

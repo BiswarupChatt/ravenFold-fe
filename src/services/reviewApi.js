@@ -1,4 +1,5 @@
 import apiClient from './apiClient.js'
+import { uploadImages } from './uploadApi.js'
 
 const unwrapPayload = (response, fallbackMessage) => {
   const data = response.data?.data
@@ -52,53 +53,6 @@ export const deleteReview = async (reviewId) => {
   return unwrapPayload(response, 'Invalid review delete response.')
 }
 
-const getReviewImageUploadSignature = async () => {
-  const response = await apiClient.post('/reviews/uploads/cloudinary-signature', {})
-
-  return unwrapPayload(response, 'Invalid review upload signature response.')
-}
-
 export const uploadReviewImages = async (files = []) => {
-  const fileList = Array.from(files)
-
-  if (fileList.length === 0) {
-    return []
-  }
-
-  const {
-    apiKey,
-    cloudName,
-    params = {},
-    signature,
-  } = await getReviewImageUploadSignature()
-
-  if (!apiKey || !cloudName || !signature) {
-    throw new Error('Review image upload signature is incomplete.')
-  }
-
-  return Promise.all(fileList.map(async (file) => {
-    const formData = new FormData()
-
-    formData.append('file', file)
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== null && value !== undefined && value !== '') {
-        formData.append(key, value)
-      }
-    })
-    formData.append('api_key', apiKey)
-    formData.append('signature', signature)
-
-    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-      method: 'POST',
-      body: formData,
-    })
-
-    if (!response.ok) {
-      throw new Error('Review image upload failed.')
-    }
-
-    const payload = await response.json()
-
-    return payload.secure_url
-  }))
+  return uploadImages(files, 'review')
 }

@@ -75,7 +75,7 @@ export const buildOptionGroups = (product = {}, variants = []) => {
         id: option.optionId || option.optionName,
         name: option.optionName || 'Option',
         optionType: 'other',
-        sizeGuideImageUrl: '',
+        sizeGuideImageAsset: null,
         values: [],
       }
 

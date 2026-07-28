@@ -10,6 +10,7 @@ import {
 } from '@mui/material'
 import AppButton from '../../../../../components/AppButton.jsx'
 import { formatReviewDate } from '../../../../profile/subPages/reviews/reviewUtils.js'
+import { getImageUrl } from '../utils.js'
 
 const RATING_FILTER_OPTIONS = [
   { label: 'All ratings', value: '' },
@@ -178,7 +179,10 @@ function ProductReviewsSection({
 
                   {Array.isArray(review.images) && review.images.length > 0 ? (
                     <Stack direction="row" flexWrap="wrap" gap={1}>
-                      {review.images.map((imageUrl) => (
+                      {review.images.map((image) => {
+                        const imageUrl = getImageUrl(image)
+
+                        return imageUrl ? (
                         <Box
                           alt="Customer review"
                           component="img"
@@ -193,7 +197,8 @@ function ProductReviewsSection({
                             width: 80,
                           }}
                         />
-                      ))}
+                        ) : null
+                      })}
                     </Stack>
                   ) : null}
 
