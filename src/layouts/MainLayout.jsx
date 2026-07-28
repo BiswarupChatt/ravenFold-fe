@@ -2,6 +2,7 @@ import { Box } from '@mui/material'
 import { Outlet, useLocation } from 'react-router-dom'
 import useScreenSize from '../hooks/useScreenSize.js'
 import Footer from './footer/Footer.jsx'
+import AnnouncementBanner from './navbar/AnnouncementBanner.jsx'
 import Navbar from './navbar/Navbar.jsx'
 
 function MainLayout() {
@@ -18,6 +19,7 @@ function MainLayout() {
         pb: isDesktop ? 0 : 8,
       }}
     >
+      <AnnouncementBanner />
       <Navbar key={pathname} />
 
       <Box component="main" sx={{ flex: 1 }}>
