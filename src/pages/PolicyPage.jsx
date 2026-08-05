@@ -6,6 +6,7 @@ import useScreenSize from '../hooks/useScreenSize.js'
 import { getApiErrorMessage } from '../services/apiClient.js'
 import { getPublishedPolicy } from '../services/policyApi.js'
 import { extractPlainTextFromHtml, sanitizeHtmlForRender } from '../utils/safeHtml.js'
+import { formatDate } from '../utils/utils.js'
 
 const DEFAULT_SEO_DESCRIPTION = 'Read Raven Fold policy details and latest published updates.'
 
@@ -20,24 +21,6 @@ const setMetaDescription = (description) => {
   }
 
   metaDescription.setAttribute('content', content)
-}
-
-const formatDate = (value) => {
-  if (!value) {
-    return ''
-  }
-
-  const date = new Date(value)
-
-  if (Number.isNaN(date.getTime())) {
-    return ''
-  }
-
-  return new Intl.DateTimeFormat(undefined, {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(date)
 }
 
 function PolicyPage() {
