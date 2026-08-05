@@ -7,7 +7,7 @@ const Contacts = lazy(() => import('../pages/Contacts.jsx'))
 const ForgotPassword = lazy(() => import('../pages/ForgotPassword.jsx'))
 const Home = lazy(() => import('../pages/Home.jsx'))
 const NotFound = lazy(() => import('../pages/NotFound.jsx'))
-const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy.jsx'))
+const PolicyPage = lazy(() => import('../pages/PolicyPage.jsx'))
 const Profile = lazy(() => import('../pages/profile/Profile.jsx'))
 const Address = lazy(() => import('../pages/profile/subPages/address/Address.jsx'))
 const Info = lazy(() => import('../pages/profile/subPages/info/Info.jsx'))
@@ -18,9 +18,6 @@ const Reviews = lazy(() => import('../pages/profile/subPages/reviews/Reviews.jsx
 const ResetPassword = lazy(() => import('../pages/ResetPassword.jsx'))
 const WriteReview = lazy(() => import('../pages/profile/subPages/reviews/WriteReview.jsx'))
 const Wishlist = lazy(() => import('../pages/profile/subPages/wishlist/Wishlist.jsx'))
-const ReturnsRefunds = lazy(() => import('../pages/ReturnsRefunds.jsx'))
-const ShippingReturns = lazy(() => import('../pages/ShippingReturns.jsx'))
-const TermsConditions = lazy(() => import('../pages/TermsConditions.jsx'))
 const ProductDetails = lazy(() => import('../pages/shop/product/ProductDetails.jsx'))
 const Shop = lazy(() => import('../pages/shop/catalog/Shop.jsx'))
 
@@ -54,10 +51,8 @@ const routes = [
       { path: 'forgot-password', element: <ForgotPassword /> },
       { path: 'reset-password', element: <ResetPassword /> },
       { path: 'wishlist', element: <Navigate replace to="/profile/wishlist" /> },
-      { path: 'terms-and-conditions', element: <TermsConditions /> },
-      { path: 'privacy-policy', element: <PrivacyPolicy /> },
-      { path: 'shipping-and-returns', element: <ShippingReturns /> },
-      { path: 'returns-and-refunds', element: <ReturnsRefunds /> },
+      { path: 'policies/:slug', element: <PolicyPage /> },
+      { path: ':slug', element: <PolicyPage /> },
       { path: '*', element: <NotFound /> },
     ],
   },

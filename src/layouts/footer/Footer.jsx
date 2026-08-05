@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
@@ -6,19 +7,13 @@ import { Box, Container, Divider, Link, Stack, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import brandLogo from '../../assets/Logo_Main-05.png'
 import useScreenSize from '../../hooks/useScreenSize.js'
+import { getPublishedPolicies } from '../../services/policyApi.js'
 
 const quickLinks = [
     { label: 'Home', to: '/' },
     { label: 'Shop', to: '/shop' },
     { label: 'Blog', to: '/blog' },
     { label: 'Contact', to: '/contacts' },
-]
-
-const legalLinks = [
-    { label: 'Terms & Conditions', to: '/terms-and-conditions' },
-    { label: 'Privacy Policy', to: '/privacy-policy' },
-    { label: 'Shipping & Returns', to: '/shipping-and-returns' },
-    { label: 'Returns & Refunds', to: '/returns-and-refunds' },
 ]
 
 const socialLinks = [
@@ -104,12 +99,40 @@ function FooterLinkGroup({ title, links }) {
 
 function Footer() {
     const { isDesktop, isMobile, isTab } = useScreenSize()
+    const [legalLinks, setLegalLinks] = useState([])
     const currentYear = new Date().getFullYear()
     const gridTemplateColumns = isDesktop
         ? '1.5fr 1fr 1fr'
         : isTab
             ? 'repeat(2, minmax(0, 1fr))'
             : '1fr'
+
+    useEffect(() => {
+        let ignore = false
+
+        getPublishedPolicies()
+            .then((policies) => {
+                if (ignore) return
+
+                setLegalLinks(
+                    policies
+                        .filter((policy) => policy?.slug && policy?.title)
+                        .map((policy) => ({
+                            label: policy.footerLabel || policy.title,
+                            to: `/${policy.slug}`,
+                        }))
+                )
+            })
+            .catch(() => {
+                if (!ignore) {
+                    setLegalLinks([])
+                }
+            })
+
+        return () => {
+            ignore = true
+        }
+    }, [])
 
     return (
         <>
@@ -174,7 +197,9 @@ function Footer() {
                         </Stack>
 
                         <FooterLinkGroup links={quickLinks} title="Quick Links" />
-                        <FooterLinkGroup links={legalLinks} title="Legal" />
+                        {legalLinks.length > 0 ? (
+                            <FooterLinkGroup links={legalLinks} title="Legal" />
+                        ) : null}
                     </Box>
 
                     <Divider
