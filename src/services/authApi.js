@@ -19,6 +19,16 @@ export const loginWithPassword = async ({ email, password }) => {
   return unwrapAuthResponse(response)
 }
 
+export const registerWithPassword = async ({ email, password, name }) => {
+  const response = await apiClient.post('/auth/register', {
+    email,
+    name,
+    password,
+  })
+
+  return unwrapAuthResponse(response)
+}
+
 export const loginWithGoogle = async (accessToken) => {
   const response = await apiClient.post('/auth/google', {
     accessToken,
