@@ -100,9 +100,6 @@ function PolicyPage() {
         {!loading && !error && policy ? (
           <>
             <PageIntro
-              description={[
-                policy.updatedAt ? `Last updated ${formatDate(policy.updatedAt)}` : '',
-              ].filter(Boolean).join(' - ')}
               eyebrow="Policy"
               spacing={2}
               sx={{ maxWidth: 780 }}
@@ -167,6 +164,12 @@ function PolicyPage() {
                 </Typography>
               )}
             </Paper>
+
+            {policy.updatedAt ? (
+              <Typography color="text.secondary" textAlign="right" variant="body2">
+                Last updated {formatDate(policy.updatedAt)}
+              </Typography>
+            ) : null}
           </>
         ) : null}
       </Stack>
