@@ -1,5 +1,5 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
-import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded'
+import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import brandLogo from '../assets/Logo_Main-05.png'
 import heroImage from '../assets/hero.png'
 
@@ -109,8 +109,9 @@ function ComingSoon() {
             </Typography>
 
             <Button
-              href="mailto:support@ravenfold.com"
-              startIcon={<MailOutlineRoundedIcon />}
+              href="https://wa.me/917439042753"
+              rel="noreferrer"
+              startIcon={<WhatsAppIcon />}
               sx={{
                 bgcolor: '#191714',
                 color: '#ffffff',
@@ -120,6 +121,7 @@ function ComingSoon() {
                   bgcolor: '#3a332b',
                 },
               }}
+              target="_blank"
               variant="contained"
             >
               Contact Us
