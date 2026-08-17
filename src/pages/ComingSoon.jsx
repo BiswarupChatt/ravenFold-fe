@@ -8,8 +8,8 @@ function ComingSoon() {
     <Box
       component="main"
       sx={{
-        bgcolor: '#111827',
-        color: '#fff',
+        bgcolor: '#f6f0e8',
+        color: '#191714',
         minHeight: '100vh',
         overflow: 'hidden',
         position: 'relative',
@@ -18,24 +18,29 @@ function ComingSoon() {
       <Box
         aria-hidden="true"
         sx={{
-          backgroundImage: `linear-gradient(90deg, rgba(17, 24, 39, 0.94) 0%, rgba(17, 24, 39, 0.72) 44%, rgba(17, 24, 39, 0.3) 100%), url(${heroImage})`,
-          backgroundPosition: { xs: '62% center', md: 'center' },
-          backgroundSize: 'cover',
-          inset: 0,
+          backgroundPosition: { xs: 'center -28px', md: 'center -64px' },
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: { xs: '760px auto', sm: '980px auto', md: '1160px auto', lg: '1320px auto' },
+          height: '100%',
+          left: 0,
           position: 'absolute',
+          right: 0,
+          top: 0,
         }}
       />
 
       <Container
         sx={{
-          minHeight: '100vh',
+          minHeight: '100dvh',
           position: 'relative',
-          py: { xs: 4, md: 6 },
+          py: { xs: 3, md: 4 },
         }}
       >
         <Stack
           sx={{
-            minHeight: 'calc(100vh - 64px)',
+            alignItems: 'center',
+            minHeight: { xs: 'calc(100dvh - 56px)', md: 'calc(100dvh - 72px)' },
+            textAlign: 'center',
           }}
         >
           <Box
@@ -44,70 +49,75 @@ function ComingSoon() {
             alt="Raven Fold"
             sx={{
               display: 'block',
-              filter: 'brightness(0) invert(1)',
-              height: 42,
+              height: { xs: 32, md: 36 },
               objectFit: 'contain',
-              objectPosition: 'left center',
-              width: 190,
+              objectPosition: 'center',
+              width: { xs: 170, md: 198 },
             }}
           />
 
           <Stack
-            spacing={3}
+            spacing={{ xs: 2.1, md: 2.5 }}
             sx={{
+              alignItems: 'center',
               justifyContent: 'center',
-              maxWidth: 620,
-              minHeight: { xs: 'calc(100vh - 170px)', md: 'calc(100vh - 190px)' },
-              py: { xs: 8, md: 10 },
+              maxWidth: 720,
+              mt: { xs: 7, sm: 8, md: 9 },
+              width: '100%',
             }}
           >
             <Typography
               component="p"
               sx={{
-                color: '#f97316',
-                fontSize: '0.78rem',
+                borderBottom: '1px solid rgba(25, 23, 20, 0.35)',
+                borderTop: '1px solid rgba(25, 23, 20, 0.35)',
+                color: '#9a3412',
+                fontSize: { xs: '0.7rem', md: '0.76rem' },
                 fontWeight: 800,
                 letterSpacing: 2.2,
+                lineHeight: 1.1,
+                px: 0.2,
+                py: 0.8,
                 textTransform: 'uppercase',
               }}
             >
-              Coming Soon
+              Opening Soon
             </Typography>
 
             <Typography
               component="h1"
               sx={{
-                fontSize: { xs: '2.7rem', sm: '3.6rem', md: '5rem' },
+                fontSize: { xs: '2.35rem', sm: '3.35rem', md: '4.75rem' },
                 fontWeight: 800,
                 letterSpacing: 0,
                 lineHeight: 0.96,
+                maxWidth: 700,
               }}
             >
-              Raven Fold
+              Carry Better, Very Soon
             </Typography>
 
             <Typography
               sx={{
-                color: 'rgba(255,255,255,0.78)',
-                fontSize: { xs: '1.02rem', md: '1.18rem' },
-                lineHeight: 1.75,
-                maxWidth: 520,
+                color: 'rgba(25, 23, 20, 0.72)',
+                fontSize: { xs: '0.98rem', md: '1.08rem' },
+                lineHeight: 1.65,
+                maxWidth: 600,
               }}
             >
-              A sharper storefront is being prepared. We will be live soon with our carry goods collection.
+              Raven Fold is getting ready to open. Our collection and checkout experience are being finalized before launch.
             </Typography>
 
             <Button
               href="mailto:support@ravenfold.com"
               startIcon={<MailOutlineRoundedIcon />}
               sx={{
-                alignSelf: 'flex-start',
-                bgcolor: '#ffffff',
-                color: '#111827',
+                bgcolor: '#191714',
+                color: '#ffffff',
                 px: 3,
-                py: 1.25,
+                py: 1.1,
                 '&:hover': {
-                  bgcolor: '#f3f4f6',
+                  bgcolor: '#3a332b',
                 },
               }}
               variant="contained"
@@ -118,8 +128,10 @@ function ComingSoon() {
 
           <Typography
             sx={{
-              color: 'rgba(255,255,255,0.58)',
+              color: 'rgba(25, 23, 20, 0.55)',
               fontSize: '0.9rem',
+              mt: 'auto',
+              pt: { xs: 5, md: 6 },
             }}
           >
             Copyright {new Date().getFullYear()} Raven Fold. All rights reserved.
