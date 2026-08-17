@@ -5,8 +5,10 @@ import AuthModalProvider from './context/AuthModalProvider.jsx'
 import ToastProvider from './components/ToastProvider.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
 import useCartSessionSync from './hooks/useCartSessionSync.js'
+import featureFlag from './config/featureFlag.js'
+import ComingSoon from './pages/ComingSoon.jsx'
 
-export default function App() {
+function CommerceApp() {
   useCartSessionSync()
 
   const loadingFallback = (
@@ -32,4 +34,12 @@ export default function App() {
       </ToastProvider>
     </AuthModalProvider>
   )
+}
+
+export default function App() {
+  if (featureFlag.showComingSoonLanding) {
+    return <ComingSoon />
+  }
+
+  return <CommerceApp />
 }
