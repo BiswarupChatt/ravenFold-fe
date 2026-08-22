@@ -1,5 +1,5 @@
 const featureFlag = {
-  showComingSoonLanding: false,
+  showComingSoonLanding: true,
 };
 
 export default featureFlag;
