@@ -32,12 +32,6 @@ function ReviewFormCard({
   const [formError, setFormError] = useState('')
   const [uploading, setUploading] = useState(false)
 
-  useEffect(() => {
-    setForm(EMPTY_FORM)
-    setPendingFiles([])
-    setFormError('')
-  }, [item?.id])
-
   const previewImages = useMemo(() => {
     return [
       ...pendingFiles.map((file) => ({ kind: 'pending', url: URL.createObjectURL(file), name: file.name })),

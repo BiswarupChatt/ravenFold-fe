@@ -1,7 +1,6 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import brandLogo from '../assets/Logo_Main-05.png'
-import heroImage from '../assets/hero.png'
 
 function ComingSoon() {
   return (

@@ -20,21 +20,34 @@ import ProfileIntro from '../../components/ProfileIntro'
 import ReviewFormCard from './ReviewFormCard.jsx'
 import { getEligibilityReasonLabel } from './reviewUtils.js'
 
+const getReviewRequestKey = (orderId, orderItemId) => `${orderId}:${orderItemId}`
+
 function WriteReview() {
   const navigate = useNavigate()
   const { orderId = '', orderItemId = '' } = useParams()
-  const [item, setItem] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [pageError, setPageError] = useState('')
+  const hasValidReviewParams = Boolean(orderId && orderItemId)
+  const requestKey = getReviewRequestKey(orderId, orderItemId)
+  const [reviewTarget, setReviewTarget] = useState({
+    item: null,
+    pageError: '',
+    requestKey: '',
+  })
   const [savingReview, setSavingReview] = useState(false)
+  const isCurrentReviewTarget = reviewTarget.requestKey === requestKey
+  const item = isCurrentReviewTarget ? reviewTarget.item : null
+  const pageError = hasValidReviewParams
+    ? (isCurrentReviewTarget ? reviewTarget.pageError : '')
+    : 'Invalid review link.'
+  const loading = hasValidReviewParams && !isCurrentReviewTarget
 
   useEffect(() => {
+    if (!hasValidReviewParams) {
+      return undefined
+    }
+
     let isActive = true
 
     const loadReviewTarget = async () => {
-      setLoading(true)
-      setPageError('')
-
       try {
         const [eligibility, reviewList] = await Promise.all([
           fetchReviewEligibility({ orderId }),
@@ -47,41 +60,45 @@ function WriteReview() {
         }
 
         if (existingReview) {
-          setPageError('A review has already been submitted for this item.')
+          setReviewTarget({
+            item: null,
+            pageError: 'A review has already been submitted for this item.',
+            requestKey,
+          })
           return
         }
 
         const eligibleItem = (eligibility.items || []).find((entry) => entry.orderItemId === orderItemId) || null
 
         if (!eligibleItem?.eligible) {
-          setPageError(getEligibilityReasonLabel(eligibleItem?.reason, eligibleItem?.reasonMessage))
+          setReviewTarget({
+            item: null,
+            pageError: getEligibilityReasonLabel(eligibleItem?.reason, eligibleItem?.reasonMessage),
+            requestKey,
+          })
           return
         }
 
-        setItem({
-          id: eligibleItem.orderItemId,
-          productId: eligibleItem.productId,
-          productSnapshot: eligibleItem.productSnapshot,
-          variantId: eligibleItem.variantId,
+        setReviewTarget({
+          item: {
+            id: eligibleItem.orderItemId,
+            productId: eligibleItem.productId,
+            productSnapshot: eligibleItem.productSnapshot,
+            variantId: eligibleItem.variantId,
+          },
+          pageError: '',
+          requestKey,
         })
       } catch (error) {
         if (!isActive) {
           return
         }
 
-        setPageError(getApiErrorMessage(error))
-      } finally {
-        if (isActive) {
-          setLoading(false)
-        }
-      }
-    }
-
-    if (!orderId || !orderItemId) {
-      setPageError('Invalid review link.')
-      setLoading(false)
-      return () => {
-        isActive = false
+        setReviewTarget({
+          item: null,
+          pageError: getApiErrorMessage(error),
+          requestKey,
+        })
       }
     }
 
@@ -90,7 +107,7 @@ function WriteReview() {
     return () => {
       isActive = false
     }
-  }, [orderId, orderItemId])
+  }, [hasValidReviewParams, orderId, orderItemId, requestKey])
 
   const handleSubmit = async (payload) => {
     if (!item) {
@@ -156,6 +173,7 @@ function WriteReview() {
           }}
         >
           <ReviewFormCard
+            key={item.id}
             item={item}
             onCancel={() => navigate('/profile/reviews')}
             onSubmit={handleSubmit}

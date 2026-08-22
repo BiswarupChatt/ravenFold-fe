@@ -1,6 +1,6 @@
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined'
 import { Box, Button, InputBase, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { formatPrice } from '../../../utils/utils.js'
 
 function CartCoupon({
@@ -14,12 +14,14 @@ function CartCoupon({
   onApply,
   onRemove,
 }) {
-  const [draftCode, setDraftCode] = useState(couponCode)
+  const [draftState, setDraftState] = useState({
+    couponCode,
+    draftCode: couponCode,
+  })
+  const draftCode = draftState.couponCode === couponCode
+    ? draftState.draftCode
+    : couponCode
   const isApplied = Boolean(couponCode) && !rejectedCoupon
-
-  useEffect(() => {
-    setDraftCode(couponCode)
-  }, [couponCode])
 
   const handleApply = () => {
     if (!draftCode.trim()) return
@@ -56,7 +58,10 @@ function CartCoupon({
             fullWidth
             disabled={disabled || !isAuthenticated}
             onChange={(e) => {
-              setDraftCode(e.target.value.toUpperCase())
+              setDraftState({
+                couponCode,
+                draftCode: e.target.value.toUpperCase(),
+              })
               onDraftChange?.()
             }}
             placeholder={isAuthenticated ? 'Enter coupon code' : 'Sign in to apply coupons'}

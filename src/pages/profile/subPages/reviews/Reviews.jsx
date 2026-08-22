@@ -26,9 +26,11 @@ function Reviews() {
   const [pageError, setPageError] = useState('')
   const [deletingReviewId, setDeletingReviewId] = useState('')
 
-  const loadReviews = useCallback(async () => {
-    setLoading(true)
-    setPageError('')
+  const loadReviews = useCallback(async ({ showLoading = true } = {}) => {
+    if (showLoading) {
+      setLoading(true)
+      setPageError('')
+    }
 
     try {
       const response = await fetchMyReviews({ limit: 50 })
@@ -43,8 +45,37 @@ function Reviews() {
   }, [])
 
   useEffect(() => {
-    loadReviews()
-  }, [loadReviews])
+    let isActive = true
+
+    const loadInitialReviews = async () => {
+      try {
+        const response = await fetchMyReviews({ limit: 50 })
+
+        if (!isActive) {
+          return
+        }
+
+        setReviews(Array.isArray(response.items) ? response.items : [])
+      } catch (error) {
+        if (!isActive) {
+          return
+        }
+
+        setPageError(getApiErrorMessage(error))
+        setReviews([])
+      } finally {
+        if (isActive) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadInitialReviews()
+
+    return () => {
+      isActive = false
+    }
+  }, [])
 
   const handleDeleteReview = async (reviewId) => {
     setDeletingReviewId(reviewId)
