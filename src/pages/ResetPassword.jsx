@@ -1,8 +1,12 @@
-import KeyRoundedIcon from '@mui/icons-material/KeyRounded'
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded'
 import { Alert, Container, Paper, Stack, Typography } from '@mui/material'
-import { useState } from 'react'
-import { Link as RouterLink, useSearchParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import {
+  Link as RouterLink,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
 import AppButton from '../components/AppButton.jsx'
 import AppInput from '../components/AppInput.jsx'
 import { resetPassword as resetPasswordRequest } from '../services/authApi.js'
@@ -26,12 +30,30 @@ const validatePassword = (value) => {
 
 function ResetPassword() {
   const [searchParams] = useSearchParams()
-  const [token, setToken] = useState(() => searchParams.get('token') || '')
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [token] = useState(() => searchParams.get('token') || '')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const hasToken = Boolean(token)
+
+  useEffect(() => {
+    if (!searchParams.has('token')) {
+      return
+    }
+
+    navigate(
+      {
+        hash: location.hash,
+        pathname: location.pathname,
+        search: '',
+      },
+      { replace: true },
+    )
+  }, [location.hash, location.pathname, navigate, searchParams])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -42,7 +64,7 @@ function ResetPassword() {
     setSuccess('')
 
     if (!trimmedToken) {
-      setError('Reset token is required.')
+      setError('This reset link is invalid or incomplete. Request a new password reset link.')
       return
     }
 
@@ -88,58 +110,61 @@ function ResetPassword() {
 
           {error ? <Alert severity="error">{error}</Alert> : null}
           {success ? <Alert severity="success">{success}</Alert> : null}
+          {!hasToken ? (
+            <Alert severity="warning">
+              This reset link is invalid or incomplete. Request a new password reset link.
+            </Alert>
+          ) : null}
 
-          <AppInput
-            autoComplete="one-time-code"
-            autoFocus={!token}
-            label="Reset token"
-            leftAdornment={<KeyRoundedIcon fontSize="small" />}
-            placeholder="Paste the reset token"
-            required
-            value={token}
-            onChange={(event) => {
-              setToken(event.target.value)
-              setError('')
-            }}
-          />
+          {hasToken ? (
+            <>
+              <AppInput
+                autoComplete="new-password"
+                autoFocus
+                disabled={Boolean(success)}
+                label="New password"
+                leftAdornment={<LockOpenRoundedIcon fontSize="small" />}
+                placeholder="Enter your new password"
+                required
+                type="password"
+                value={password}
+                onChange={(event) => {
+                  setPassword(event.target.value)
+                  setError('')
+                }}
+              />
 
-          <AppInput
-            autoComplete="new-password"
-            label="New password"
-            leftAdornment={<LockOpenRoundedIcon fontSize="small" />}
-            placeholder="Enter your new password"
-            required
-            type="password"
-            value={password}
-            onChange={(event) => {
-              setPassword(event.target.value)
-              setError('')
-            }}
-          />
+              <AppInput
+                autoComplete="new-password"
+                disabled={Boolean(success)}
+                label="Confirm new password"
+                leftAdornment={<LockOpenRoundedIcon fontSize="small" />}
+                placeholder="Re-enter your new password"
+                required
+                type="password"
+                value={confirmPassword}
+                onChange={(event) => {
+                  setConfirmPassword(event.target.value)
+                  setError('')
+                }}
+              />
 
-          <AppInput
-            autoComplete="new-password"
-            label="Confirm new password"
-            leftAdornment={<LockOpenRoundedIcon fontSize="small" />}
-            placeholder="Re-enter your new password"
-            required
-            type="password"
-            value={confirmPassword}
-            onChange={(event) => {
-              setConfirmPassword(event.target.value)
-              setError('')
-            }}
-          />
-
-          <AppButton
-            fullWidth
-            loading={isSubmitting}
-            loadingText="Updating..."
-            type="submit"
-            variant="contained"
-          >
-            Reset password
-          </AppButton>
+              <AppButton
+                fullWidth
+                loading={isSubmitting}
+                loadingText="Updating..."
+                disabled={Boolean(success)}
+                type="submit"
+                variant="contained"
+              >
+                Reset password
+              </AppButton>
+            </>
+          ) : (
+            <AppButton component={RouterLink} fullWidth to="/forgot-password" variant="contained">
+              Request new link
+            </AppButton>
+          )}
 
           <AppButton component={RouterLink} fullWidth to="/" variant="outlined">
             Back to home

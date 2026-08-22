@@ -46,7 +46,7 @@ function ForgotPassword() {
       const result = await requestPasswordReset({ email: email.trim() })
       setSuccess(
         result?.message ||
-          'If an account exists for this email, a password reset link will be sent.',
+          'Request received. If this email is registered with RavenFold, we will send a password reset link. The link can also set a password for accounts created with Google.',
       )
     } catch (requestError) {
       setError(getApiErrorMessage(requestError))
@@ -64,7 +64,7 @@ function ForgotPassword() {
               Forgot password
             </Typography>
             <Typography color="text.secondary">
-              Enter the email for your RavenFold account and we will issue a password reset link.
+              Enter your RavenFold email and we will send a secure link to reset or set your password.
             </Typography>
           </Stack>
 

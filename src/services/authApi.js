@@ -54,7 +54,7 @@ export const requestPasswordReset = async ({ email }) => {
     delivery: 'log',
     message:
       response.data?.message ||
-      'If an account exists for this email, a reset link will be sent.',
+      'Request received. If this email is registered with RavenFold, we will send a password reset link. The link can also set a password for accounts created with Google.',
   }
 }
 
