@@ -488,7 +488,7 @@ function Home() {
           <Stack
             alignItems="center"
             spacing={2.5}
-            sx={{ mx: 'auto', maxWidth: 980, textAlign: 'center' }}
+            sx={{ mx: 'auto', maxWidth: 980, textAlign: 'center', width: '100%' }}
           >
             <FormatQuoteRoundedIcon sx={{ color: 'primary.main', fontSize: 56 }} />
             <Typography
@@ -503,15 +503,22 @@ function Home() {
               "The wallet feels compact, the finish looks premium, and the
               packaging made it feel ready to gift."
             </Typography>
-            <Stack alignItems="center" spacing={1}>
-              <Stack direction="row" spacing={0.3}>
+            <Stack alignItems="center" spacing={1} sx={{ width: '100%' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 0.4,
+                  justifyContent: 'center',
+                  width: '100%',
+                }}
+              >
                 {Array.from({ length: 5 }).map((_, index) => (
                   <StarRoundedIcon
                     key={index}
                     sx={{ color: '#e19a00', fontSize: 20 }}
                   />
                 ))}
-              </Stack>
+              </Box>
               <Typography sx={{ fontWeight: 650 }}>
                 Raven Fold customer
               </Typography>
@@ -520,7 +527,10 @@ function Home() {
         </Container>
       </Box>
 
-      <Box component="section" sx={{ bgcolor: 'background.default', pb: { xs: 5, md: 8 } }}>
+      <Box
+        component="section"
+        sx={{ bgcolor: 'background.default', py: { xs: 5, md: 6 } }}
+      >
         <Container>
           <Box
             sx={{
@@ -534,16 +544,18 @@ function Home() {
             }}
           >
             {supportCards.map(({ Icon, description, title }) => (
-              <Stack
-                alignItems="center"
-                justifyContent="center"
+              <Box
                 key={title}
-                spacing={1.5}
                 sx={{
+                  alignItems: 'center',
                   border: '1px solid',
                   borderColor: 'divider',
-                  minHeight: 210,
-                  p: { xs: 2.5, md: 3 },
+                  display: 'grid',
+                  gridTemplateRows: '42px 34px minmax(72px, auto)',
+                  justifyItems: 'center',
+                  minHeight: { xs: 220, md: 230 },
+                  p: { xs: 2.5, md: 3.25 },
+                  rowGap: 1.5,
                   textAlign: 'center',
                 }}
               >
@@ -554,7 +566,7 @@ function Home() {
                 <Typography sx={{ color: 'text.secondary', lineHeight: 1.55 }}>
                   {description}
                 </Typography>
-              </Stack>
+              </Box>
             ))}
           </Box>
         </Container>
