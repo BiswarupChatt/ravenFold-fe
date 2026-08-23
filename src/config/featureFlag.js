@@ -1,5 +1,5 @@
 const featureFlag = {
-  showComingSoonLanding: false,
+  showComingSoonLanding: true,
   showBlog: false,
   showNavbarSearch: false,
   showWishlist: true,
