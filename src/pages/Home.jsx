@@ -48,7 +48,7 @@ const promoItems = [
   'WhatsApp support',
 ]
 
-const productTabs = ['New Arrivals', 'Best Sellers', 'Featured']
+const productTabs = ['New Arrivals']
 
 const supportCards = [
   {
@@ -177,7 +177,7 @@ function Home() {
   }
 
   return (
-    <Box component="main" sx={{ overflowX: 'hidden' }}>
+    <Box component="main" sx={{ bgcolor: 'background.default', overflowX: 'hidden' }}>
       <Box
         component="section"
         sx={{
@@ -282,7 +282,7 @@ function Home() {
       <Box
         component="section"
         sx={{
-          bgcolor: 'background.paper',
+          bgcolor: 'background.default',
           borderBottom: '1px solid',
           borderColor: 'divider',
           overflow: 'hidden',
@@ -331,7 +331,7 @@ function Home() {
         </Box>
       </Box>
 
-      <Box component="section" sx={{ bgcolor: 'background.paper', py: { xs: 5, md: 8 } }}>
+      <Box component="section" sx={{ bgcolor: 'background.default', py: { xs: 5, md: 8 } }}>
         <Container>
           <Stack spacing={{ xs: 3, md: 5 }}>
             <Box
@@ -384,51 +384,60 @@ function Home() {
                   )
                 })}
               </Stack>
-
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: { xs: 'flex-start', md: 'flex-end' },
-                  mt: { xs: 2, md: 0 },
-                }}
-              >
-                <Button
-                  component={RouterLink}
-                  endIcon={<ArrowForwardRoundedIcon />}
-                  size="small"
-                  sx={{
-                    bgcolor: 'text.primary',
-                    color: '#ffffff',
-                    minHeight: 42,
-                    px: 2.4,
-                    '&:hover': {
-                      bgcolor: 'primary.main',
-                    },
-                  }}
-                  to="/shop"
-                  variant="contained"
-                >
-                  View all products
-                </Button>
-              </Box>
             </Box>
 
-            <Stack spacing={1} sx={{ maxWidth: 880 }}>
-              <Typography sx={{ fontSize: '0.95rem', fontWeight: 600 }}>
-                All Product Shop
-              </Typography>
-              <Typography
-                component="h2"
+            <Box
+              sx={{
+                alignItems: { xs: 'flex-start', md: 'flex-end' },
+                columnGap: 2,
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) auto' },
+                rowGap: 2,
+                width: '100%',
+              }}
+            >
+              <Stack spacing={1} sx={{ maxWidth: 880 }}>
+                <Typography sx={{ fontSize: '0.95rem', fontWeight: 600 }}>
+                  All Product Shop
+                </Typography>
+                <Typography
+                  component="h2"
+                  sx={{
+                    fontSize: { xs: '2.4rem', md: '3.35rem' },
+                    fontWeight: 500,
+                    letterSpacing: 0,
+                    lineHeight: 1,
+                  }}
+                >
+                  Favorite carry products
+                </Typography>
+              </Stack>
+
+              <Button
+                component={RouterLink}
+                endIcon={<ArrowForwardRoundedIcon />}
+                size="small"
                 sx={{
-                  fontSize: { xs: '2.4rem', md: '3.35rem' },
-                  fontWeight: 500,
-                  letterSpacing: 0,
+                  alignSelf: { xs: 'flex-start', md: 'end' },
+                  bgcolor: 'text.primary',
+                  color: '#ffffff',
+                  fontSize: '0.82rem',
+                  justifySelf: { xs: 'start', md: 'end' },
                   lineHeight: 1,
+                  minHeight: 34,
+                  px: 1.6,
+                  py: 0,
+                  whiteSpace: 'nowrap',
+                  '&:hover': {
+                    bgcolor: 'primary.main',
+                  },
                 }}
+                to="/shop"
+                variant="contained"
               >
-                Favorite carry products
-              </Typography>
-            </Stack>
+                View all products
+              </Button>
+            </Box>
 
             {productsLoading ? (
               <Typography color="text.secondary">Loading new arrivals...</Typography>
@@ -465,151 +474,6 @@ function Home() {
               </Box>
             )}
           </Stack>
-        </Container>
-      </Box>
-
-      <Box component="section" sx={{ py: { xs: 5, md: 8 } }}>
-        <Container>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: '1fr',
-                md: '0.95fr 1.3fr',
-              },
-              minHeight: { md: 430 },
-            }}
-          >
-            <Box
-              sx={{
-                bgcolor: 'primary.main',
-                color: 'primary.contrastText',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                p: { xs: 3, md: 5 },
-              }}
-            >
-              <Stack
-                component={RouterLink}
-                spacing={1.5}
-                sx={{ color: 'inherit', textDecoration: 'none' }}
-                to="/shop"
-              >
-                <Typography
-                  sx={{
-                    color: 'rgba(255,255,255,0.7)',
-                    fontSize: '0.78rem',
-                    fontWeight: 850,
-                    letterSpacing: 1.5,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  Shop by use
-                </Typography>
-                <Typography
-                  component="h2"
-                  sx={{
-                    fontSize: { xs: '2.25rem', md: '3.25rem' },
-                    fontWeight: 650,
-                    letterSpacing: 0,
-                    lineHeight: 1,
-                  }}
-                >
-                  Built around daily carry
-                </Typography>
-                <Typography sx={{ color: 'rgba(255,255,255,0.72)', lineHeight: 1.7 }}>
-                  Start with the way you move, then pick the Raven Fold piece
-                  that keeps your day organized.
-                </Typography>
-              </Stack>
-              <Button
-                component={RouterLink}
-                endIcon={<ArrowForwardRoundedIcon />}
-                sx={{
-                  alignSelf: 'flex-start',
-                  bgcolor: '#ffffff',
-                  color: 'primary.main',
-                  mt: { xs: 4, md: 0 },
-                  '&:hover': {
-                    bgcolor: 'background.default',
-                  },
-                }}
-                to="/shop"
-                variant="contained"
-              >
-                View all products
-              </Button>
-            </Box>
-
-            <Box
-              sx={{
-                bgcolor: 'background.paper',
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))' },
-              }}
-            >
-              {collectionLinks.map((collection, index) => (
-                <Box
-                  component={RouterLink}
-                  key={collection.label}
-                  sx={{
-                    borderBottom: '1px solid',
-                    borderLeft: { md: '1px solid' },
-                    borderColor: 'divider',
-                    color: 'text.primary',
-                    display: 'flex',
-                    minHeight: { xs: 150, md: 215 },
-                    p: { xs: 2.5, md: 4 },
-                    textDecoration: 'none',
-                    transition:
-                      'background-color 160ms ease, color 160ms ease',
-                    '&:hover': {
-                      bgcolor: 'background.default',
-                      color: 'primary.main',
-                    },
-                    '&:hover .collection-arrow': {
-                      opacity: 1,
-                      transform: 'translateX(4px)',
-                    },
-                  }}
-                  to="/shop"
-                >
-                  <Stack justifyContent="space-between" spacing={3} sx={{ width: '100%' }}>
-                    <Stack direction="row" justifyContent="space-between" spacing={2}>
-                      <Typography
-                        sx={{
-                          color: 'inherit',
-                          fontSize: '0.76rem',
-                          fontWeight: 850,
-                          letterSpacing: 1.5,
-                          opacity: 0.55,
-                        }}
-                      >
-                        0{index + 1}
-                      </Typography>
-                      <ArrowForwardRoundedIcon
-                        className="collection-arrow"
-                        sx={{
-                          color: 'inherit',
-                          opacity: 0.55,
-                          transition: 'opacity 160ms ease, transform 160ms ease',
-                        }}
-                      />
-                    </Stack>
-                    <Stack spacing={1}>
-                      <Typography sx={{ fontSize: { xs: '1.25rem', md: '1.55rem' }, fontWeight: 800 }}>
-                        {collection.label}
-                      </Typography>
-                      <Typography sx={{ color: 'text.secondary', lineHeight: 1.65, maxWidth: 460 }}>
-                        {collection.description}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                </Box>
-              ))}
-            </Box>
-          </Box>
         </Container>
       </Box>
 
@@ -656,7 +520,7 @@ function Home() {
         </Container>
       </Box>
 
-      <Box component="section" sx={{ bgcolor: 'background.paper', pb: { xs: 5, md: 8 } }}>
+      <Box component="section" sx={{ bgcolor: 'background.default', pb: { xs: 5, md: 8 } }}>
         <Container>
           <Box
             sx={{
@@ -672,9 +536,10 @@ function Home() {
             {supportCards.map(({ Icon, description, title }) => (
               <Stack
                 alignItems="center"
+                justifyContent="center"
                 key={title}
                 spacing={1.5}
-              sx={{
+                sx={{
                   border: '1px solid',
                   borderColor: 'divider',
                   minHeight: 210,
@@ -697,15 +562,17 @@ function Home() {
 
       <Box component="section" sx={{ pb: { xs: 5, md: 8 } }}>
         <Container>
-          <Stack
-            alignItems={isDesktop ? 'center' : 'flex-start'}
-            direction={isDesktop ? 'row' : 'column'}
-            justifyContent="space-between"
-            spacing={2}
+          <Box
             sx={{
+              alignItems: 'center',
               borderTop: '1px solid',
               borderColor: 'divider',
+              columnGap: 3,
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) auto' },
               pt: { xs: 3, md: 4 },
+              rowGap: 2,
+              width: '100%',
             }}
           >
             <Typography
@@ -722,14 +589,25 @@ function Home() {
             <Button
               component={RouterLink}
               endIcon={<ArrowForwardRoundedIcon />}
-              size="large"
-              sx={{ bgcolor: 'text.primary', color: '#ffffff', minHeight: 54, px: 4 }}
+              size="small"
+              sx={{
+                bgcolor: 'text.primary',
+                color: '#ffffff',
+                fontSize: '0.88rem',
+                justifySelf: { xs: 'start', md: 'end' },
+                minHeight: 40,
+                px: 2.2,
+                whiteSpace: 'nowrap',
+                '&:hover': {
+                  bgcolor: 'primary.main',
+                },
+              }}
               to="/shop"
               variant="contained"
             >
               Shop Raven Fold
             </Button>
-          </Stack>
+          </Box>
         </Container>
       </Box>
     </Box>
