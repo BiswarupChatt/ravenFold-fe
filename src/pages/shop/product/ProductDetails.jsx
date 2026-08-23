@@ -31,11 +31,11 @@ function ProductDetails() {
   const [reviewLoading, setReviewLoading] = useState(false)
   const [reviewPage, setReviewPage] = useState(1)
   const [reviewRatingFilter, setReviewRatingFilter] = useState('')
-  const pagePaddingY = isDesktop ? 8 : isTab ? 6 : 5
+  const pagePaddingY = isDesktop ? 4 : isTab ? 3.5 : 3
   const detailsGridColumns = isDesktop
     ? 'minmax(0, 1.08fr) minmax(0, 0.92fr)'
     : 'minmax(0, 1fr)'
-  const detailsGridGap = isDesktop ? 6 : isMobile ? 3 : 4
+  const detailsGridGap = isDesktop ? 4 : isMobile ? 2.5 : 3
 
   useEffect(() => {
     let isActive = true
@@ -130,7 +130,7 @@ function ProductDetails() {
   return (
     <Box sx={{ overflowX: 'hidden', py: pagePaddingY }}>
       <Container>
-        <Stack spacing={3}>
+        <Stack spacing={2.5}>
           {pageError ? (
             <Alert severity="error" sx={{ borderRadius: 1 }}>
               {pageError}
@@ -142,7 +142,7 @@ function ProductDetails() {
               <CircularProgress />
             </Box>
           ) : product ? (
-            <Stack spacing={4}>
+            <Stack spacing={2.5}>
               <PageIntro
                 showBackButton
                 sx={{ width: '100%' }}

@@ -1,5 +1,6 @@
 import { lazy } from 'react'
 import { Navigate, useRoutes } from 'react-router-dom'
+import featureFlag from '../config/featureFlag.js'
 import withAuthRequired from '../hoc/withAuthRequired.jsx'
 const Blog = lazy(() => import('../pages/Blog.jsx'))
 const MainLayout = lazy(() => import('../layouts/MainLayout.jsx'))
@@ -32,7 +33,7 @@ const routes = [
       { path: 'shop', element: <Shop /> },
       { path: 'shop/:productIdOrSlug', element: <ProductDetails /> },
       { path: 'contacts', element: <Contacts /> },
-      { path: 'blog', element: <Blog /> },
+      { path: 'blog', element: featureFlag.showBlog ? <Blog /> : <NotFound /> },
       {
         path: 'profile',
         element: <ProtectedProfile />,

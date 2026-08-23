@@ -13,6 +13,7 @@ import { NavLink } from 'react-router-dom'
 import brandLogo from '../../assets/Logo_Main-05.png'
 import CartDrawer from '../../drawer/CartDrawer.jsx'
 import SearchDrawer from '../../drawer/SearchDrawer.jsx'
+import featureFlag from '../../config/featureFlag.js'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import NavigationActions from './NavigationActions.jsx'
 import NavigationLinks from './NavigationLinks.jsx'
@@ -215,7 +216,9 @@ function Navbar() {
         </Box>
       ) : null}
 
-      <SearchDrawer onClose={closeActiveDrawer} open={activeDrawer === 'search'} />
+      {featureFlag.showNavbarSearch ? (
+        <SearchDrawer onClose={closeActiveDrawer} open={activeDrawer === 'search'} />
+      ) : null}
       <CartDrawer onClose={closeActiveDrawer} open={activeDrawer === 'cart'} />
     </>
   )

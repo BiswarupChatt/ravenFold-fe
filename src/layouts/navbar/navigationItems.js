@@ -1,9 +1,11 @@
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    const navigationItems = [
+import featureFlag from '../../config/featureFlag.js'
+
+const navigationItems = [
   { label: 'Home', path: '/' },
   { label: 'Shop', path: '/shop' },
-  { label: 'Blog', path: '/blog' },
+  featureFlag.showBlog ? { label: 'Blog', path: '/blog' } : null,
   { label: 'Contact', path: '/contacts' },
-]
+].filter(Boolean)
 
 /*
 nested navigation reference:

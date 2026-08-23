@@ -146,8 +146,7 @@ function ProductCard({
       tabIndex={onViewProduct ? 0 : undefined}
       sx={{
         bgcolor: 'background.default',
-        border: '1px solid',
-        borderColor: 'divider',
+        border: 0,
         borderRadius: 0,
         boxShadow: 'none',
         display: 'flex',
@@ -155,15 +154,13 @@ function ProductCard({
         height: '100%',
         overflow: 'hidden',
         position: 'relative',
-        transition: 'border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease',
+        transition: 'box-shadow 180ms ease, transform 180ms ease',
         cursor: onViewProduct ? 'pointer' : 'default',
         '&:hover': {
-          borderColor: 'rgba(24, 24, 27, 0.18)',
           boxShadow: '0 14px 32px rgba(15, 23, 42, 0.12)',
           transform: 'translateY(-3px)',
         },
       }}
-      variant="outlined"
     >
       <Box
         sx={{

@@ -78,8 +78,8 @@ function ImageTile({
           src={image}
           sx={{
             display: 'block',
-            height: '86%',
-            maxWidth: '88%',
+            height: '100%',
+            maxWidth: '100%',
             objectFit: 'contain',
             pointerEvents: 'none',
             width: '100%',

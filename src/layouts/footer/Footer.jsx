@@ -6,15 +6,16 @@ import YouTubeIcon from '@mui/icons-material/YouTube'
 import { Box, Container, Divider, Link, Stack, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import brandLogo from '../../assets/Logo_Main-05.png'
+import featureFlag from '../../config/featureFlag.js'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import { getPublishedPolicies } from '../../services/policyApi.js'
 
 const quickLinks = [
     { label: 'Home', to: '/' },
     { label: 'Shop', to: '/shop' },
-    { label: 'Blog', to: '/blog' },
+    featureFlag.showBlog ? { label: 'Blog', to: '/blog' } : null,
     { label: 'Contact', to: '/contacts' },
-]
+].filter(Boolean)
 
 const socialLinks = [
     {
