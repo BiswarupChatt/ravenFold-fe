@@ -33,6 +33,7 @@ import {
   requestFacebookLogin,
   requestGoogleLogin,
 } from '../services/oauthProviders.js'
+import featureFlag from '../config/featureFlag.js'
 import { setAuthSession } from '../store/authSlice.js'
 
 const initialCredentials = {
@@ -45,6 +46,9 @@ const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
 const facebookAppId = import.meta.env.VITE_FACEBOOK_APP_ID || ''
 const facebookGraphVersion =
   import.meta.env.VITE_FACEBOOK_GRAPH_VERSION || 'v25.0'
+const showGoogleLogin = Boolean(featureFlag.showGoogleLogin)
+const showFacebookLogin = Boolean(featureFlag.showFacebookLogin)
+const showSocialLogin = showGoogleLogin || showFacebookLogin
 
 const policyLinks = {
   privacy: '/policies/privacy-and-cookie-policy',
@@ -577,23 +581,27 @@ function LoginModal({ open, onClose, onLoginSuccess }) {
 
   const renderProviderOptions = ({ includeEmail = false } = {}) => (
     <Stack spacing={1.1}>
-      <AuthOptionButton
-        disabled={isSubmitting || providerLoading === 'facebook'}
-        icon={<GoogleBrandIcon />}
-        loading={providerLoading === 'google'}
-        onClick={handleGoogleLogin}
-      >
-        Continue with Google
-      </AuthOptionButton>
+      {showGoogleLogin ? (
+        <AuthOptionButton
+          disabled={isSubmitting || providerLoading === 'facebook'}
+          icon={<GoogleBrandIcon />}
+          loading={providerLoading === 'google'}
+          onClick={handleGoogleLogin}
+        >
+          Continue with Google
+        </AuthOptionButton>
+      ) : null}
 
-      <AuthOptionButton
-        disabled={isSubmitting || providerLoading === 'google'}
-        icon={<FacebookBrandIcon />}
-        loading={providerLoading === 'facebook'}
-        onClick={handleFacebookLogin}
-      >
-        Continue with Facebook
-      </AuthOptionButton>
+      {showFacebookLogin ? (
+        <AuthOptionButton
+          disabled={isSubmitting || providerLoading === 'google'}
+          icon={<FacebookBrandIcon />}
+          loading={providerLoading === 'facebook'}
+          onClick={handleFacebookLogin}
+        >
+          Continue with Facebook
+        </AuthOptionButton>
+      ) : null}
 
       {includeEmail ? (
         <AuthOptionButton
@@ -632,21 +640,25 @@ function LoginModal({ open, onClose, onLoginSuccess }) {
         width: '100%',
       }}
     >
-      <CompactProviderButton
-        ariaLabel="Continue with Google"
-        disabled={isSubmitting || providerLoading === 'facebook'}
-        icon={<GoogleBrandIcon />}
-        loading={providerLoading === 'google'}
-        onClick={handleGoogleLogin}
-      />
+      {showGoogleLogin ? (
+        <CompactProviderButton
+          ariaLabel="Continue with Google"
+          disabled={isSubmitting || providerLoading === 'facebook'}
+          icon={<GoogleBrandIcon />}
+          loading={providerLoading === 'google'}
+          onClick={handleGoogleLogin}
+        />
+      ) : null}
 
-      <CompactProviderButton
-        ariaLabel="Continue with Facebook"
-        disabled={isSubmitting || providerLoading === 'google'}
-        icon={<FacebookBrandIcon />}
-        loading={providerLoading === 'facebook'}
-        onClick={handleFacebookLogin}
-      />
+      {showFacebookLogin ? (
+        <CompactProviderButton
+          ariaLabel="Continue with Facebook"
+          disabled={isSubmitting || providerLoading === 'google'}
+          icon={<FacebookBrandIcon />}
+          loading={providerLoading === 'facebook'}
+          onClick={handleFacebookLogin}
+        />
+      ) : null}
     </Box>
   )
 
@@ -750,11 +762,15 @@ function LoginModal({ open, onClose, onLoginSuccess }) {
         onChangeMode={handleModeChange}
       />
 
-      <Divider sx={{ color: 'text.secondary' }}>
-        or continue with
-      </Divider>
+      {showSocialLogin ? (
+        <>
+          <Divider sx={{ color: 'text.secondary' }}>
+            or continue with
+          </Divider>
 
-      {renderCompactProviderOptions()}
+          {renderCompactProviderOptions()}
+        </>
+      ) : null}
 
       <PolicyNotice onNavigate={handleClose} />
     </Stack>
