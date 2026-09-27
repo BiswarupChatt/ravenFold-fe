@@ -4,6 +4,7 @@ import AppRoutes from './routes/index.jsx'
 import AuthModalProvider from './context/AuthModalProvider.jsx'
 import ToastProvider from './components/ToastProvider.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
+import PromotionalPopup from './components/PromotionalPopup.jsx'
 import useCartSessionSync from './hooks/useCartSessionSync.js'
 import featureFlag from './config/featureFlag.js'
 import ComingSoon from './pages/ComingSoon.jsx'
@@ -28,6 +29,7 @@ function CommerceApp() {
     <AuthModalProvider>
       <ToastProvider>
         <ScrollToTop />
+        <PromotionalPopup />
         <Suspense fallback={loadingFallback}>
           <AppRoutes />
         </Suspense>
