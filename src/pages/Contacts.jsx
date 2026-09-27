@@ -12,13 +12,11 @@ import { useMemo, useState } from 'react'
 import AppButton from '../components/AppButton.jsx'
 import AppInput from '../components/AppInput.jsx'
 import PageIntro from '../components/PageIntro.jsx'
+import { useSiteSettings } from '../context/SiteSettingsProvider.jsx'
 import useScreenSize from '../hooks/useScreenSize.js'
 import { getApiErrorMessage } from '../services/apiClient.js'
 import { sendContactInquiry } from '../services/contactApi.js'
 import { errorToast, successToast } from '../services/toast.js'
-
-const whatsappNumber = '917439042753'
-const whatsappUrl = `https://wa.me/${whatsappNumber}`
 
 const initialFormState = {
   email: '',
@@ -46,9 +44,9 @@ const fieldGridSx = {
   },
 }
 
-function buildWhatsAppMessage(formState) {
+function buildWhatsAppMessage(formState, whatsappUrl, brandName) {
   const lines = [
-    'Hi Raven Fold, I need help.',
+    `Hi ${brandName}, I need help.`,
     '',
     formState.name.trim() ? `Name: ${formState.name.trim()}` : '',
     formState.email.trim() ? `Email: ${formState.email.trim()}` : '',
@@ -62,11 +60,18 @@ function buildWhatsAppMessage(formState) {
 
 function Contacts() {
   const { isMobile } = useScreenSize()
+  const { settings } = useSiteSettings()
+  const brandName = settings.brandName || 'Raven Fold'
+  const whatsappNumber = settings.contact?.whatsappNumber || '917439042753'
+  const whatsappUrl = `https://wa.me/${whatsappNumber}`
   const [formState, setFormState] = useState(initialFormState)
   const [errors, setErrors] = useState({})
   const [formMessage, setFormMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const whatsappLink = useMemo(() => buildWhatsAppMessage(formState), [formState])
+  const whatsappLink = useMemo(
+    () => buildWhatsAppMessage(formState, whatsappUrl, brandName),
+    [brandName, formState, whatsappUrl],
+  )
 
   const handleFieldChange = (event) => {
     const { name, value } = event.target
@@ -141,10 +146,10 @@ function Contacts() {
       <Container>
         <Stack spacing={{ xs: 4, md: 5 }}>
           <PageIntro
-            description="Send order questions, product requests, delivery updates, returns, or GST invoice requests to the Raven Fold team."
+            description={`Send order questions, product requests, delivery updates, returns, or GST invoice requests to the ${brandName} team.`}
             eyebrow="Contact"
             sx={{ width: '100%' }}
-            title="Need help with Raven Fold?"
+            title={`Need help with ${brandName}?`}
           />
 
           <Box

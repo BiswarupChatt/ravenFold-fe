@@ -13,18 +13,18 @@ import { NavLink } from 'react-router-dom'
 import brandLogo from '../../assets/Logo_Main-05.png'
 import CartDrawer from '../../drawer/CartDrawer.jsx'
 import SearchDrawer from '../../drawer/SearchDrawer.jsx'
-import featureFlag from '../../config/featureFlag.js'
+import { useSiteSettings } from '../../context/SiteSettingsProvider.jsx'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import NavigationActions from './NavigationActions.jsx'
 import NavigationLinks from './NavigationLinks.jsx'
 
-function BrandLogoLink({ onClick, placement = 'desktop' }) {
+function BrandLogoLink({ brandName, logoUrl, onClick, placement = 'desktop' }) {
   const logoHeight = placement === 'drawer' ? 42 : 38
   const logoWidth = placement === 'mobile' ? 172 : 188
 
   return (
     <Box
-      aria-label="Raven Fold home"
+      aria-label={`${brandName} home`}
       component={NavLink}
       onClick={onClick}
       sx={{
@@ -37,9 +37,9 @@ function BrandLogoLink({ onClick, placement = 'desktop' }) {
       to="/"
     >
       <Box
-        alt="Raven Fold"
+        alt={brandName}
         component="img"
-        src={brandLogo}
+        src={logoUrl || brandLogo}
         sx={{
           display: 'block',
           height: logoHeight,
@@ -56,6 +56,10 @@ function Navbar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [activeDrawer, setActiveDrawer] = useState(null)
   const { isDesktop } = useScreenSize()
+  const { settings } = useSiteSettings()
+  const brandName = settings.brandName || 'Raven Fold'
+  const logoUrl = settings.logo?.url || ''
+  const showNavbarSearch = Boolean(settings.featureFlags?.showNavbarSearch)
 
   const openDrawer = () => setIsDrawerOpen(true)
   const closeDrawer = () => setIsDrawerOpen(false)
@@ -115,7 +119,7 @@ function Navbar() {
                 <Box
                   sx={{ display: 'flex', justifyContent: 'flex-end', minWidth: 0 }}
                 >
-                  <BrandLogoLink placement="mobile" />
+                  <BrandLogoLink brandName={brandName} logoUrl={logoUrl} placement="mobile" />
                 </Box>
               </Toolbar>
             </Container>
@@ -142,7 +146,7 @@ function Navbar() {
                 mb: 3,
               }}
             >
-              <BrandLogoLink onClick={closeDrawer} placement="drawer" />
+              <BrandLogoLink brandName={brandName} logoUrl={logoUrl} onClick={closeDrawer} placement="drawer" />
 
               <IconButton
                 aria-label="Close navigation menu"
@@ -197,7 +201,7 @@ function Navbar() {
                 <Box
                   sx={{ alignItems: 'center', display: 'flex', minWidth: 0 }}
                 >
-                  <BrandLogoLink />
+                  <BrandLogoLink brandName={brandName} logoUrl={logoUrl} />
                 </Box>
 
                 <Box sx={{ justifySelf: 'center' }}>
@@ -216,7 +220,7 @@ function Navbar() {
         </Box>
       ) : null}
 
-      {featureFlag.showNavbarSearch ? (
+      {showNavbarSearch ? (
         <SearchDrawer onClose={closeActiveDrawer} open={activeDrawer === 'search'} />
       ) : null}
       <CartDrawer onClose={closeActiveDrawer} open={activeDrawer === 'cart'} />

@@ -1,9 +1,7 @@
-import featureFlag from '../../config/featureFlag.js'
-
 const navigationItems = [
   { label: 'Home', path: '/' },
   { label: 'Shop', path: '/shop' },
-  featureFlag.showBlog ? { label: 'Blog', path: '/blog' } : null,
+  { label: 'Blog', path: '/blog', featureFlag: 'showBlog' },
   { label: 'Contact', path: '/contacts' },
 ].filter(Boolean)
 

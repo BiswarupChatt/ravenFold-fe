@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { NavLink, matchPath, useLocation } from 'react-router-dom'
 import navigationItems from './navigationItems.js'
 import theme from '../../theme.js'
+import { useSiteSettings } from '../../context/SiteSettingsProvider.jsx'
 
 const inlineLinkStyles = {
   color: 'text.secondary',
@@ -131,14 +132,18 @@ function getItemKey(item, depth, index) {
 
 function InlineLeafLink({ item, pathname, onItemClick }) {
   const isActive = isItemActive(item, pathname)
+  const isExternal = /^https?:\/\//i.test(item.path || '')
 
   return (
     <Button
       color="inherit"
-      component={NavLink}
+      component={isExternal ? 'a' : NavLink}
       end={resolvePath(item.path) === '/'}
+      href={isExternal ? item.path : undefined}
       onClick={onItemClick}
+      rel={item.target === '_blank' ? 'noreferrer' : undefined}
       sx={[inlineLinkStyles, isActive ? inlineActiveStyles : null]}
+      target={item.target}
       to={resolvePath(item.path)}
     >
       {item.label}
@@ -148,6 +153,7 @@ function InlineLeafLink({ item, pathname, onItemClick }) {
 
 function InlineMenuLeaf({ item, pathname, onItemClick, onCloseBranch }) {
   const isActive = isItemActive(item, pathname)
+  const isExternal = /^https?:\/\//i.test(item.path || '')
 
   const handleClick = () => {
     onCloseBranch?.()
@@ -156,9 +162,12 @@ function InlineMenuLeaf({ item, pathname, onItemClick, onCloseBranch }) {
 
   return (
     <MenuItem
-      component={NavLink}
+      component={isExternal ? 'a' : NavLink}
+      href={isExternal ? item.path : undefined}
       onClick={handleClick}
+      rel={item.target === '_blank' ? 'noreferrer' : undefined}
       selected={isActive}
+      target={item.target}
       to={resolvePath(item.path)}
     >
       {item.label}
@@ -270,19 +279,23 @@ function InlineDropdownItem({ item, depth = 0, pathname, onItemClick, onCloseBra
 
 function DrawerLeafLink({ item, depth, pathname, onItemClick }) {
   const isActive = isItemActive(item, pathname)
+  const isExternal = /^https?:\/\//i.test(item.path || '')
 
   return (
     <Button
       color="inherit"
-      component={NavLink}
+      component={isExternal ? 'a' : NavLink}
       fullWidth
+      href={isExternal ? item.path : undefined}
       onClick={onItemClick}
+      rel={item.target === '_blank' ? 'noreferrer' : undefined}
       sx={[
         drawerLinkStyles,
         depth > 0 ? drawerNestedLinkStyles : null,
         isActive ? { color: 'secondary.main' } : null,
         { pl: depth * 2 },
       ]}
+      target={item.target}
       to={resolvePath(item.path)}
     >
       {item.label}
@@ -343,6 +356,11 @@ function DrawerDropdownItem({ item, depth = 0, pathname, onItemClick }) {
 function NavigationLinks({ items = navigationItems, layout = 'inline', onItemClick }) {
   const isDrawerLayout = layout === 'drawer'
   const { pathname } = useLocation()
+  const { settings } = useSiteSettings()
+  const featureFlags = settings.featureFlags || {}
+  const visibleItems = items.filter((item) => (
+    !item.featureFlag || Boolean(featureFlags[item.featureFlag])
+  ))
 
   return (
     <Stack
@@ -351,7 +369,7 @@ function NavigationLinks({ items = navigationItems, layout = 'inline', onItemCli
       spacing={isDrawerLayout ? 0.5 : 0.5}
       sx={{ width: isDrawerLayout ? '100%' : 'auto' }}
     >
-      {items.map((item, index) =>
+      {visibleItems.map((item, index) =>
         hasChildren(item) ? (
           isDrawerLayout ? (
             <DrawerDropdownItem

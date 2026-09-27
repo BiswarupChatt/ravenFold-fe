@@ -1,6 +1,6 @@
 import { lazy } from 'react'
 import { Navigate, useRoutes } from 'react-router-dom'
-import featureFlag from '../config/featureFlag.js'
+import { useSiteSettings } from '../context/SiteSettingsProvider.jsx'
 import withAuthRequired from '../hoc/withAuthRequired.jsx'
 const Blog = lazy(() => import('../pages/Blog.jsx'))
 const MainLayout = lazy(() => import('../layouts/MainLayout.jsx'))
@@ -25,6 +25,18 @@ const Shop = lazy(() => import('../pages/shop/catalog/Shop.jsx'))
 const ProtectedProfile = withAuthRequired(Profile)
 const ProtectedCheckout = withAuthRequired(Checkout)
 
+function BlogRoute() {
+  const { settings } = useSiteSettings()
+
+  return settings.featureFlags?.showBlog ? <Blog /> : <NotFound />
+}
+
+function WishlistRoute() {
+  const { settings } = useSiteSettings()
+
+  return settings.featureFlags?.enableWishlist ? <Wishlist /> : <NotFound />
+}
+
 const routes = [
   {
     element: <MainLayout />,
@@ -33,7 +45,7 @@ const routes = [
       { path: 'shop', element: <Shop /> },
       { path: 'shop/:productIdOrSlug', element: <ProductDetails /> },
       { path: 'contacts', element: <Contacts /> },
-      { path: 'blog', element: featureFlag.showBlog ? <Blog /> : <NotFound /> },
+      { path: 'blog', element: <BlogRoute /> },
       {
         path: 'profile',
         element: <ProtectedProfile />,
@@ -42,7 +54,7 @@ const routes = [
           { path: 'info', element: <Info /> },
           { path: 'address', element: <Address /> },
           { path: 'order', element: <Order /> },
-          { path: 'wishlist', element: <Wishlist /> },
+          { path: 'wishlist', element: <WishlistRoute /> },
           { path: 'reviews', element: <Reviews /> },
           { path: 'reviews/write/:orderId/:orderItemId', element: <WriteReview /> },
         ],

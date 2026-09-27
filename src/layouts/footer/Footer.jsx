@@ -1,44 +1,26 @@
 import { useEffect, useState } from 'react'
 import FacebookRoundedIcon from '@mui/icons-material/FacebookRounded'
+import LanguageIcon from '@mui/icons-material/Language'
 import InstagramIcon from '@mui/icons-material/Instagram'
 import LinkedInIcon from '@mui/icons-material/LinkedIn'
 import YouTubeIcon from '@mui/icons-material/YouTube'
 import { Box, Container, Divider, Link, Stack, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
 import brandLogo from '../../assets/Logo_Main-05.png'
-import featureFlag from '../../config/featureFlag.js'
+import { useSiteSettings } from '../../context/SiteSettingsProvider.jsx'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import { getPublishedPolicies } from '../../services/policyApi.js'
 
-const quickLinks = [
-    { label: 'Home', to: '/' },
-    { label: 'Shop', to: '/shop' },
-    featureFlag.showBlog ? { label: 'Blog', to: '/blog' } : null,
-    { label: 'Contact', to: '/contacts' },
-].filter(Boolean)
+const getSocialIcon = (label = '') => {
+    const normalizedLabel = label.toLowerCase()
 
-const socialLinks = [
-    {
-        label: 'Instagram',
-        href: 'https://www.instagram.com/',
-        Icon: InstagramIcon,
-    },
-    {
-        label: 'Facebook',
-        href: 'https://www.facebook.com/',
-        Icon: FacebookRoundedIcon,
-    },
-    {
-        label: 'LinkedIn',
-        href: 'https://www.linkedin.com/',
-        Icon: LinkedInIcon,
-    },
-    {
-        label: 'YouTube',
-        href: 'https://www.youtube.com/',
-        Icon: YouTubeIcon,
-    },
-]
+    if (normalizedLabel.includes('instagram')) return InstagramIcon
+    if (normalizedLabel.includes('facebook')) return FacebookRoundedIcon
+    if (normalizedLabel.includes('linkedin')) return LinkedInIcon
+    if (normalizedLabel.includes('youtube')) return YouTubeIcon
+
+    return LanguageIcon
+}
 
 const sectionTitleStyles = {
     color: 'text.primary',
@@ -100,8 +82,28 @@ function FooterLinkGroup({ title, links }) {
 
 function Footer() {
     const { isDesktop, isMobile, isTab } = useScreenSize()
+    const { settings } = useSiteSettings()
     const [legalLinks, setLegalLinks] = useState([])
     const currentYear = new Date().getFullYear()
+    const brandName = settings.brandName || 'Raven Fold'
+    const logoUrl = settings.logo?.url || brandLogo
+    const quickLinks = [
+        { label: 'Home', to: '/' },
+        { label: 'Shop', to: '/shop' },
+        settings.featureFlags?.showBlog ? { label: 'Blog', to: '/blog' } : null,
+        { label: 'Contact', to: '/contacts' },
+    ].filter(Boolean)
+    const socialLinks = Array.isArray(settings.socialLinks)
+        ? settings.socialLinks
+            .filter((link) => link?.url)
+            .map((link) => ({
+                href: link.url,
+                Icon: getSocialIcon(link.label),
+                label: link.label || 'Social link',
+            }))
+        : []
+    const copyrightText = settings.copyrightText
+        || `Copyright ${currentYear} ${brandName}. All rights reserved.`
     const gridTemplateColumns = isDesktop
         ? '1.5fr 1fr 1fr'
         : isTab
@@ -168,9 +170,9 @@ function Footer() {
                                 }}
                             >
                                 <Box
-                                    alt="Raven Fold"
+                                    alt={brandName}
                                     component="img"
-                                    src={brandLogo}
+                                    src={logoUrl}
                                     sx={{
                                         display: 'block',
                                         height: 40,
@@ -182,17 +184,16 @@ function Footer() {
                             </Link>
 
                             <Typography sx={{ color: 'text.secondary', lineHeight: 1.7 }}>
-                                Thoughtful carry goods, cleaner shopping flows, and a storefront
-                                foundation built to feel calm, useful, and easy to trust.
+                                {settings.seo?.description || 'Thoughtful carry goods, cleaner shopping flows, and a storefront foundation built to feel calm, useful, and easy to trust.'}
                             </Typography>
 
                             <Stack spacing={0.9}>
                                 <Typography sx={sectionTitleStyles}>Support</Typography>
                                 <Typography sx={{ color: 'text.secondary' }}>
-                                    support@ravenfold.com
+                                    {settings.contact?.supportEmail || 'support@ravenfold.com'}
                                 </Typography>
                                 <Typography sx={{ color: 'text.secondary' }}>
-                                    Mon - Sat, 9:00 AM - 6:00 PM
+                                    {settings.contact?.businessHours || 'Mon - Sat, 9:00 AM - 6:00 PM'}
                                 </Typography>
                             </Stack>
                         </Stack>
@@ -225,28 +226,30 @@ function Footer() {
                                 textAlign: isMobile ? 'center' : 'left',
                             }}
                         >
-                            Copyright {currentYear} Raven Fold. All rights reserved.
+                            {copyrightText}
                         </Typography>
 
-                        <Stack
-                            direction="row"
-                            spacing={1}
-                            sx={{ justifyContent: 'center', ml: isMobile ? 0 : 'auto' }}
-                        >
-                            {socialLinks.map(({ label, href, Icon }) => (
-                                <Link
-                                    key={label}
-                                    aria-label={label}
-                                    href={href}
-                                    rel="noreferrer"
-                                    sx={socialLinkStyles}
-                                    target="_blank"
-                                    underline="none"
-                                >
-                                    <Icon sx={{ fontSize: 20 }} />
-                                </Link>
-                            ))}
-                        </Stack>
+                        {socialLinks.length ? (
+                            <Stack
+                                direction="row"
+                                spacing={1}
+                                sx={{ justifyContent: 'center', ml: isMobile ? 0 : 'auto' }}
+                            >
+                                {socialLinks.map(({ label, href, Icon }) => (
+                                    <Link
+                                        key={`${label}-${href}`}
+                                        aria-label={label}
+                                        href={href}
+                                        rel="noreferrer"
+                                        sx={socialLinkStyles}
+                                        target="_blank"
+                                        underline="none"
+                                    >
+                                        <Icon sx={{ fontSize: 20 }} />
+                                    </Link>
+                                ))}
+                            </Stack>
+                        ) : null}
                     </Box>
                 </Container>
             </Box>

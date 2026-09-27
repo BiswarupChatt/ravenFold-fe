@@ -4,30 +4,33 @@ import useScreenSize from '../hooks/useScreenSize.js'
 import Footer from './footer/Footer.jsx'
 import AnnouncementBanner from './navbar/AnnouncementBanner.jsx'
 import Navbar from './navbar/Navbar.jsx'
+import SiteSettingsProvider from '../context/SiteSettingsProvider.jsx'
 
 function MainLayout() {
   const { isDesktop } = useScreenSize()
   const { pathname } = useLocation()
 
   return (
-    <Box
-      sx={{
-        bgcolor: 'background.default',
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        pb: isDesktop ? 0 : 8,
-      }}
-    >
-      <AnnouncementBanner />
-      <Navbar key={pathname} />
+    <SiteSettingsProvider>
+      <Box
+        sx={{
+          bgcolor: 'background.default',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
+          pb: isDesktop ? 0 : 8,
+        }}
+      >
+        <AnnouncementBanner />
+        <Navbar key={pathname} />
 
-      <Box component="main" sx={{ flex: 1 }}>
-        <Outlet />
+        <Box component="main" sx={{ flex: 1 }}>
+          <Outlet />
+        </Box>
+
+        <Footer />
       </Box>
-
-      <Footer />
-    </Box>
+    </SiteSettingsProvider>
   )
 }
 

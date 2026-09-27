@@ -33,6 +33,7 @@ import { selectCartQuantity } from '../../store/cartSlice'
 import useScreenSize from '../../hooks/useScreenSize.js'
 import navigationActions from './navigationActions.js'
 import theme from '../../theme.js'
+import { useSiteSettings } from '../../context/SiteSettingsProvider.jsx'
 
 const inlineActionButtonStyles = {
   bgcolor: 'background.paper',
@@ -105,6 +106,11 @@ function NavigationActions({ layout = 'inline', activeDrawer, onDrawerAction }) 
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const isBottomBar = layout === 'bottomBar'
+  const { settings } = useSiteSettings()
+  const featureFlags = settings.featureFlags || {}
+  const visibleActions = navigationActions.filter((action) => (
+    !action.featureFlag || Boolean(featureFlags[action.featureFlag])
+  ))
 
   const renderActionButton = ({
     label,
@@ -189,11 +195,11 @@ function NavigationActions({ layout = 'inline', activeDrawer, onDrawerAction }) 
     <Box
       sx={{
         display: 'grid',
-        gridTemplateColumns: `repeat(${navigationActions.length}, minmax(0, 1fr))`,
+        gridTemplateColumns: `repeat(${visibleActions.length}, minmax(0, 1fr))`,
         width: '100%',
       }}
     >
-      {navigationActions.map((action) => (
+      {visibleActions.map((action) => (
         <Box
           key={action.path}
           sx={{ display: 'flex', justifyContent: 'center' }}
@@ -204,7 +210,7 @@ function NavigationActions({ layout = 'inline', activeDrawer, onDrawerAction }) 
     </Box>
   ) : (
     <Stack direction="row" spacing={isMobile ? 0.5 : 1}>
-      {navigationActions.map((action) => (
+      {visibleActions.map((action) => (
         <Box key={action.path}>{renderActionButton(action)}</Box>
       ))}
     </Stack>

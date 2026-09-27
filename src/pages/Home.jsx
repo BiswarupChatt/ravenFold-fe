@@ -14,6 +14,7 @@ import heroImage from '../assets/hero-image.webp'
 import ProductCard from '../components/ProductCard.jsx'
 import useScreenSize from '../hooks/useScreenSize.js'
 import { getProducts } from '../services/productApi.js'
+import { defaultHomePageContent, getHomePage } from '../services/storefrontPageApi.js'
 import { errorToast, successToast } from '../services/toast.js'
 import {
   selectWishlistItems,
@@ -21,57 +22,12 @@ import {
 } from '../store/wishlistSlice.js'
 import { getImageUrl, getPriceData, getPrimaryImage } from '../utils/utils.js'
 
-const collectionLinks = [
-  {
-    description: 'Compact pieces for cards, cash, and daily essentials.',
-    label: 'Wallets',
-  },
-  {
-    description: 'Organized carry for office commutes and city movement.',
-    label: 'Backpacks',
-  },
-  {
-    description: 'Room for short trips, gym days, and weekend packing.',
-    label: 'Duffle bags',
-  },
-  {
-    description: 'Small organizers that keep the rest of your setup clean.',
-    label: 'Accessories',
-  },
-]
-
-const promoItems = [
-  'Launch offers on selected pieces',
-  'Secure checkout',
-  'Delivery tracking',
-  'GST invoice support',
-  'WhatsApp support',
-]
-
-const productTabs = ['New Arrivals']
-
-const supportCards = [
-  {
-    Icon: ShieldOutlinedIcon,
-    description: 'Encrypted payments with order confirmation after checkout.',
-    title: 'Secure checkout',
-  },
-  {
-    Icon: LocalShippingOutlinedIcon,
-    description: 'Shipment updates with tracking details when your order moves.',
-    title: 'Delivery tracking',
-  },
-  {
-    Icon: ReceiptLongOutlinedIcon,
-    description: 'Invoice help for business purchases and eligible requests.',
-    title: 'GST invoice support',
-  },
-  {
-    Icon: SupportAgentOutlinedIcon,
-    description: 'Reach the Raven Fold team for product and order questions.',
-    title: 'Support online',
-  },
-]
+const supportIconMap = {
+  invoice: ReceiptLongOutlinedIcon,
+  shield: ShieldOutlinedIcon,
+  shipping: LocalShippingOutlinedIcon,
+  support: SupportAgentOutlinedIcon,
+}
 
 const getMaterial = (product) => {
   if (!Array.isArray(product.attributes)) {
@@ -116,9 +72,32 @@ function Home() {
   const navigate = useNavigate()
   const { isDesktop, isMobile } = useScreenSize()
   const wishlistItems = useSelector(selectWishlistItems)
-  const [activeProductTab, setActiveProductTab] = useState(productTabs[0])
+  const [homeContent, setHomeContent] = useState(defaultHomePageContent)
+  const [activeProductTab, setActiveProductTab] = useState(defaultHomePageContent.productSection.tabLabel)
   const [featuredProducts, setFeaturedProducts] = useState([])
   const [productsLoading, setProductsLoading] = useState(true)
+
+  useEffect(() => {
+    let isActive = true
+
+    getHomePage()
+      .then((page) => {
+        if (!isActive) return
+        const nextContent = page.content || defaultHomePageContent
+
+        setHomeContent(nextContent)
+        setActiveProductTab(nextContent.productSection?.tabLabel || defaultHomePageContent.productSection.tabLabel)
+      })
+      .catch(() => {
+        if (isActive) {
+          setHomeContent(defaultHomePageContent)
+        }
+      })
+
+    return () => {
+      isActive = false
+    }
+  }, [])
 
   useEffect(() => {
     let isActive = true
@@ -128,7 +107,7 @@ function Home() {
 
       try {
         const productData = await getProducts({
-          limit: 4,
+          limit: homeContent.productSection?.productLimit || 4,
           page: 1,
           sortBy: 'createdAt',
           sortOrder: 'desc',
@@ -154,7 +133,7 @@ function Home() {
     return () => {
       isActive = false
     }
-  }, [])
+  }, [homeContent.productSection?.productLimit])
 
   const wishlistIds = useMemo(
     () => new Set(wishlistItems.map((item) => item.id)),
@@ -176,15 +155,24 @@ function Home() {
     )
   }
 
+  const hero = homeContent.hero || defaultHomePageContent.hero
+  const promoStrip = homeContent.promoStrip || defaultHomePageContent.promoStrip
+  const productSection = homeContent.productSection || defaultHomePageContent.productSection
+  const testimonial = homeContent.testimonial || defaultHomePageContent.testimonial
+  const supportCards = homeContent.supportCards || defaultHomePageContent.supportCards
+  const finalCta = homeContent.finalCta || defaultHomePageContent.finalCta
+  const productTabs = [productSection.tabLabel || defaultHomePageContent.productSection.tabLabel]
+
   return (
     <Box component="main" sx={{ bgcolor: 'background.default', overflowX: 'hidden' }}>
+      {hero.isActive ? (
       <Box
         component="section"
         sx={{
           alignItems: 'stretch',
           backgroundImage: [
             'linear-gradient(90deg, rgba(247, 244, 239, 0.98) 0%, rgba(247, 244, 239, 0.9) 34%, rgba(247, 244, 239, 0.34) 62%, rgba(247, 244, 239, 0.06) 100%)',
-            `url(${heroImage})`,
+            `url(${hero.backgroundImageUrl || heroImage})`,
           ].join(', '),
           backgroundPosition: { xs: '62% center', md: 'center' },
           backgroundRepeat: 'no-repeat',
@@ -212,7 +200,7 @@ function Home() {
                 textTransform: 'uppercase',
               }}
             >
-              New Raven Fold arrivals
+              {hero.eyebrow}
             </Typography>
             <Typography
               component="h1"
@@ -224,7 +212,7 @@ function Home() {
                 maxWidth: 760,
               }}
             >
-              Fresh carry arrivals
+              {hero.title}
             </Typography>
             <Typography
               sx={{
@@ -234,8 +222,7 @@ function Home() {
                 maxWidth: 520,
               }}
             >
-              Bags, wallets, and travel goods designed for cleaner everyday
-              movement.
+              {hero.subtitle}
             </Typography>
             <Stack direction={isMobile ? 'column' : 'row'} spacing={1.5}>
               <Button
@@ -251,10 +238,10 @@ function Home() {
                     bgcolor: 'primary.main',
                   },
                 }}
-                to="/shop"
+                to={hero.primaryCtaUrl || '/shop'}
                 variant="contained"
               >
-                Shop collection
+                {hero.primaryCtaLabel}
               </Button>
               <Button
                 component={RouterLink}
@@ -269,16 +256,18 @@ function Home() {
                     color: 'primary.main',
                   },
                 }}
-                to="/contacts"
+                to={hero.secondaryCtaUrl || '/contacts'}
                 variant="text"
               >
-                Need help?
+                {hero.secondaryCtaLabel}
               </Button>
             </Stack>
           </Stack>
         </Container>
       </Box>
+      ) : null}
 
+      {promoStrip.isActive && promoStrip.items?.length ? (
       <Box
         component="section"
         sx={{
@@ -304,7 +293,7 @@ function Home() {
             whiteSpace: 'nowrap',
           }}
         >
-          {[...promoItems, ...promoItems].map((item, index) => (
+          {[...promoStrip.items, ...promoStrip.items].map((item, index) => (
             <Stack
               alignItems="center"
               direction="row"
@@ -330,7 +319,9 @@ function Home() {
           ))}
         </Box>
       </Box>
+      ) : null}
 
+      {productSection.isActive ? (
       <Box component="section" sx={{ bgcolor: 'background.default', py: { xs: 5, md: 8 } }}>
         <Container>
           <Stack spacing={{ xs: 3, md: 5 }}>
@@ -398,7 +389,7 @@ function Home() {
             >
               <Stack spacing={1} sx={{ maxWidth: 880 }}>
                 <Typography sx={{ fontSize: '0.95rem', fontWeight: 600 }}>
-                  All Product Shop
+                  {productSection.eyebrow}
                 </Typography>
                 <Typography
                   component="h2"
@@ -409,7 +400,7 @@ function Home() {
                     lineHeight: 1,
                   }}
                 >
-                  Favorite carry products
+                  {productSection.title}
                 </Typography>
               </Stack>
 
@@ -432,10 +423,10 @@ function Home() {
                     bgcolor: 'primary.main',
                   },
                 }}
-                to="/shop"
+                to={productSection.buttonUrl || '/shop'}
                 variant="contained"
               >
-                View all products
+                {productSection.buttonLabel}
               </Button>
             </Box>
 
@@ -476,7 +467,9 @@ function Home() {
           </Stack>
         </Container>
       </Box>
+      ) : null}
 
+      {testimonial.isActive ? (
       <Box
         component="section"
         sx={{
@@ -500,8 +493,7 @@ function Home() {
                 lineHeight: 1.25,
               }}
             >
-              "The wallet feels compact, the finish looks premium, and the
-              packaging made it feel ready to gift."
+              "{testimonial.quote}"
             </Typography>
             <Stack alignItems="center" spacing={1} sx={{ width: '100%' }}>
               <Box
@@ -512,7 +504,7 @@ function Home() {
                   width: '100%',
                 }}
               >
-                {Array.from({ length: 5 }).map((_, index) => (
+                {Array.from({ length: Math.round(testimonial.rating || 5) }).map((_, index) => (
                   <StarRoundedIcon
                     key={index}
                     sx={{ color: '#e19a00', fontSize: 20 }}
@@ -520,13 +512,15 @@ function Home() {
                 ))}
               </Box>
               <Typography sx={{ fontWeight: 650 }}>
-                Raven Fold customer
+                {testimonial.author}
               </Typography>
             </Stack>
           </Stack>
         </Container>
       </Box>
+      ) : null}
 
+      {supportCards.isActive && supportCards.items?.length ? (
       <Box
         component="section"
         sx={{ bgcolor: 'background.default', py: { xs: 5, md: 6 } }}
@@ -543,7 +537,10 @@ function Home() {
               },
             }}
           >
-            {supportCards.map(({ Icon, description, title }) => (
+            {supportCards.items.map(({ description, icon, title }) => {
+              const Icon = supportIconMap[icon] || ShieldOutlinedIcon
+
+              return (
               <Box
                 key={title}
                 sx={{
@@ -567,11 +564,14 @@ function Home() {
                   {description}
                 </Typography>
               </Box>
-            ))}
+              )
+            })}
           </Box>
         </Container>
       </Box>
+      ) : null}
 
+      {finalCta.isActive ? (
       <Box component="section" sx={{ pb: { xs: 5, md: 8 } }}>
         <Container>
           <Box
@@ -596,7 +596,7 @@ function Home() {
                 lineHeight: 1,
               }}
             >
-              Find your next everyday carry.
+              {finalCta.title}
             </Typography>
             <Button
               component={RouterLink}
@@ -614,14 +614,15 @@ function Home() {
                   bgcolor: 'primary.main',
                 },
               }}
-              to="/shop"
+              to={finalCta.buttonUrl || '/shop'}
               variant="contained"
             >
-              Shop Raven Fold
+              {finalCta.buttonLabel}
             </Button>
           </Box>
         </Container>
       </Box>
+      ) : null}
     </Box>
   )
 }
