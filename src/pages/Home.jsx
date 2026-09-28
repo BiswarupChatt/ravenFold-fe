@@ -29,6 +29,13 @@ const supportIconMap = {
   support: SupportAgentOutlinedIcon,
 }
 
+const getSectionMeta = (content, type) => (
+  (content.sections || []).find((section) => section.type === type) || {
+    isActive: content[type]?.isActive !== false,
+    sortOrder: defaultHomePageContent.sections.findIndex((section) => section.type === type),
+  }
+)
+
 const getMaterial = (product) => {
   if (!Array.isArray(product.attributes)) {
     return ''
@@ -161,11 +168,17 @@ function Home() {
   const testimonial = homeContent.testimonial || defaultHomePageContent.testimonial
   const supportCards = homeContent.supportCards || defaultHomePageContent.supportCards
   const finalCta = homeContent.finalCta || defaultHomePageContent.finalCta
+  const heroMeta = getSectionMeta(homeContent, 'hero')
+  const promoStripMeta = getSectionMeta(homeContent, 'promoStrip')
+  const productSectionMeta = getSectionMeta(homeContent, 'productSection')
+  const testimonialMeta = getSectionMeta(homeContent, 'testimonial')
+  const supportCardsMeta = getSectionMeta(homeContent, 'supportCards')
+  const finalCtaMeta = getSectionMeta(homeContent, 'finalCta')
   const productTabs = [productSection.tabLabel || defaultHomePageContent.productSection.tabLabel]
 
   return (
-    <Box component="main" sx={{ bgcolor: 'background.default', overflowX: 'hidden' }}>
-      {hero.isActive ? (
+    <Box component="main" sx={{ bgcolor: 'background.default', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
+      {hero.isActive && heroMeta.isActive ? (
       <Box
         component="section"
         sx={{
@@ -180,6 +193,7 @@ function Home() {
           color: 'text.primary',
           display: 'flex',
           minHeight: { xs: 560, md: 'min(700px, calc(100vh - 96px))' },
+          order: heroMeta.sortOrder,
         }}
       >
         <Container sx={{ display: 'flex' }}>
@@ -267,13 +281,14 @@ function Home() {
       </Box>
       ) : null}
 
-      {promoStrip.isActive && promoStrip.items?.length ? (
+      {promoStrip.isActive && promoStripMeta.isActive && promoStrip.items?.length ? (
       <Box
         component="section"
         sx={{
           bgcolor: 'background.default',
           borderBottom: '1px solid',
           borderColor: 'divider',
+          order: promoStripMeta.sortOrder,
           overflow: 'hidden',
           '@keyframes ravenFoldPromoMarquee': {
             '0%': { transform: 'translateX(0)' },
@@ -321,8 +336,8 @@ function Home() {
       </Box>
       ) : null}
 
-      {productSection.isActive ? (
-      <Box component="section" sx={{ bgcolor: 'background.default', py: { xs: 5, md: 8 } }}>
+      {productSection.isActive && productSectionMeta.isActive ? (
+      <Box component="section" sx={{ bgcolor: 'background.default', order: productSectionMeta.sortOrder, py: { xs: 5, md: 8 } }}>
         <Container>
           <Stack spacing={{ xs: 3, md: 5 }}>
             <Box
@@ -469,11 +484,12 @@ function Home() {
       </Box>
       ) : null}
 
-      {testimonial.isActive ? (
+      {testimonial.isActive && testimonialMeta.isActive ? (
       <Box
         component="section"
         sx={{
           bgcolor: 'background.paper',
+          order: testimonialMeta.sortOrder,
           py: { xs: 6, md: 9 },
         }}
       >
@@ -520,10 +536,10 @@ function Home() {
       </Box>
       ) : null}
 
-      {supportCards.isActive && supportCards.items?.length ? (
+      {supportCards.isActive && supportCardsMeta.isActive && supportCards.items?.length ? (
       <Box
         component="section"
-        sx={{ bgcolor: 'background.default', py: { xs: 5, md: 6 } }}
+        sx={{ bgcolor: 'background.default', order: supportCardsMeta.sortOrder, py: { xs: 5, md: 6 } }}
       >
         <Container>
           <Box
@@ -571,8 +587,8 @@ function Home() {
       </Box>
       ) : null}
 
-      {finalCta.isActive ? (
-      <Box component="section" sx={{ pb: { xs: 5, md: 8 } }}>
+      {finalCta.isActive && finalCtaMeta.isActive ? (
+      <Box component="section" sx={{ order: finalCtaMeta.sortOrder, pb: { xs: 5, md: 8 } }}>
         <Container>
           <Box
             sx={{

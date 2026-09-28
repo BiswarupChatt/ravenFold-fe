@@ -1,7 +1,7 @@
 import apiClient from './apiClient.js'
 
-export const getActiveAnnouncementBanners = async () => {
-  const response = await apiClient.get('/announcement-banners/active')
+export const getActiveAnnouncementBanners = async (params = {}) => {
+  const response = await apiClient.get('/announcement-banners/active', { params })
   const banners = response.data?.data
 
   if (!Array.isArray(banners)) {

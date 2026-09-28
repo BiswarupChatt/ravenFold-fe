@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Box, Button, Container, Typography } from '@mui/material'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { selectIsAuthenticated } from '../../store/authSlice.js'
 import { getActiveAnnouncementBanners } from '../../services/announcementBannerApi.js'
+import { getCampaignContext } from '../../services/campaignContext.js'
 
 const SLIDE_INTERVAL_MS = 5000
 
@@ -31,13 +34,18 @@ const variantStyles = {
 const isExternalUrl = (value = '') => /^https?:\/\//i.test(value)
 
 function AnnouncementBanner() {
+  const location = useLocation()
+  const isAuthenticated = useSelector(selectIsAuthenticated)
   const [banners, setBanners] = useState([])
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
 
   useEffect(() => {
     let isMounted = true
 
-    getActiveAnnouncementBanners()
+    getActiveAnnouncementBanners(getCampaignContext({
+      isAuthenticated,
+      pathname: location.pathname,
+    }))
       .then((bannerList) => {
         if (isMounted) {
           setBanners(bannerList)
@@ -52,7 +60,7 @@ function AnnouncementBanner() {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [isAuthenticated, location.pathname])
 
   const visibleBanners = useMemo(() => {
     return banners

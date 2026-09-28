@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useMemo, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { NavLink, useLocation } from 'react-router-dom'
 import CloseIcon from '@mui/icons-material/Close'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
@@ -13,7 +14,9 @@ import {
   Typography,
 } from '@mui/material'
 import AppButton from './AppButton.jsx'
+import { getCampaignContext } from '../services/campaignContext.js'
 import { createLead, getActivePopupCampaigns } from '../services/popupCampaignApi.js'
+import { selectIsAuthenticated } from '../store/authSlice.js'
 
 const isExternalUrl = (value = '') => /^https?:\/\//i.test(value)
 
@@ -56,6 +59,7 @@ const rememberCampaign = (campaign) => {
 
 function PromotionalPopup() {
   const location = useLocation()
+  const isAuthenticated = useSelector(selectIsAuthenticated)
   const [campaign, setCampaign] = useState(null)
   const [open, setOpen] = useState(false)
   const [email, setEmail] = useState('')
@@ -65,15 +69,16 @@ function PromotionalPopup() {
   const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    if (location.pathname !== '/') {
-      setOpen(false)
-      return undefined
-    }
-
     let isMounted = true
     let timeoutId
 
-    getActivePopupCampaigns()
+    setOpen(false)
+    setCampaign(null)
+
+    getActivePopupCampaigns(getCampaignContext({
+      isAuthenticated,
+      pathname: location.pathname,
+    }))
       .then((campaigns) => {
         if (!isMounted) return
         const nextCampaign = campaigns.find(shouldShowCampaign)
@@ -95,7 +100,7 @@ function PromotionalPopup() {
       isMounted = false
       if (timeoutId) window.clearTimeout(timeoutId)
     }
-  }, [location.pathname])
+  }, [isAuthenticated, location.pathname])
 
   const ctaProps = useMemo(() => {
     const ctaUrl = campaign?.ctaUrl || ''

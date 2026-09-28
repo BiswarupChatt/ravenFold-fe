@@ -1,7 +1,7 @@
 import apiClient from './apiClient.js'
 
-export const getActivePopupCampaigns = async () => {
-  const response = await apiClient.get('/popup-campaigns/active')
+export const getActivePopupCampaigns = async (params = {}) => {
+  const response = await apiClient.get('/popup-campaigns/active', { params })
   if (!response.data?.success) {
     throw new Error(response.data?.message || 'Invalid popup campaign response.')
   }
